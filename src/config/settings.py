@@ -55,7 +55,7 @@ THIRD_PARTY_APPS = [
     "django_celery_results",
 ]
 
-LOCAL_APPS = []
+LOCAL_APPS = ["shared.infrastructure.apps.SharedInfrastructureConfig"]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
