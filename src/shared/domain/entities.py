@@ -9,6 +9,8 @@ from uuid import uuid4
 
 from django.utils import timezone
 
+from .events import *
+
 
 class Entity(ABC):
     """Base entity class that all domain entities should inherit from."""
@@ -36,7 +38,7 @@ class Entity(ABC):
     @property
     def update_timestamp(self) -> None:
         """Get the last updated timestamp of the entity."""
-        self.update_timestamp = timezone.now()
+        self._updated_at = timezone.now()
 
     def __eq__(self, other: Any):
         """Check the equality of this object with another object."""
@@ -68,7 +70,7 @@ class AggregateRoot(Entity):
         super().__init__(id)
         self._domain_events = []
 
-    def add_domain_event(self, event) -> None:
+    def add_domain_event(self, event: DomainEvent) -> None:
         """Adds new domain event for this aggregate root"""
         self._domain_events.append(event)
 
@@ -77,7 +79,7 @@ class AggregateRoot(Entity):
         self._domain_events.clear()
 
     @property
-    def domain_events(self) -> List[Any]:
+    def domain_events(self) -> List[DomainEvent]:
         """Get all domain events."""
         return self._domain_events
 
@@ -92,7 +94,7 @@ class ValueObject(ABC):
     def _get_equality_components(self) -> Tuple:
         raise NotImplementedError()
 
-    def __eq__(self, other_value: "ValueObject"):
+    def __eq__(self, other_value: object) -> bool:
         """Check's the equality of this object with other object"""
         if not isinstance(other_value, self.__class__):
             return False

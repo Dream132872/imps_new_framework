@@ -20,9 +20,17 @@ from django.contrib import admin
 from django.urls import include, path
 from django.conf import settings
 
+
+def home(request):
+    from django.http import HttpResponse
+
+    return HttpResponse("Hello")
+
+
 urlpatterns = [
     path("admin-django/doc/", include("django.contrib.admindocs.urls")),
     path("admin-django/", admin.site.urls),
+    path("", home),
 ]
 
 
