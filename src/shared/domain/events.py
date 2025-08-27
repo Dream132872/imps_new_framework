@@ -40,6 +40,11 @@ class EventHandler(ABC):
         """Main handle method of event."""
         raise NotImplementedError
 
+    @abstractmethod
+    async def handle_async(self, event: DomainEvent) -> None:
+        """Main handle method of event asyncronously."""
+        raise NotImplementedError
+
 
 class EventBus(ABC):
     """Event bus interface for publishing domain events"""
@@ -47,6 +52,11 @@ class EventBus(ABC):
     @abstractmethod
     def publish(self, event: DomainEvent) -> None:
         """Publish a domain event."""
+        raise NotImplementedError
+
+    @abstractmethod
+    async def publish_async(self, event: DomainEvent) -> None:
+        """Publish a domain event  asyncronously."""
         raise NotImplementedError
 
     @abstractmethod
@@ -69,20 +79,22 @@ class InMemoryEventBus(EventBus):
         self._handlers: Dict[str, List[EventHandler]] = {}
 
     def publish(self, event: DomainEvent):
-        """Publish a domain event."""
         handlers = self._handlers.get(event.event_type, [])
         for handler in handlers:
             handler.handle(event)
 
+    async def publish_async(self, event: DomainEvent) -> None:
+        handlers = self._handlers.get(event.event_type, [])
+        for handler in handlers:
+            await handler.handle_async(event)
+
     def subscribe(self, event_type: str, handler: EventHandler):
-        """Subscribe to a specific event type."""
         if not event_type in self._handlers:
             self._handlers[event_type] = []
 
         self._handlers[event_type].append(handler)
 
     def unsubscribe(self, event_type: str, handler: EventHandler):
-        """Unsubscribe from a specific event type."""
         if event_type in self._handlers:
             self._handlers[event_type] = [
                 h for h in self._handlers[event_type] if h != handler
