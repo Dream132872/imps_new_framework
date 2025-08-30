@@ -47,7 +47,7 @@ class DjangoRepository(Repository[T], Generic[T]):
         except self.model_class.DoesNotExist:
             raise EntityNotFoundError(f"Entity with id {entity.id} not found")
 
-    async def exists_async(self, id: str) -> bool:
+    async def exists_by_id_async(self, id: str) -> bool:
         return await self.model_class.objects.filter(pk=id).aexists()
 
     def _entity_to_model(self, entity: T) -> models.Model:

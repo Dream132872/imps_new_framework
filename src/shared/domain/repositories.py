@@ -28,6 +28,7 @@ class Repository(ABC, Generic[T]):
     @abstractmethod
     async def get_all_async(self) -> List[T]:
         """Get all entities from the repository."""
+        raise NotImplementedError
 
     @abstractmethod
     async def delete_async(self, entity: T) -> None:
@@ -35,7 +36,7 @@ class Repository(ABC, Generic[T]):
         raise NotImplementedError
 
     @abstractmethod
-    async def exists_async(self, id: str) -> bool:
+    async def exists_by_id_async(self, id: str) -> bool:
         """Check if an entity exists by it's ID."""
         raise NotImplementedError
 

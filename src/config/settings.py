@@ -10,8 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import asyncio
+import concurrent.futures
 import mimetypes
 import os
+import sys
 from pathlib import Path
 
 from decouple import Csv, config
@@ -91,7 +94,12 @@ WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 
 # number of threads for threadpool in asgi webserver like daphne
-ASYNC_THREADS = config("ASYNC_THREADS", default=os.cpu_count() * 2, cast=int)
+ASYNC_THREADS = config("ASYNC_THREADS", default=int(os.cpu_count() or 1) * 2, cast=int)
+
+# configure eventloop policy for windows platform
+if sys.platform == "win32" and hasattr(asyncio, "WindowsProactorEventLoopPolicy"):
+    asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
+
 
 # Channel Layers Configuration
 CHANNEL_LAYERS = {
