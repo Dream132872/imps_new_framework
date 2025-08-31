@@ -51,22 +51,52 @@ class EventBus(ABC):
 
     @abstractmethod
     def publish(self, event: DomainEvent) -> None:
-        """Publish a domain event."""
+        """Publish a domain event.
+
+        Args:
+            event (DomainEvent): Instance of domain event.
+
+        Raises:
+            NotImplementedError: you should implement this method.
+        """
         raise NotImplementedError
 
     @abstractmethod
     async def publish_async(self, event: DomainEvent) -> None:
-        """Publish a domain event  asyncronously."""
+        """Publish a domain event  asyncronously.
+
+        Args:
+            event (DomainEvent): Instance of domain event.
+
+        Raises:
+            NotImplementedError: You should implement this method.
+        """
         raise NotImplementedError
 
     @abstractmethod
     def subscribe(self, event_type: str, handler: EventHandler) -> None:
-        """Subscribe to a specific event type."""
+        """Subscribe to a specific event type.
+
+        Args:
+            event_type (str): type of the event (Name of the event).
+            handler (EventHandler): handler of this event type.
+
+        Raises:
+            NotImplementedError: You should implment this method.
+        """
         raise NotImplementedError
 
     @abstractmethod
     def unsubscribe(self, event_type: str, handler: EventHandler) -> None:
-        """Unsubscribe from a specific event type."""
+        """Unsubscribe from a specific event type.
+
+        Args:
+            event_type (str): Type of the event (Name of the event)
+            handler (EventHandler): Handler of this event type.
+
+        Raises:
+            NotImplementedError: _description_
+        """
         raise NotImplementedError
 
 
@@ -99,3 +129,24 @@ class InMemoryEventBus(EventBus):
             self._handlers[event_type] = [
                 h for h in self._handlers[event_type] if h != handler
             ]
+
+
+def get_event_bus(event_bus_type: str = "in_memory") -> EventBus:
+    """
+    gets required event bus based on type you pass
+
+    Args:
+        event_bus_type (str, optional): type of the event bus that you want. Defaults to "in_memory".
+
+    Returns:
+        EventBus: an instance of EventBus interface implementation
+    """
+
+    event_buses = {
+        "in_memory": InMemoryEventBus,
+    }
+
+    if not event_bus_type in event_buses:
+        raise KeyError(f"Event bus ('{event_bus_type}') does not exists.")
+
+    return event_buses[event_bus_type]()

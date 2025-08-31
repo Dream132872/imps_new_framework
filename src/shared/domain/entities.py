@@ -15,7 +15,7 @@ from .events import *
 class Entity(ABC):
     """Base entity class that all domain entities should inherit from."""
 
-    def __init__(self, id: Optional[str]):
+    def __init__(self, id: Optional[str] = None):
         self._id = id or str(uuid4())
         self._created_at = timezone.now()
         self._updated_at = timezone.now()
@@ -90,10 +90,6 @@ class ValueObject(ABC):
     Value objects are immutable and defined by it's attributes
     """
 
-    @abstractmethod
-    def _get_equality_components(self) -> Tuple:
-        raise NotImplementedError()
-
     def __eq__(self, other_value: object) -> bool:
         """Check's the equality of this object with other object"""
         if not isinstance(other_value, self.__class__):
@@ -108,4 +104,8 @@ class ValueObject(ABC):
     @abstractmethod
     def to_dict(self) -> Dict[str, Any]:
         """Get's the dictionary representation of the value object"""
+        raise NotImplementedError()
+
+    @abstractmethod
+    def _get_equality_components(self) -> Tuple:
         raise NotImplementedError()
