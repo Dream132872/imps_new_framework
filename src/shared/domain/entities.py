@@ -71,11 +71,15 @@ class AggregateRoot(Entity):
         self._domain_events = []
 
     def add_domain_event(self, event: DomainEvent) -> None:
-        """Adds new domain event for this aggregate root"""
+        """Adds new domain event for this aggregate root.
+
+        Args:
+            event (DomainEvent): instance of domain event.
+        """
         self._domain_events.append(event)
 
     def clear_domain_events(self) -> None:
-        """Clear all domain events of this aggregate roots"""
+        """Clear all domain events of this aggregate roots."""
         self._domain_events.clear()
 
     @property
@@ -87,11 +91,18 @@ class AggregateRoot(Entity):
 class ValueObject(ABC):
     """
     Base class for value objects.
-    Value objects are immutable and defined by it's attributes
+    Value objects are immutable and defined by it's attributes.
     """
 
     def __eq__(self, other_value: object) -> bool:
-        """Check's the equality of this object with other object"""
+        """Check's the equality of this object with other object.
+
+        Args:
+            other_value (object): Other value to check
+
+        Returns:
+            bool: return's True if the two value match else False
+        """
         if not isinstance(other_value, self.__class__):
             return False
 

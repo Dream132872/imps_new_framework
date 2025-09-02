@@ -37,12 +37,20 @@ class EventHandler(ABC):
 
     @abstractmethod
     def handle(self, event: DomainEvent) -> None:
-        """Main handle method of event."""
+        """Main handle method of event.
+
+        Args:
+            event (DomainEvent): the event object
+        """
         raise NotImplementedError
 
     @abstractmethod
     async def handle_async(self, event: DomainEvent) -> None:
-        """Main handle method of event asyncronously."""
+        """Main handle method of event asyncronously.
+
+        Args:
+            event (DomainEvent): the event object
+        """
         raise NotImplementedError
 
 

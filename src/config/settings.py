@@ -56,9 +56,10 @@ THIRD_PARTY_APPS = [
     "django_filters",
     "channels",
     "django_celery_results",
+    "django_injector",
 ]
 
-LOCAL_APPS = ["shared.infrastructure.apps.SharedInfrastructureConfig"]
+LOCAL_APPS = ["shared.infrastructure", "core.infrastructure"]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 

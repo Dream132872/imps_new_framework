@@ -20,9 +20,16 @@ from django.contrib import admin
 from django.urls import include, path
 from django.conf import settings
 
+from core.infrastructure.ioc import UserServiceBase
+from shared.infrastructure.ioc import get_injector
+
 
 def home(request):
     from django.http import HttpResponse
+
+    user_service = get_injector().get(UserServiceBase)
+
+    print(user_service.get_by_id(1))
 
     return HttpResponse("Hello")
 
