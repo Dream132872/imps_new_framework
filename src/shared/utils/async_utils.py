@@ -2,8 +2,8 @@
 Async utilities for managing thread pools.
 """
 
-import asyncio
 import concurrent.futures
+from typing import Any, Callable, Coroutine
 
 from django.conf import settings
 
@@ -22,7 +22,7 @@ def get_custom_executor():
     return _custom_executor
 
 
-def sync_to_async_custom(func):
+def sync_to_async_custom(func: Callable) -> Callable[..., Coroutine[Any, Any, Any]]:
     """Custom sync_to_async with custom executor."""
     from asgiref.sync import sync_to_async
 

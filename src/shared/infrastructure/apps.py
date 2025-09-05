@@ -7,7 +7,7 @@ from django.apps import AppConfig, apps
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
-from shared.utils.apps_manager import *
+from shared.utils.module_manager import *
 
 
 class SharedInfrastructureConfig(AppConfig):

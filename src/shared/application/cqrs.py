@@ -6,8 +6,6 @@ import uuid
 from abc import ABC, abstractmethod
 from typing import Any, Dict, Generic, Type, TypeVar
 
-from asgiref.sync import sync_to_async
-
 # Type variables for generic commands and queries
 C = TypeVar("C")  # Command type
 Q = TypeVar("Q")  # Query type
