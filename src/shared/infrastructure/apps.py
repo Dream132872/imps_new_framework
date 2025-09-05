@@ -8,7 +8,6 @@ from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
 from shared.utils.apps_manager import *
-from shared.utils.menu_utils import MenuPool
 
 
 class SharedInfrastructureConfig(AppConfig):
@@ -24,10 +23,6 @@ class SharedInfrastructureConfig(AppConfig):
         django_injector = apps.get_app_config("django_injector")
         injector = getattr(django_injector, "injector")
 
-        # each django app can have it's own menu items.
-        # to handle that, we need MenuPool instance
-        menu_pool = MenuPool()
-
         # modules that should be load for all installed_apps.
         # you can define a class attribute named force_load_modules to load them in all installed apps.
         force_load_modules = getattr(
@@ -39,7 +34,7 @@ class SharedInfrastructureConfig(AppConfig):
             name=settings.MIGRATIONS_HISTORY_PATH,
         ).render()
 
-        for label, config in apps.app_configs.items():
+        for _, config in apps.app_configs.items():
             if not any(filter(lambda a: a == config.name, settings.LOCAL_APPS)):
                 continue
 
@@ -103,9 +98,3 @@ class SharedInfrastructureConfig(AppConfig):
             settings.MIGRATION_MODULES[config.label] = (
                 f"{settings.MIGRATIONS_HISTORY_PATH}.{config.label}"
             )
-
-            # each django app can have a list of MenuItem.
-            # you can add your desigred menu link with menu_items key in each django apps.
-            if hasattr(config, "menu_items"):
-                menu_items = getattr(config, "menu_items", [])
-                menu_pool.extend(menu_items)

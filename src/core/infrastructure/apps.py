@@ -1,5 +1,8 @@
 from django.apps import AppConfig
+from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
+
+from shared.utils.menu_utils import MenuItem
 
 
 class InfrastructureConfig(AppConfig):
@@ -7,3 +10,12 @@ class InfrastructureConfig(AppConfig):
     name = "core.infrastructure"
     label = "core_infrastructure"
     verbose_name = _("Core")
+    menu_items = [
+        MenuItem(
+            name="core:index_view",
+            title=_("Dashboard"),
+            url=reverse_lazy("core:index_view"),
+            icon="bi bi-house",
+            display_order=-999999999,
+        ),
+    ]
