@@ -2,11 +2,11 @@
 Django admin configuration for shared infrastructure.
 """
 
-from django.contrib import admin
-from django.utils.html import format_html
-from django.utils.safestring import mark_safe
+from typing import Any, Optional
 
-from .models import BaseModel
+from django.contrib import admin
+from django.db.models import QuerySet
+from django.http import HttpRequest
 
 
 class BaseModelAdmin(admin.ModelAdmin):
@@ -27,7 +27,9 @@ class BaseModelAdmin(admin.ModelAdmin):
     # Common list per page
     list_per_page = 25
 
-    def get_fieldsets(self, request, obj=None):
+    def get_fieldsets(
+        self, request: HttpRequest, obj: Optional[Any] = None
+    ) -> list[tuple[str | None, dict[str, Any]]]:
         """
         Add system information fields to fieldsets.
         Override this in subclasses to customize fieldsets.
@@ -53,7 +55,9 @@ class BaseModelAdmin(admin.ModelAdmin):
 
         return fieldsets
 
-    def get_readonly_fields(self, request, obj=None):
+    def get_readonly_fields(
+        self, request: HttpRequest, obj: Optional[Any] = None
+    ) -> list[str]:
         """
         Ensure system fields are readonly.
         Override this in subclasses to add more readonly fields.
@@ -62,35 +66,41 @@ class BaseModelAdmin(admin.ModelAdmin):
         readonly_fields.extend(["id", "created_at", "updated_at"])
         return readonly_fields
 
-    def get_queryset(self, request):
+    def get_queryset(self, request: HttpRequest) -> QuerySet[Any]:
         """
         Optimize queryset for common operations.
         Override this in subclasses for specific optimizations.
         """
         return super().get_queryset(request)
 
-    def has_delete_permission(self, request, obj=None):
+    def has_delete_permission(
+        self, request: HttpRequest, obj: Optional[Any] = None
+    ) -> bool:
         """
         Custom delete permission logic.
         Override this in subclasses for specific permission logic.
         """
         return super().has_delete_permission(request, obj)
 
-    def has_change_permission(self, request, obj=None):
+    def has_change_permission(
+        self, request: HttpRequest, obj: Optional[Any] = None
+    ) -> bool:
         """
         Custom change permission logic.
         Override this in subclasses for specific permission logic.
         """
         return super().has_change_permission(request, obj)
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request: HttpRequest) -> bool:
         """
         Custom add permission logic.
         Override this in subclasses for specific permission logic.
         """
         return super().has_add_permission(request)
 
-    def has_view_permission(self, request, obj=None):
+    def has_view_permission(
+        self, request: HttpRequest, obj: Optional[Any] = None
+    ) -> bool:
         """
         Custom view permission logic.
         Override this in subclasses for specific permission logic.

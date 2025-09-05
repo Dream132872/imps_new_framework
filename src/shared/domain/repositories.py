@@ -3,7 +3,7 @@ Base repository interfaces.
 """
 
 from abc import ABC, abstractmethod
-from typing import Generic, List, Optional, Type, TypeVar
+from typing import Any, Generic, List, Optional, Type, TypeVar
 
 from .entities import Entity
 
@@ -47,32 +47,32 @@ class UnitOfWork(ABC):
     """
 
     @abstractmethod
-    def __enter__(self):
+    def __enter__(self) -> None:
         """Enter the unit-of-work context."""
         pass
 
     @abstractmethod
-    async def __aenter__(self):
+    async def __aenter__(self) -> None:
         """Enter the unit-of-work context asyncronously."""
         pass
 
     @abstractmethod
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         """Exit the unit-of-work context."""
         pass
 
     @abstractmethod
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
+    async def __aexit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         """Exit the unit-of-work context asyncronously."""
         pass
 
     @abstractmethod
-    async def commit_async(self):
+    async def commit_async(self) -> None:
         """Commit the current transaction."""
         pass
 
     @abstractmethod
-    async def rollback_async(self):
+    async def rollback_async(self) -> None:
         """Rollback the current transaction."""
         pass
 

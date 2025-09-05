@@ -3,7 +3,7 @@ Base repository implementation for infrastructure layer
 """
 
 from abc import ABC
-from typing import Dict, Generic, List, Optional, Type, TypeVar
+from typing import Any, Dict, Generic, List, Optional, Type, TypeVar
 
 from asgiref.sync import sync_to_async
 from django.db import models, transaction
@@ -73,23 +73,23 @@ class DjangoUnitOfWork(UnitOfWork):
         self._transaction = transaction.atomic()
         self._transaction.__enter__()
 
-    async def __aenter__(self):
+    async def __aenter__(self) -> None:
         self._transaction = await sync_to_async(transaction.atomic)()
         await sync_to_async(self._transaction.__enter__)()
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         if self._transaction:
             self._transaction.__exit__(exc_type, exc_val, exc_tb)
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
+    async def __aexit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         if self._transaction:
             await sync_to_async(self._transaction.__exit__)(exc_type, exc_val, exc_tb)
 
-    async def commit_async(self):
+    async def commit_async(self) -> None:
         # django's transactions are automatically commited when the context exits
         pass
 
-    async def rollback_async(self):
+    async def rollback_async(self) -> None:
         if self._transaction:
             await sync_to_async(self._transaction.__exit__)(
                 type(Exception("RollBack")), None, None

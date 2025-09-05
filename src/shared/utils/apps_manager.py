@@ -38,8 +38,8 @@ class ModuleNode:
             child.parent_module_node = self
 
     @property
-    def full_path(self):
-        return str(Path(os.path.join(self.parent_dir, self.name)))
+    def full_path(self) -> Path:
+        return Path(os.path.join(settings.BASE_DIR, self.parent_dir, self.name))
 
     def render(self, parent_dir: Optional[str] = None) -> None:
         """render the node."""
@@ -48,16 +48,15 @@ class ModuleNode:
             self.parent_dir = parent_dir
 
         if self.parent_dir and not self.content and len(self.name.split(".")) == 1:
-            path_obj = Path(os.path.join(self.parent_dir, self.name))
-            path_obj.mkdir(exist_ok=True, parents=True)
+            self.full_path.mkdir(exist_ok=True, parents=True)
 
         if len(self.name.split(".")) > 1 and not self.children:
-            if not os.path.exists(self.full_path):
-                with open(os.path.join(self.full_path), "w") as file:
+            if not os.path.exists(str(self.full_path)):
+                with open(str(self.full_path), "w") as file:
                     file.write(self.content)
 
         for child in self.children:
-            child.render(parent_dir=self.full_path)
+            child.render(parent_dir=str(self.full_path))
 
 
 def load_module(module_dot_path: str) -> None:

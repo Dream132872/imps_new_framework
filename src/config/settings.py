@@ -120,6 +120,11 @@ DATABASES = {
     }
 }
 
+MIGRATIONS_HISTORY_PATH = config(
+    "MIGRATIONS_HISTORY_PATH", default="migrations_history", cast=str
+)
+MIGRATION_MODULES = {}
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators

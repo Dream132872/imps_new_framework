@@ -7,4 +7,3 @@ class InfrastructureConfig(AppConfig):
     name = "core.infrastructure"
     label = "core_infrastructure"
     verbose_name = _("Core")
-    initial_loading_modules = ("ioc",)
