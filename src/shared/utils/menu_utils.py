@@ -4,11 +4,11 @@ This file contains menu item
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import ClassVar, Literal
+from typing import ClassVar, List, Literal
 
 from shared.utils.singleton import SingletonClass
 
-__all__ = ("PluginMenuItem", "PluginMenuPool", "MenuPositionEnum")
+__all__ = ("MenuItem", "MenuPool", "MenuPositionEnum")
 
 
 class MenuPositionEnum(Enum):
@@ -17,12 +17,12 @@ class MenuPositionEnum(Enum):
 
 
 @dataclass()
-class PluginMenuItem:
+class MenuItem:
     """
-    This is plugin menu item.
+    This is menu item.
 
     after initializing a new instance of this class, it automatically adds the instance
-    to the PluginMenuPool.
+    to the MenuPool.
     """
 
     name: str
@@ -46,14 +46,14 @@ class PluginMenuItem:
     display_order: int = 0
     """display order of the menu item"""
 
-    children: list["PluginMenuItem"] = field(default_factory=list)
+    children: list["MenuItem"] = field(default_factory=list)
     """list of children menu items"""
 
     def __post_init__(self):
-        plugin_menu_pool = PluginMenuPool()
-        plugin_menu_pool.add(self)
+        menu_pool = MenuPool()
+        menu_pool.add(self)
 
-    def add(self, item: "PluginMenuItem") -> None:
+    def add(self, item: "MenuItem") -> None:
         """add child item to the menu"""
         self.children.append(item)
 
@@ -63,22 +63,27 @@ class PluginMenuItem:
 
 
 @dataclass()
-class PluginMenuPool(SingletonClass):
-    _menus: ClassVar[dict[str, PluginMenuItem]] = {}
+class MenuPool(SingletonClass):
+    _menus: ClassVar[dict[str, MenuItem]] = {}
     """manage list of all menu items"""
 
-    def add(self, item: "PluginMenuItem") -> None:
+    def add(self, item: "MenuItem") -> None:
         """adds a menu item to the pool"""
         if item.name not in self._menus:
             self._menus[item.name] = item
         else:
             raise KeyError(f"Menu item {item.name} already exists")
 
+    def extend(self, items: List["MenuItem"]) -> None:
+        """Adds menu items to the pool"""
+        for item in items:
+            self.add(item)
+
     @property
-    def menus(self) -> dict[str, PluginMenuItem]:
+    def menus(self) -> dict[str, MenuItem]:
         return self._menus
 
-    def get_menus_by_position(self, position: MenuPositionEnum) -> list[PluginMenuItem]:
+    def get_menus_by_position(self, position: MenuPositionEnum) -> list[MenuItem]:
         ordered_sidebar_items = list(
             filter(
                 lambda x: x.menu_position == position,

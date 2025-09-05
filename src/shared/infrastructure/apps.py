@@ -8,6 +8,7 @@ from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
 from shared.utils.apps_manager import *
+from shared.utils.menu_utils import MenuPool
 
 
 class SharedInfrastructureConfig(AppConfig):
@@ -18,8 +19,14 @@ class SharedInfrastructureConfig(AppConfig):
     force_load_modules = ()
 
     def ready(self) -> None:
+        # for managing injection, we should get injector instance of django_injector app.
+        # this instance is in django_injector app instance
         django_injector = apps.get_app_config("django_injector")
         injector = getattr(django_injector, "injector")
+
+        # each django app can have it's own menu items.
+        # to handle that, we need MenuPool instance
+        menu_pool = MenuPool()
 
         # modules that should be load for all installed_apps.
         # you can define a class attribute named force_load_modules to load them in all installed apps.
@@ -73,24 +80,32 @@ class SharedInfrastructureConfig(AppConfig):
 
             # handle locale folder for each django app.
             # a folder with name 'locale' should be created in each django app directory.
+            # after creating locale folder, we should config that path in LOCALE_PATHS.
             ModuleNode(
                 name="locale",
                 parent_dir=django_app_dot_location.split(".")[0],
             ).render()
 
-            # after creating locale folder, we should config that path in LOCALE_PATHS.
             settings.LOCALE_PATHS.append(
                 os.path.join(
                     settings.BASE_DIR, *django_app_dot_location.split(".")[0], "locale"
                 )
             )
 
-            # configuring migration path for each django app.
+            # to manage migration histories, we should create a direcotry for app in migration history folder.
+            # then we can configure it with settings.MIGRATION_HISTORY_PATH settings.
             ModuleNode(
                 name=config.label,
                 parent_dir=settings.MIGRATIONS_HISTORY_PATH,
                 children=[ModuleNode("__init__.py", content="")],
             ).render()
+
             settings.MIGRATION_MODULES[config.label] = (
                 f"{settings.MIGRATIONS_HISTORY_PATH}.{config.label}"
             )
+
+            # each django app can have a list of MenuItem.
+            # you can add your desigred menu link with menu_items key in each django apps.
+            if hasattr(config, "menu_items"):
+                menu_items = getattr(config, "menu_items", [])
+                menu_pool.extend(menu_items)
