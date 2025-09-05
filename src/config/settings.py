@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 import asyncio
 import concurrent.futures
+from ctypes import cast
+from email.policy import default
 import mimetypes
 import os
 import sys
@@ -66,6 +68,7 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -86,6 +89,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "django.template.context_processors.i18n",
             ],
         },
     },
@@ -151,6 +155,7 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGES = (("en", _("English")), ("fa", _("Persian")))
 
 LANGUAGE_CODE = config("LANGUAGE_CODE", default="fa")
+MULTILANGUAGE_URL_PREFIX = config("MULTILANGUAGE_URL_PREFIX", default=False, cast=bool)
 TIME_ZONE = config("TIME_ZONE", default="UTC")
 USE_I18N = config("USE_I18N", default=True, cast=bool)
 USE_TZ = config("USE_TZ", default=True, cast=bool)

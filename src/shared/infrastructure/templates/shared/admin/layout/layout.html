@@ -1,16 +1,7 @@
 {% load i18n layout %}
 
 <!DOCTYPE html>
-<html lang="{{ LANGUAGE_CODE }}"
-  dir="{% if LANGUAGE_BIDI %}
-    
-    rtl
-
-  {% else %}
-    
-    ltr
-
-  {% endif %}">
+<html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
   <!-- begin::Head -->
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -18,7 +9,7 @@
     <!-- begin::Primary Meta Tags -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- end::Primary Meta Tags -->
-    {% include 'shared/admin/_head_references.html' %}
+    {% include 'shared/admin/layout/_head_references.html' %}
     {% block head_ref %}
 
     {% endblock %}
@@ -44,7 +35,7 @@
               <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-end">
                   <li class="breadcrumb-item">
-                    <a href="{% url 'samo:index_view' %}">{% trans 'Home' %}</a>
+                    <a href="{% url 'core:index_view' %}">{% trans 'Home' %}</a>
                   </li>
                   <li class="breadcrumb-item active" aria-current="page">{{ title|default:'Admin' }}</li>
                 </ol>
@@ -77,7 +68,7 @@
       <!-- end::Footer -->
     </div>
     <!-- end::App Wrapper -->
-    {% include 'shared/admin/_head_references.html' %}
+    {% include 'shared/admin/layout/_footer_references.html' %}
     {% block footer_ref %}
 
     {% endblock %}

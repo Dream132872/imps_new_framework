@@ -16,32 +16,21 @@ Including another URLconf
 """
 
 from django.conf import settings
+from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.http import HttpRequest, HttpResponse
 from django.urls import include, path
 
-from core.infrastructure.ioc import UserServiceBase
-from shared.infrastructure.ioc import get_injector
-
-
-def home(request: HttpRequest) -> HttpResponse:
-    from django.http import HttpResponse
-
-    user_service = get_injector().get(UserServiceBase)
-
-    print(user_service.get_by_id(1))
-
-    return HttpResponse("Hello")
-
-
-urlpatterns = [
-    path("admin-django/doc/", include("django.contrib.admindocs.urls")),
-    path("admin-django/", admin.site.urls),
-    path("", home),
-]
-
+urlpatterns = []
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+urlpatterns += i18n_patterns(
+    path("admin-django/doc/", include("django.contrib.admindocs.urls")),
+    path("admin-django/", admin.site.urls),
+    path("", include("shared.infrastructure.urls")),
+    path("", include("core.infrastructure.urls")),
+    prefix_default_language=settings.MULTILANGUAGE_URL_PREFIX,
+)

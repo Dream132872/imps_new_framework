@@ -15,7 +15,7 @@ menu_pool = MenuPool()
 
 
 @register.inclusion_tag(
-    "samo/templatetags/layout/admin_site_header.html", takes_context=True
+    "shared/templatetags/layout/admin_site_header.html", takes_context=True
 )
 def admin_site_header(context: Dict[str, Any], *args: Tuple, **kwargs: Dict[str, Any]):
     """
@@ -30,7 +30,7 @@ def admin_site_header(context: Dict[str, Any], *args: Tuple, **kwargs: Dict[str,
 
 
 @register.inclusion_tag(
-    "samo/templatetags/layout/admin_sidebar.html", takes_context=True
+    "shared/templatetags/layout/admin_sidebar.html", takes_context=True
 )
 def admin_sidebar(context: Dict[str, Any], *args: Tuple, **kwargs: Dict[str, Any]):
     """
@@ -43,7 +43,7 @@ def admin_sidebar(context: Dict[str, Any], *args: Tuple, **kwargs: Dict[str, Any
 
 
 @register.inclusion_tag(
-    "samo/templatetags/layout/admin_fixed_footer.html", takes_context=True
+    "shared/templatetags/layout/admin_fixed_footer.html", takes_context=True
 )
 def admin_fixed_footer(context: Dict[str, Any], *args: Tuple, **kwargs: Dict[str, Any]):
     """

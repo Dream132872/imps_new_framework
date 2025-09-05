@@ -1,0 +1,18 @@
+<li class="nav-item">
+    <a href="{% if menu_item.children %}#{% else %}{{ menu_item.url }}{% endif %}" class="nav-link">
+        <i class="nav-icon {{ menu_item.icon }}"></i>
+        <p>
+            {{ menu_item.title }}
+            {% if menu_item.children %}
+                <i class="nav-arrow bi bi-chevron-right"></i>
+            {% endif %}
+        </p>
+    </a>
+    {% if menu_item.children %}
+        <ul class="nav nav-treeview">
+            {% for child in menu_item.children %}
+                {% include 'shared/components/admin_sidebar_menu_component.html' with menu_item=child %}
+            {% endfor %}
+        </ul>
+    {% endif %}
+</li>
