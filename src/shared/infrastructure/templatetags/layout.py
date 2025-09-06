@@ -8,7 +8,7 @@ from typing import Any, Dict
 from django import template
 from django.utils import timezone
 
-from shared.utils.menu_utils import *
+from shared.infrastructure.utils.menu_utils import *
 
 register = template.Library()
 menu_pool = MenuPool()

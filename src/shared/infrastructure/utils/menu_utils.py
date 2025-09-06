@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import ClassVar, List, Literal
 
-from shared.utils.singleton import SingletonClass
+from shared.infrastructure.utils.singleton import SingletonClass
 
 __all__ = ("MenuItem", "MenuPool", "MenuPositionEnum")
 

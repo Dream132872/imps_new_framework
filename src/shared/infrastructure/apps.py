@@ -7,7 +7,7 @@ from django.apps import AppConfig, apps
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
-from shared.utils.module_manager import *
+from shared.infrastructure.utils.module_manager import *
 
 
 class SharedInfrastructureConfig(AppConfig):
@@ -15,7 +15,7 @@ class SharedInfrastructureConfig(AppConfig):
     name = "shared.infrastructure"
     label = "shared_infrastructure"
     verbose_name = _("Shared infrastrucutre")
-    force_load_modules = ()
+    shared_modules_to_load = ()
 
     def ready(self) -> None:
         # for managing injection, we should get injector instance of django_injector app.
@@ -24,9 +24,9 @@ class SharedInfrastructureConfig(AppConfig):
         injector = getattr(django_injector, "injector")
 
         # modules that should be load for all installed_apps.
-        # you can define a class attribute named force_load_modules to load them in all installed apps.
-        force_load_modules = getattr(
-            SharedInfrastructureConfig, "force_load_modules", ()
+        # you can define a class attribute named shared_modules_to_load to load them in all installed apps.
+        shared_modules_to_load = getattr(
+            SharedInfrastructureConfig, "shared_modules_to_load", ()
         )
 
         # create base migration history folder in the project root directory
@@ -54,7 +54,7 @@ class SharedInfrastructureConfig(AppConfig):
                         load_module(f"{django_app_dot_location}.{py_module}")
 
             # load all initial load python modules that are shared between all installed apps.
-            for module in force_load_modules:
+            for module in shared_modules_to_load:
                 load_module(f"{django_app_dot_location}.{module}")
 
             # manage all Injector Module classes to handle dependency injection.
