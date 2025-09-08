@@ -4,6 +4,8 @@ from shared.infrastructure.models import BaseModel
 
 # Create your models here.
 
+__all__ = ("Todo",)
+
 
 class Todo(BaseModel):
     """Model definition for Todo."""

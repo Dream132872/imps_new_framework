@@ -1,13 +1,16 @@
 import inspect
+import logging
 import os
 from importlib import import_module
 
-import injector as django_injector_module
+import injector as injector_module
 from django.apps import AppConfig, apps
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
 from shared.infrastructure.utils.module_manager import *
+
+logger = logging.getLogger(__name__)
 
 
 class SharedInfrastructureConfig(AppConfig):
@@ -16,12 +19,12 @@ class SharedInfrastructureConfig(AppConfig):
     label = "shared_infrastructure"
     verbose_name = _("Shared infrastrucutre")
     shared_modules_to_load = ()
+    initial_loading_modules = ()
 
     def ready(self) -> None:
-        # for managing injection, we should get injector instance of django_injector app.
+        # this is for shared injector instance
         # this instance is in django_injector app instance
-        django_injector = apps.get_app_config("django_injector")
-        injector = getattr(django_injector, "injector")
+        self.injector = injector_module.Injector([])
 
         # modules that should be load for all installed_apps.
         # you can define a class attribute named shared_modules_to_load to load them in all installed apps.
@@ -66,12 +69,12 @@ class SharedInfrastructureConfig(AppConfig):
                 for _, klass in inspect.getmembers(
                     module,
                     lambda a: inspect.isclass(a)
-                    and issubclass(a, django_injector_module.Module),
+                    and issubclass(a, injector_module.Module),
                 ):
                     # install found class to injector
-                    injector.binder.install(klass)
+                    self.injector.binder.install(klass)
             except ImportError as e:
-                pass
+                logger.error(f"Error loading ioc module: {e}")
 
             # handle locale folder for each django app.
             # a folder with name 'locale' should be created in each django app directory.

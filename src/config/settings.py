@@ -11,9 +11,6 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 import asyncio
-import concurrent.futures
-from ctypes import cast
-from email.policy import default
 import mimetypes
 import os
 import sys
@@ -58,7 +55,6 @@ THIRD_PARTY_APPS = [
     "django_filters",
     "channels",
     "django_celery_results",
-    "django_injector",
 ]
 
 LOCAL_APPS = ["shared.infrastructure", "core.infrastructure"]
@@ -120,8 +116,21 @@ CHANNEL_LAYERS = {
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR.parent / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.environ.get("DATABASE_NAME", "imps_new_framework_db"),
+        "USER": os.environ.get("DATABASE_USER", "root"),
+        "PASSWORD": os.environ.get("DATABASE_PASSWORD", "admin"),
+        "HOST": os.environ.get("DATABASE_HOST", "localhost"),  # Use localhost when running Django locally
+        "PORT": os.environ.get("DATABASE_PORT", "5432"),  # PgBouncer port
+        "OPTIONS": {
+            # PgBouncer-specific options
+            "application_name": "django_imps_framework",
+            # Connection pooling settings for high concurrency
+            "connect_timeout": 30,  # Increased timeout for high load
+        },
+        # Connection pooling settings for Django
+        "CONN_MAX_AGE": 0,  # Disable Django's connection pooling since PgBouncer handles it
+        "CONN_HEALTH_CHECKS": True,
     }
 }
 

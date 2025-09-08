@@ -2,9 +2,11 @@
 Inversion of Control in Core layer
 """
 
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 
-from injector import Binder, Module, inject
+from injector import Binder, Inject, Module, SingletonScope
 
 
 class RoleServiceBase(ABC):
@@ -25,14 +27,9 @@ class UserServiceBase(ABC):
 
 
 class UserService(UserServiceBase):
-    def get_by_id(self, id: int):
-        return "this is user"
-
-
-class UserService2(UserServiceBase):
-    @inject
-    def __init__(self, roleService: RoleServiceBase) -> None:
+    def __init__(self, roleService: Inject[RoleServiceBase]) -> None:
         self.role_service = roleService
+        print("this is user service")
 
     def get_by_id(self, id: int):
         print(self.role_service.get_by_id(1))
@@ -41,5 +38,5 @@ class UserService2(UserServiceBase):
 
 class UserModule(Module):
     def configure(self, binder: Binder) -> None:
-        binder.bind(UserServiceBase, UserService2)
-        binder.bind(RoleServiceBase, RoleService)
+        binder.bind(RoleServiceBase, RoleService, SingletonScope)
+        binder.bind(UserServiceBase, UserService, SingletonScope)

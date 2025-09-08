@@ -2,13 +2,16 @@ Django==5.2.5
 djangorestframework==3.15.0
 django-cors-headers==4.3.1
 python-decouple==3.8
-# psycopg2-binary==2.9.7
+psycopg2-binary==2.9.7
 django-extensions==3.2.3
 django-filter==24.1
 celery==5.3.4
 django-celery-results
 django-celery
 redis==5.0.1
+docutils
+django-injector
+adrf
 # Django Channels for WebSocket support
 channels==4.0.0
 daphne==4.0.0
@@ -26,5 +29,3 @@ black==24.1.1
 flake8==7.0.0
 isort==5.13.2
 pre-commit==3.6.0
-docutils
-django-injector

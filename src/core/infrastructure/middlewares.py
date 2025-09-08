@@ -17,7 +17,7 @@ class MultipleProxyMiddleware(MiddlewareMixin):
         "HTTP_X_FORWARDED_SERVER",
     ]
 
-    def process_request(self, request: HttpRequest):
+    def process_request(self, request: HttpRequest) -> None:
         """
         Rewrites the proxy headers so that only the most
         recent proxy is used.
