@@ -17,6 +17,7 @@ import sys
 from pathlib import Path
 
 from decouple import Csv, config
+from django.conf.global_settings import AUTH_USER_MODEL
 from django.utils.translation import gettext_lazy as _
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -120,7 +121,9 @@ DATABASES = {
         "NAME": os.environ.get("DATABASE_NAME", "imps_new_framework_db"),
         "USER": os.environ.get("DATABASE_USER", "root"),
         "PASSWORD": os.environ.get("DATABASE_PASSWORD", "admin"),
-        "HOST": os.environ.get("DATABASE_HOST", "localhost"),  # Use localhost when running Django locally
+        "HOST": os.environ.get(
+            "DATABASE_HOST", "localhost"
+        ),  # Use localhost when running Django locally
         "PORT": os.environ.get("DATABASE_PORT", "5432"),  # PgBouncer port
         "OPTIONS": {
             # PgBouncer-specific options
@@ -134,6 +137,8 @@ DATABASES = {
     }
 }
 
+AUTH_USER_MODEL = "core_infrastructure.User"
+
 MIGRATIONS_HISTORY_PATH = config(
     "MIGRATIONS_HISTORY_PATH", default="migrations_history", cast=str
 )
@@ -143,20 +148,7 @@ MIGRATION_MODULES = {}
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
-    },
-]
+AUTH_PASSWORD_VALIDATORS = []
 
 
 # Internationalization

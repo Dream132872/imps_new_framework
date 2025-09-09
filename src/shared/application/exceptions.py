@@ -32,3 +32,7 @@ class UnAuthorizedError(ApplicationError):
 
 class ConflictError(ApplicationError):
     """Exception raised when there's a conflict (e.g. duplicate resources)"""
+
+
+class ConfigurationError(ApplicationError):
+    """Exception raised when there's configuration error"""

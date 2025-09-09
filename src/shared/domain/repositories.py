@@ -2,9 +2,9 @@
 Base repository interfaces.
 """
 
+from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any, Generic, List, Optional, Type, TypeVar
-
 from .entities import Entity
 
 T = TypeVar("T", bound=Entity)
@@ -40,6 +40,7 @@ class Repository(ABC, Generic[T]):
         """Check if an entity exists by it's ID."""
         raise NotImplementedError
 
+R = TypeVar("R", bound=Repository)
 
 class UnitOfWork(ABC):
     """
@@ -77,6 +78,6 @@ class UnitOfWork(ABC):
         pass
 
     @abstractmethod
-    def get_repository(self, entity_type: Type[T]) -> Repository[T]:
-        """Get a repository for the specified entity type."""
+    def get_repository(self, repo: Type[R]) -> R:
+        """Get a repository for the specified repository."""
         pass

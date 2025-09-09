@@ -7,7 +7,6 @@ import injector as injector_module
 from django.apps import AppConfig, apps
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
-
 from shared.infrastructure.utils.module_manager import *
 
 logger = logging.getLogger(__name__)
@@ -24,7 +23,7 @@ class SharedInfrastructureConfig(AppConfig):
     def ready(self) -> None:
         # this is for shared injector instance
         # this instance is in django_injector app instance
-        self.injector = injector_module.Injector([])
+        self.injector = injector_module.Injector()
 
         # modules that should be load for all installed_apps.
         # you can define a class attribute named shared_modules_to_load to load them in all installed apps.

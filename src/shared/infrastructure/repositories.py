@@ -2,17 +2,20 @@
 Base repository implementation for infrastructure layer
 """
 
-from abc import ABC
-from typing import Any, Dict, Generic, List, Optional, Type, TypeVar
+from __future__ import annotations
+
+from typing import Any, Generic, List, Type, TypeVar
 
 from asgiref.sync import sync_to_async
 from django.db import models, transaction
 
+from shared.application.exceptions import ConfigurationError
 from shared.domain.entities import Entity
 from shared.domain.exceptions import *
 from shared.domain.repositories import Repository, UnitOfWork
 
 T = TypeVar("T", bound=Entity)
+R = TypeVar("R", bound=Repository)
 
 
 class DjangoRepository(Repository[T], Generic[T]):
@@ -23,20 +26,20 @@ class DjangoRepository(Repository[T], Generic[T]):
         self.entity_class = entity_class
 
     async def save_async(self, entity: T) -> T:
-        model_instance = self._entity_to_model(entity)
+        model_instance = await self._entity_to_model(entity)
         await model_instance.asave()
-        return self._model_to_entity(model_instance)
+        return await self._model_to_entity(model_instance)
 
     async def get_by_id_async(self, id: str) -> T | None:
         try:
             model_instance = await self.model_class.objects.aget(pk=id)
-            return self._model_to_entity(model_instance)
+            return await self._model_to_entity(model_instance)
         except self.model_class.DoesNotExist:
             return None
 
     async def get_all_async(self) -> List[T]:
         return [
-            self._model_to_entity(e)
+            await self._model_to_entity(e)
             for e in await sync_to_async(self.model_class.objects.all)()
         ]
 
@@ -50,11 +53,11 @@ class DjangoRepository(Repository[T], Generic[T]):
     async def exists_by_id_async(self, id: str) -> bool:
         return await self.model_class.objects.filter(pk=id).aexists()
 
-    def _entity_to_model(self, entity: T) -> models.Model:
+    async def _entity_to_model(self, entity: T) -> models.Model:
         """Convert domain entity to django model."""
         raise NotImplementedError
 
-    def _model_to_entity(self, model: models.Model) -> T:
+    async def _model_to_entity(self, model: models.Model) -> T:
         """Convert django model to domain entity."""
         raise NotImplementedError
 
@@ -95,8 +98,14 @@ class DjangoUnitOfWork(UnitOfWork):
                 type(Exception("RollBack")), None, None
             )
 
-    def get_repository(self, entity_type: type[T]) -> Repository[T]:
-        if entity_type in self._repositories:
-            return self._repositories[entity_type]
+    def get_repository(self, repo: Type[R]) -> R:
+        if not repo in self._repositories:
+            from shared.infrastructure.ioc import get_injector
 
-        raise NotImplementedError(f"No repository registered for {entity_type}")
+            injector = get_injector()
+            try:
+                self._repositories[repo] = injector.get(repo)
+            except:
+                raise ConfigurationError(message=f"No repository registered for {repo}")
+
+        return self._repositories[repo]

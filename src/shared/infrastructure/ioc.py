@@ -5,16 +5,23 @@ This is inversion of control manager of infrastructure.
 import functools
 import inspect
 import logging
-from typing import Any, Awaitable, Callable, Dict, Hashable, Tuple, Union
+from typing import Any, Awaitable, Callable, Dict, Hashable, Tuple, TypeVar, Union
 
 from asgiref.sync import iscoroutinefunction
 from django.apps import apps
 from django.core.exceptions import ImproperlyConfigured
 from django.core.handlers.asgi import ASGIRequest
 from django.http import HttpRequest
-from injector import Injector
+from injector import Binder, Injector, Module
 
-__all__ = ("get_injector", "inject_dependencies")
+from shared.domain.entities import Entity
+from shared.domain.repositories import UnitOfWork
+from shared.infrastructure.repositories import DjangoUnitOfWork
+
+T = TypeVar("T", bound=Entity)
+
+
+__all__ = ("get_injector", "inject_dependencies", "SharedModule")
 
 logger = logging.getLogger(__name__)
 
@@ -107,3 +114,8 @@ def inject_dependencies():
             return sync_wrapper
 
     return decorator
+
+
+class SharedModule(Module):
+    def configure(self, binder: Binder) -> None:
+        binder.bind(UnitOfWork, DjangoUnitOfWork)
