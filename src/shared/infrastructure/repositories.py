@@ -44,10 +44,7 @@ class DjangoRepository(Repository[T], Generic[T]):
         return await sync_to_async(self.get_by_id)(id)
 
     def get_all(self) -> List[T]:
-        return [
-            self._model_to_entity(e)
-            for e in self.model_class.objects.all()
-        ]
+        return [self._model_to_entity(e) for e in self.model_class.objects.all()]
 
     async def get_all_async(self) -> List[T]:
         return await sync_to_async(self.get_all)()
@@ -63,7 +60,7 @@ class DjangoRepository(Repository[T], Generic[T]):
         await sync_to_async(self.delete)(entity=entity)
 
     def exists_by_id(self, id: str) -> bool:
-        raise NotImplementedError
+        return self.model_class.objects.filter(pk=id).exists()
 
     async def exists_by_id_async(self, id: str) -> bool:
         return await self.model_class.objects.filter(pk=id).aexists()

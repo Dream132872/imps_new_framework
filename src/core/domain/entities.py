@@ -17,3 +17,6 @@ class User(AggregateRoot):
 
     def __repr__(self) -> str:
         return str(self)
+
+    def to_dict(self):
+        return {"id": self.id, "username": self.username}

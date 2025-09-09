@@ -1,10 +1,16 @@
 import logging
-from typing import Any, Hashable
+from typing import Any, Dict, Hashable
+
+from adrf.requests import AsyncRequest
+from rest_framework import status
+from rest_framework.response import Response
+from twisted.spread.pb import respond
 
 from core.domain.repositories import UserRepository
 from shared.domain.repositories import UnitOfWork
 from shared.infrastructure.ioc import inject_dependencies
 from shared.infrastructure.views import TemplateView
+from adrf.views import APIView
 
 logger = logging.getLogger(__name__)
 
@@ -25,3 +31,18 @@ class HomeView(TemplateView):
                 )
             )
         return super().get_context_data(**kwargs)
+
+
+class UsersApiView(APIView):
+    @inject_dependencies()
+    def __init__(self, uow: UnitOfWork, **kwargs: Dict[Hashable, Any]) -> None:
+        self.uow = uow
+        super().__init__(**kwargs)
+
+    async def get(self, request: AsyncRequest):
+        try:
+            async with self.uow:
+                users = await self.uow[UserRepository].get_all_async()
+                return Response([u.to_dict() for u in users], status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(e, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
