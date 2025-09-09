@@ -4,7 +4,7 @@ Base repository implementation for infrastructure layer
 
 from __future__ import annotations
 
-from typing import Any, Generic, List, Type, TypeVar
+from typing import Any, Dict, Generic, Hashable, List, Tuple, Type, TypeVar
 
 from asgiref.sync import sync_to_async
 from django.db import models, transaction
@@ -25,39 +25,54 @@ class DjangoRepository(Repository[T], Generic[T]):
         self.model_class = model_class
         self.entity_class = entity_class
 
-    async def save_async(self, entity: T) -> T:
-        model_instance = await self._entity_to_model(entity)
-        await model_instance.asave()
-        return await self._model_to_entity(model_instance)
+    def save(self, entity: T) -> T:
+        model_instance = self._entity_to_model(entity)
+        model_instance.save()
+        return self._model_to_entity(model_instance)
 
-    async def get_by_id_async(self, id: str) -> T | None:
+    async def save_async(self, entity: T) -> T:
+        return await sync_to_async(self.save)(entity=entity)
+
+    def get_by_id(self, id: str) -> T | None:
         try:
-            model_instance = await self.model_class.objects.aget(pk=id)
-            return await self._model_to_entity(model_instance)
+            model_instance = self.model_class.objects.get(pk=id)
+            return self._model_to_entity(model_instance)
         except self.model_class.DoesNotExist:
             return None
 
-    async def get_all_async(self) -> List[T]:
+    async def get_by_id_async(self, id: str) -> T | None:
+        return await sync_to_async(self.get_by_id)(id)
+
+    def get_all(self) -> List[T]:
         return [
-            await self._model_to_entity(e)
-            for e in await sync_to_async(self.model_class.objects.all)()
+            self._model_to_entity(e)
+            for e in self.model_class.objects.all()
         ]
 
-    async def delete_async(self, entity: T) -> None:
+    async def get_all_async(self) -> List[T]:
+        return await sync_to_async(self.get_all)()
+
+    def delete(self, entity: T) -> None:
         try:
-            model_instance = await self.model_class.objects.aget(pk=entity.id)
-            await model_instance.adelete(keep_parents=True)
+            model_instance = self.model_class.objects.get(pk=entity.id)
+            model_instance.delete(keep_parents=True)
         except self.model_class.DoesNotExist:
             raise EntityNotFoundError(f"Entity with id {entity.id} not found")
+
+    async def delete_async(self, entity: T) -> None:
+        await sync_to_async(self.delete)(entity=entity)
+
+    def exists_by_id(self, id: str) -> bool:
+        raise NotImplementedError
 
     async def exists_by_id_async(self, id: str) -> bool:
         return await self.model_class.objects.filter(pk=id).aexists()
 
-    async def _entity_to_model(self, entity: T) -> models.Model:
+    def _entity_to_model(self, entity: T) -> models.Model:
         """Convert domain entity to django model."""
         raise NotImplementedError
 
-    async def _model_to_entity(self, model: models.Model) -> T:
+    def _model_to_entity(self, model: models.Model) -> T:
         """Convert django model to domain entity."""
         raise NotImplementedError
 
@@ -109,3 +124,6 @@ class DjangoUnitOfWork(UnitOfWork):
                 raise ConfigurationError(message=f"No repository registered for {repo}")
 
         return self._repositories[repo]
+
+    def __getitem__(self, repo_type: Type[R]) -> R:
+        return self.get_repository(repo_type)

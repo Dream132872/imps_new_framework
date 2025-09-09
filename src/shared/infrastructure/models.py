@@ -1,3 +1,9 @@
+"""
+Base model tha all other models should inherit from.
+all models would have three main fields named id, created_at and updated_at.
+"""
+
+
 import uuid
 
 from django.db import models

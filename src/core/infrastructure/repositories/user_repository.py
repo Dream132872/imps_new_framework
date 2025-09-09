@@ -15,7 +15,7 @@ class DjangoUserRepository(DjangoRepository[User], UserRepository):
     def __init__(self) -> None:
         super().__init__(UserModel, User)
 
-    async def _model_to_entity(self, model: Any) -> User:
+    def _model_to_entity(self, model: Any) -> User:
         return User(
             id=model.id,
             username=model.username,

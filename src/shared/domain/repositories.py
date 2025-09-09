@@ -3,8 +3,10 @@ Base repository interfaces.
 """
 
 from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from typing import Any, Generic, List, Optional, Type, TypeVar
+
 from .entities import Entity
 
 T = TypeVar("T", bound=Entity)
@@ -16,31 +18,58 @@ class Repository(ABC, Generic[T]):
     """
 
     @abstractmethod
-    async def save_async(self, entity: T) -> T:
+    def save(self, entity: T) -> T:
         """Save an entity to repository."""
         raise NotImplementedError
 
     @abstractmethod
-    async def get_by_id_async(self, id: str) -> Optional[T]:
+    async def save_async(self, entity: T) -> T:
+        """Save an entity to repository async."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_by_id(self, id: str) -> Optional[T]:
         """Gets an entity by it's ID."""
         raise NotImplementedError
 
     @abstractmethod
-    async def get_all_async(self) -> List[T]:
+    async def get_by_id_async(self, id: str) -> Optional[T]:
+        """Gets an entity by it's ID async."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_all(self) -> List[T]:
         """Get all entities from the repository."""
         raise NotImplementedError
 
     @abstractmethod
-    async def delete_async(self, entity: T) -> None:
+    async def get_all_async(self) -> List[T]:
+        """Get all entities from the repository async."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def delete(self, entity: T) -> None:
         """Delete an entity from the repository."""
         raise NotImplementedError
 
     @abstractmethod
-    async def exists_by_id_async(self, id: str) -> bool:
+    async def delete_async(self, entity: T) -> None:
+        """Delete an entity from the repository async."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def exists_by_id(self, id: str) -> bool:
         """Check if an entity exists by it's ID."""
         raise NotImplementedError
 
+    @abstractmethod
+    async def exists_by_id_async(self, id: str) -> bool:
+        """Check if an entity exists by it's ID async."""
+        raise NotImplementedError
+
+
 R = TypeVar("R", bound=Repository)
+
 
 class UnitOfWork(ABC):
     """
@@ -80,4 +109,8 @@ class UnitOfWork(ABC):
     @abstractmethod
     def get_repository(self, repo: Type[R]) -> R:
         """Get a repository for the specified repository."""
+        pass
+
+    @abstractmethod
+    def __getitem__(self, repo_type: Type[R]) -> R:
         pass
