@@ -40,9 +40,8 @@ class Entity(ABC):
         """Get the last updated timestamp of the entity."""
         return self._updated_at
 
-    @property
     def update_timestamp(self) -> None:
-        """Get the last updated timestamp of the entity."""
+        """Update the updated_at timestamp."""
         self._updated_at = timezone.now()
 
     def __eq__(self, other: Any):

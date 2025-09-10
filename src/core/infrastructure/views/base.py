@@ -1,18 +1,17 @@
 import logging
-from typing import Any, Dict, Hashable
+from typing import Any
 
 from adrf.requests import AsyncRequest
+from adrf.views import APIView
 from django.http import HttpRequest, JsonResponse
 from django.http.response import HttpResponse as HttpResponse
 from rest_framework import status
 from rest_framework.response import Response
-from twisted.spread.pb import respond
 
 from core.domain.repositories import UserRepository
 from shared.domain.repositories import UnitOfWork
 from shared.infrastructure.ioc import inject_dependencies
 from shared.infrastructure.views import TemplateView
-from adrf.views import APIView
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +20,7 @@ class HomeView(TemplateView):
     template_name = "core/admin/home.html"
 
     @inject_dependencies()
-    def __init__(self, uow: UnitOfWork, **kwargs: dict[Hashable, Any]) -> None:
+    def __init__(self, uow: UnitOfWork, **kwargs: dict[str, Any]) -> None:
         self.uow: UnitOfWork = uow
         super().__init__(**kwargs)
 
@@ -37,7 +36,7 @@ class HomeView(TemplateView):
 
 class UsersApiView(APIView):
     @inject_dependencies()
-    def __init__(self, uow: UnitOfWork, **kwargs: Dict[Hashable, Any]) -> None:
+    def __init__(self, uow: UnitOfWork, **kwargs: dict[str, Any]) -> None:
         self.uow = uow
         super().__init__(**kwargs)
 

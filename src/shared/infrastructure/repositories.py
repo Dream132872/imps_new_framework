@@ -110,7 +110,7 @@ class DjangoUnitOfWork(UnitOfWork):
                 type(Exception("RollBack")), None, None
             )
 
-    def get_repository(self, repo: type[R]) -> R:
+    def _get_repository(self, repo: type[R]) -> R:
         if not repo in self._repositories:
             from shared.infrastructure.ioc import get_injector
 
@@ -123,4 +123,4 @@ class DjangoUnitOfWork(UnitOfWork):
         return self._repositories[repo]
 
     def __getitem__(self, repo_type: type[R]) -> R:
-        return self.get_repository(repo_type)
+        return self._get_repository(repo_type)

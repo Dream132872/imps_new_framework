@@ -1,10 +1,12 @@
 import datetime
 from typing import Any, Optional
 
+from django.contrib.auth.hashers import make_password
+
 from shared.domain.entities import AggregateRoot, ValueObject
 from shared.domain.exceptions import ValidationError
 
-__all__ = ("User",)
+__all__ = ("User", "Email")
 
 
 class Email(ValueObject):
@@ -99,6 +101,57 @@ class User(AggregateRoot):
     @property
     def password(self) -> str:
         return self._password
+
+    def change_password(self, password: str) -> None:
+        """Update user password."""
+        self._password = make_password(password=password)
+        self.update_timestamp()
+
+    def promote_to_staff(self) -> None:
+        """Promote user to staff member."""
+        self._is_staff = True
+        self.update_timestamp()
+
+    def demote_from_staff(self) -> None:
+        """Remove staff previllages from user."""
+        self._is_staff = False
+        self.update_timestamp()
+
+    def promote_to_superuser(self) -> None:
+        """Promote user to superuser."""
+        self._is_staff = True
+        self._is_superuser = True
+        self.update_timestamp()
+
+    def demote_from_superuser(self) -> None:
+        """Remove superuser previllages from user."""
+        self._is_superuser = True
+        self.update_timestamp()
+
+    def activate(self) -> None:
+        """Activate user."""
+        self._is_active = True
+        self.update_timestamp()
+
+    def deactivate(self) -> None:
+        """Deactivate user."""
+        self._is_active = False
+        self.update_timestamp()
+
+    def update_profile(
+        self, first_name: str = "", last_name: str = "", email: Optional[Email] = None
+    ) -> None:
+        """Update user profile information."""
+        if first_name:
+            self._first_name = first_name
+
+        if last_name:
+            self._last_name = last_name
+
+        if email:
+            self._email = email
+
+        self.update_timestamp()
 
     def __str__(self) -> str:
         return self.username

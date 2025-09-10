@@ -107,7 +107,7 @@ class UnitOfWork(ABC):
         pass
 
     @abstractmethod
-    def get_repository(self, repo: type[R]) -> R:
+    def _get_repository(self, repo: type[R]) -> R:
         """Get a repository for the specified repository."""
         pass
 

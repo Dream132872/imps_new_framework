@@ -2,7 +2,7 @@ from typing import Any
 
 from django.contrib.auth import get_user_model
 
-from core.domain.entities import Email, User
+from core.domain.entities import User
 from core.domain.repositories import UserRepository
 from shared.infrastructure.repositories import DjangoRepository
 

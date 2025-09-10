@@ -124,7 +124,7 @@ DATABASES = {
         "HOST": os.environ.get(
             "DATABASE_HOST", "localhost"
         ),  # Use localhost when running Django locally
-        "PORT": os.environ.get("DATABASE_PORT", "5432"),  # PgBouncer port
+        "PORT": os.environ.get("DATABASE_PORT", "6432"),  # PgBouncer port
         "OPTIONS": {
             # PgBouncer-specific options
             "application_name": "django_imps_framework",
