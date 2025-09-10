@@ -4,7 +4,7 @@ Base repository implementation for infrastructure layer
 
 from __future__ import annotations
 
-from typing import Any, Dict, Generic, Hashable, List, Tuple, Type, TypeVar
+from typing import Any, Generic, TypeVar
 
 from asgiref.sync import sync_to_async
 from django.db import models, transaction
@@ -21,7 +21,7 @@ R = TypeVar("R", bound=Repository)
 class DjangoRepository(Repository[T], Generic[T]):
     """Base django repository implementation"""
 
-    def __init__(self, model_class: Type[models.Model], entity_class: Type[T]) -> None:
+    def __init__(self, model_class: type[models.Model], entity_class: type[T]) -> None:
         self.model_class = model_class
         self.entity_class = entity_class
 
@@ -43,10 +43,10 @@ class DjangoRepository(Repository[T], Generic[T]):
     async def get_by_id_async(self, id: str) -> T | None:
         return await sync_to_async(self.get_by_id)(id)
 
-    def get_all(self) -> List[T]:
+    def get_all(self) -> list[T]:
         return [self._model_to_entity(e) for e in self.model_class.objects.all()]
 
-    async def get_all_async(self) -> List[T]:
+    async def get_all_async(self) -> list[T]:
         return await sync_to_async(self.get_all)()
 
     def delete(self, entity: T) -> None:
@@ -110,7 +110,7 @@ class DjangoUnitOfWork(UnitOfWork):
                 type(Exception("RollBack")), None, None
             )
 
-    def get_repository(self, repo: Type[R]) -> R:
+    def get_repository(self, repo: type[R]) -> R:
         if not repo in self._repositories:
             from shared.infrastructure.ioc import get_injector
 
@@ -122,5 +122,5 @@ class DjangoUnitOfWork(UnitOfWork):
 
         return self._repositories[repo]
 
-    def __getitem__(self, repo_type: Type[R]) -> R:
+    def __getitem__(self, repo_type: type[R]) -> R:
         return self.get_repository(repo_type)

@@ -19,6 +19,7 @@ daphne==4.0.0
 uvicorn==0.27.1
 # Production WSGI server with Uvicorn workers
 gunicorn==21.2.0
+pytz
 # Performance testing
 aiohttp==3.9.3
 pytest==8.0.0

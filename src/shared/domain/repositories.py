@@ -5,7 +5,7 @@ Base repository interfaces.
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, Generic, List, Optional, Type, TypeVar
+from typing import Any, Generic, Optional, TypeVar
 
 from .entities import Entity
 
@@ -38,12 +38,12 @@ class Repository(ABC, Generic[T]):
         raise NotImplementedError
 
     @abstractmethod
-    def get_all(self) -> List[T]:
+    def get_all(self) -> list[T]:
         """Get all entities from the repository."""
         raise NotImplementedError
 
     @abstractmethod
-    async def get_all_async(self) -> List[T]:
+    async def get_all_async(self) -> list[T]:
         """Get all entities from the repository async."""
         raise NotImplementedError
 
@@ -107,10 +107,10 @@ class UnitOfWork(ABC):
         pass
 
     @abstractmethod
-    def get_repository(self, repo: Type[R]) -> R:
+    def get_repository(self, repo: type[R]) -> R:
         """Get a repository for the specified repository."""
         pass
 
     @abstractmethod
-    def __getitem__(self, repo_type: Type[R]) -> R:
+    def __getitem__(self, repo_type: type[R]) -> R:
         pass

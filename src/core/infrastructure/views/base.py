@@ -2,6 +2,8 @@ import logging
 from typing import Any, Dict, Hashable
 
 from adrf.requests import AsyncRequest
+from django.http import HttpRequest, JsonResponse
+from django.http.response import HttpResponse as HttpResponse
 from rest_framework import status
 from rest_framework.response import Response
 from twisted.spread.pb import respond
@@ -23,14 +25,14 @@ class HomeView(TemplateView):
         self.uow: UnitOfWork = uow
         super().__init__(**kwargs)
 
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         with self.uow:
-            print(
-                self.uow[UserRepository].get_by_id(
-                    "2b8b8212-ef3f-4eb5-9893-c29675297087"
-                )
+            user = self.uow[UserRepository].get_by_id(
+                "2b8b8212-ef3f-4eb5-9893-c29675297087"
             )
-        return super().get_context_data(**kwargs)
+            if user:
+                return JsonResponse(user.to_dict())
+        return super().get(request, *args, **kwargs)
 
 
 class UsersApiView(APIView):
