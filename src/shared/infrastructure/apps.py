@@ -7,6 +7,7 @@ import injector as injector_module
 from django.apps import AppConfig, apps
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
+
 from shared.infrastructure.utils.module_manager import *
 
 logger = logging.getLogger(__name__)
@@ -99,3 +100,13 @@ class SharedInfrastructureConfig(AppConfig):
             settings.MIGRATION_MODULES[config.label] = (
                 f"{settings.MIGRATIONS_HISTORY_PATH}.{config.label}"
             )
+
+            # load cqrs service of domain.
+            # each domain has it's own cqrs_service.py file
+            # that configures the handlers for commands and queries.
+            try:
+                load_module(
+                    f"{django_app_dot_location.split(".")[0]}.application.cqrs_service"
+                )
+            except:
+                logger.warning(f"There is no cqrs_service.py file in {config.label}")

@@ -6,7 +6,6 @@ from __future__ import annotations
 
 from typing import Any, Generic, TypeVar
 
-from asgiref.sync import sync_to_async
 from django.db import models, transaction
 
 from shared.application.exceptions import ConfigurationError

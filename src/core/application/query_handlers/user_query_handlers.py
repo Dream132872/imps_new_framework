@@ -2,19 +2,22 @@
 User Query Handlers for CQRS implementation
 """
 
+from __future__ import annotations
+
+from injector import inject
+
 from core.domain.entities import User
 from core.domain.repositories import UserRepository
 from shared.application.cqrs import *
 from shared.domain.repositories import UnitOfWork
-from shared.infrastructure.ioc import inject_dependencies
 
-from ..queries import GetUserByIdQuery
+from ..queries.user_queries import *
 
-__all__ = ("GetProductByIdQueryHandler",)
+__all__ = ("GetUserByIdQueryHandler",)
 
 
-class GetProductByIdQueryHandler(QueryHandler[GetUserByIdQuery, User]):
-    # @inject_dependencies()
+class GetUserByIdQueryHandler(QueryHandler[GetUserByIdQuery, User]):
+    @inject
     def __init__(self, uow: UnitOfWork) -> None:
         self.uow = uow
 
