@@ -2,13 +2,17 @@
 Base CQRS (Command Query Responsibility Segregation) infrastructure.
 """
 
+from __future__ import annotations
+
 import uuid
 from abc import ABC, abstractmethod
 from typing import Any, Dict, Generic, Type, TypeVar
 
+from adrf.mixins import sync_to_async
+
 # Type variables for generic commands and queries
-C = TypeVar("C")  # Command type
-Q = TypeVar("Q")  # Query type
+C = TypeVar("C", bound=Command)  # Command type
+Q = TypeVar("Q", bound=Query)  # Query type
 R = TypeVar("R")  # Result type
 
 
@@ -26,11 +30,6 @@ class CommandHandler(ABC, Generic[C, R]):
     @abstractmethod
     def handle(self, command: C) -> R:
         """Handle a command and return a result."""
-        pass
-
-    @abstractmethod
-    async def handle_async(self, command: C) -> R:
-        """Handle a command asyncronously and return a result."""
         pass
 
 
@@ -60,7 +59,7 @@ class CommandBus:
             raise ValueError(f"No handler registered for type: {command_type}")
 
         handler = self._handlers[command_type]
-        return await handler.handle_async(command)
+        return await sync_to_async(handler.handle)(command)
 
 
 class Query(ABC):
@@ -76,11 +75,6 @@ class QueryHandler(ABC, Generic[Q, R]):
 
     @abstractmethod
     def handle(self, query: Q) -> R:
-        """Handle a query and return a result."""
-        pass
-
-    @abstractmethod
-    async def handle_async(self, query: Q) -> R:
         """Handle a query and return a result."""
         pass
 
@@ -109,7 +103,7 @@ class QueryBus:
             raise ValueError(f"No handler registered for query type: {query_type}")
 
         handler = self._handlers[query_type]
-        return await handler.handle_async(query)
+        return await sync_to_async(handler.handle)(query)
 
 
 # Global command and query buses

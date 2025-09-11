@@ -4,17 +4,19 @@ Production startup script for Uvicorn with static and media file serving.
 """
 
 import os
-import sys
 import signal
-import uvicorn
+import sys
 from pathlib import Path
+from typing import Any
+
+import uvicorn
 
 # Add the project root to Python path
 project_root = Path(__file__).parent
 sys.path.insert(0, str(project_root) + "src")
 
 # Import configuration
-from uvicorn_config import UVICORN_CONFIG, DJANGO_SETTINGS_MODULE
+from uvicorn_config import DJANGO_SETTINGS_MODULE, UVICORN_CONFIG
 
 # Set Django settings module
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", DJANGO_SETTINGS_MODULE)
@@ -23,7 +25,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", DJANGO_SETTINGS_MODULE)
 server = None
 
 
-def signal_handler(signum, frame):
+def signal_handler(signum: Any, frame: Any):
     """Handle shutdown signals gracefully."""
     print(f"\nReceived signal {signum}. Shutting down gracefully...")
     if server:

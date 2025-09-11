@@ -35,7 +35,7 @@ async def lifespan(scope: Any, receive: Any, send: Any):
 
 routes = []
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "conf.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 
 application = ProtocolTypeRouter(
     {

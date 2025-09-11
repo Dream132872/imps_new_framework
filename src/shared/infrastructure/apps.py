@@ -22,7 +22,6 @@ class SharedInfrastructureConfig(AppConfig):
 
     def ready(self) -> None:
         # this is for shared injector instance
-        # this instance is in django_injector app instance
         self.injector = injector_module.Injector()
 
         # modules that should be load for all installed_apps.
