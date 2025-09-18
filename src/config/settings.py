@@ -49,6 +49,7 @@ DJANGO_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
+    "modeltranslation",
     "rest_framework",
     "corsheaders",
     "django_extensions",
@@ -64,6 +65,7 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "core.infrastructure.middlewares.locale.ForceIgnoreDefaultLanguageMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -154,7 +156,9 @@ AUTH_PASSWORD_VALIDATORS = []
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
 LANGUAGES = (("en", _("English")), ("fa", _("Persian")))
-
+MODELTRANSLATION_LANGUAGES = ("fa", "en")
+MODELTRANSLATION_FALLBACK_LANGUAGES = ("fa", "en")
+MODELTRANSLATION_AUTO_POPULATE = False
 LANGUAGE_CODE = config("LANGUAGE_CODE", default="fa")
 MULTILANGUAGE_URL_PREFIX = config("MULTILANGUAGE_URL_PREFIX", default=False, cast=bool)
 TIME_ZONE = config("TIME_ZONE", default="UTC")

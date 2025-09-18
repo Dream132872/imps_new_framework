@@ -7,3 +7,8 @@ from .models import *
 @admin.register(User)
 class UserAdmin(BaseModelAdmin, BaesUserAdmin):
     pass
+
+
+@admin.register(Picture)
+class PictureAdmin(BaseModelAdmin):
+    pass
