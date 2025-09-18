@@ -5,7 +5,7 @@ Base repository interfaces.
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, Generic, Optional, TypeVar
+from typing import Any, Generic, TypeVar
 
 from .entities import Entity
 
@@ -23,7 +23,7 @@ class Repository(ABC, Generic[T]):
         raise NotImplementedError
 
     @abstractmethod
-    def get_by_id(self, id: str) -> Optional[T]:
+    def get_by_id(self, id: str) -> T | None:
         """Gets an entity by it's ID."""
         raise NotImplementedError
 

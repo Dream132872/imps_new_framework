@@ -7,11 +7,16 @@ from dataclasses import dataclass
 
 from shared.application.cqrs import Query
 
-__all__ = ("GetUserByIdQuery",)
+__all__ = ("GetUserByIdQuery", "GetActiveUsersQuery")
 
 
 @dataclass
 class GetUserByIdQuery(Query):
-    """Query to get user by id"""
+    """Query to get user by id."""
 
     user_id: uuid.UUID
+
+
+@dataclass
+class GetActiveUsersQuery(Query):
+    """Query to get all active users."""

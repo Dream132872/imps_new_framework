@@ -1,3 +1,7 @@
+"""
+Django repository implementation for user.
+"""
+
 from typing import Any
 
 from django.contrib.auth import get_user_model
@@ -12,6 +16,10 @@ UserModel = get_user_model()
 
 
 class DjangoUserRepository(DjangoRepository[User], UserRepository):
+    """
+    Django implementation of uesr repository.
+    """
+
     def __init__(self) -> None:
         super().__init__(UserModel, User)
 

@@ -1,5 +1,9 @@
-import datetime
-from typing import Any, Optional
+"""
+User related domain implementations.
+"""
+
+from datetime import datetime
+from typing import Any
 
 from django.contrib.auth.hashers import make_password
 
@@ -38,19 +42,20 @@ class Email(ValueObject):
 
 
 class User(AggregateRoot):
+
     def __init__(
         self,
         username: str,
         password: str,
-        last_name: Optional[str] = "",
-        first_name: Optional[str] = "",
-        email: Optional[str] = "",
+        last_name: str | None = "",
+        first_name: str | None = "",
+        email: str | None = "",
         is_staff: bool = False,
         is_superuser: bool = False,
         is_active: bool = True,
-        created_at: Optional[datetime.datetime] = None,
-        updated_at: Optional[datetime.datetime] = None,
-        id: Optional[str] = None,
+        created_at: datetime | None = None,
+        updated_at: datetime | None = None,
+        id: str | None = None,
     ) -> None:
         super().__init__(id=id, created_at=created_at, updated_at=updated_at)
         self._username = username
@@ -83,7 +88,7 @@ class User(AggregateRoot):
         return self.full_name if self.full_name else self.username
 
     @property
-    def email(self) -> Optional[Email]:
+    def email(self) -> Email | None:
         return self._email
 
     @property
@@ -139,7 +144,7 @@ class User(AggregateRoot):
         self.update_timestamp()
 
     def update_profile(
-        self, first_name: str = "", last_name: str = "", email: Optional[Email] = None
+        self, first_name: str = "", last_name: str = "", email: Email | None = None
     ) -> None:
         """Update user profile information."""
         if first_name:

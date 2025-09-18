@@ -2,6 +2,14 @@
 Domain base exceptions.
 """
 
+__all__ = (
+    "EntityNotFoundError",
+    "InvalidEntityError",
+    "BusinessRuleViolationError",
+    "ConcurrencyError",
+    "ValidationError",
+)
+
 
 class DomainException(Exception):
     """Base exception for domain-related errors."""

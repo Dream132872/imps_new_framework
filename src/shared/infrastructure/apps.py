@@ -40,12 +40,13 @@ class SharedInfrastructureConfig(AppConfig):
             if not any(filter(lambda a: a == config.name, settings.LOCAL_APPS)):
                 continue
 
+            # dotted path to the installed app.
             django_app_dot_location = ".".join(config.__module__.split(".")[:-1])
 
-            # manage initial load python modules
+            # manage initial load python modules.
             # each django app has a config file and each config file can have
             # a variable named initial_loading_modules that contains a string/list/tuple of all
-            # python modules that should be loaded after ready() method
+            # python modules that should be loaded after ready() method.
             if hasattr(config, "initial_loading_modules"):
                 initial_loading_modules = getattr(config, "initial_loading_modules")
 
@@ -61,7 +62,7 @@ class SharedInfrastructureConfig(AppConfig):
 
             # manage all Injector Module classes to handle dependency injection.
             # each django app can have a python module named ioc.py that contains all Injector Modules.
-            # this section installs all Modules in global django_injector injector instance.
+            # this section installs all Modules in global injector instance.
             try:
                 module = import_module(f"{django_app_dot_location}.ioc")
 

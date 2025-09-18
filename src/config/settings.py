@@ -17,7 +17,6 @@ import sys
 from pathlib import Path
 
 from decouple import Csv, config
-from django.conf.global_settings import AUTH_USER_MODEL
 from django.utils.translation import gettext_lazy as _
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -97,7 +96,8 @@ WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 
 # number of threads for threadpool in asgi webserver like daphne
-ASYNC_THREADS = config("ASYNC_THREADS", default=int(os.cpu_count() or 1) * 2, cast=int)
+# Optimized for high concurrency: increase thread pool for I/O operations
+ASYNC_THREADS = config("ASYNC_THREADS", default=int(os.cpu_count() or 1) * 4, cast=int)
 
 # configure eventloop policy for windows platform
 if sys.platform == "win32" and hasattr(asyncio, "WindowsProactorEventLoopPolicy"):
@@ -121,19 +121,18 @@ DATABASES = {
         "NAME": os.environ.get("DATABASE_NAME", "imps_new_framework_db"),
         "USER": os.environ.get("DATABASE_USER", "root"),
         "PASSWORD": os.environ.get("DATABASE_PASSWORD", "admin"),
-        "HOST": os.environ.get(
-            "DATABASE_HOST", "localhost"
-        ),  # Use localhost when running Django locally
+        "HOST": os.environ.get("DATABASE_HOST", "localhost"),
         "PORT": os.environ.get("DATABASE_PORT", "6432"),  # PgBouncer port
         "OPTIONS": {
-            # PgBouncer-specific options
+            # PgBouncer-specific options for high concurrency
             "application_name": "django_imps_framework",
-            # Connection pooling settings for high concurrency
-            "connect_timeout": 30,  # Increased timeout for high load
+            "connect_timeout": 10,  # Reduced timeout for faster failure detection
         },
-        # Connection pooling settings for Django
+        # Connection pooling settings optimized for PgBouncer
         "CONN_MAX_AGE": 0,  # Disable Django's connection pooling since PgBouncer handles it
         "CONN_HEALTH_CHECKS": True,
+        # Additional settings for high concurrency
+        "ATOMIC_REQUESTS": False,  # Disable for better performance with PgBouncer
     }
 }
 
@@ -188,25 +187,76 @@ CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE = TIME_ZONE
 
-# logging system
+# Cache configuration for high performance
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": config("REDIS_CACHE_URL", default="redis://localhost:6379/1"),
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "CONNECTION_POOL_KWARGS": {
+                "max_connections": 50,
+                "retry_on_timeout": True,
+            },
+        },
+        "KEY_PREFIX": "imps_framework",
+        "TIMEOUT": 300,  # 5 minutes default
+    }
+}
 
+# Security optimizations for production
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = "DENY"
+
+# File upload optimizations
+FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 1000
+
+# Logging configuration for production
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+            "style": "{",
+        },
+        "simple": {
+            "format": "{levelname} {message}",
+            "style": "{",
+        },
+    },
     "handlers": {
+        "file": {
+            "level": "WARNING",
+            "class": "logging.FileHandler",
+            "filename": "logs/django.log",
+            "formatter": "verbose",
+        },
         "console": {
+            "level": "INFO",
             "class": "logging.StreamHandler",
+            "formatter": "simple",
         },
     },
     "root": {
         "handlers": ["console"],
-        "level": "WARNING",
+        "level": "INFO",
     },
     "loggers": {
         "django": {
+            "handlers": ["file", "console"],
+            "level": "WARNING",
+            "propagate": False,
+        },
+        "uvicorn": {
             "handlers": ["console"],
-            "level": os.getenv("DJANGO_LOG_LEVEL", "INFO"),
+            "level": "INFO",
             "propagate": False,
         },
     },
 }
+
+os.makedirs("logs", exist_ok=True)

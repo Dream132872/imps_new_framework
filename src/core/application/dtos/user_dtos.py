@@ -3,9 +3,9 @@ Data Transfer Objects for User
 """
 
 import uuid
-from typing import Optional
-from datetime import datetime
 from dataclasses import dataclass
+from datetime import datetime
+from typing import Optional
 
 
 @dataclass
@@ -18,3 +18,5 @@ class UserDTO:
     is_staff: bool
     is_superuser: bool
     is_active: bool
+    created_at: datetime
+    updated_at: datetime

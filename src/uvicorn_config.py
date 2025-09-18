@@ -13,13 +13,14 @@ BASE_DIR = Path(__file__).parent
 # Django settings
 DJANGO_SETTINGS_MODULE = "config.settings"
 
-# Uvicorn configuration
+# Uvicorn configuration optimized for 2000+ concurrent users
 UVICORN_CONFIG = {
     "app": "config.asgi:application",
     "host": os.getenv("UVICORN_HOST", "0.0.0.0"),
     "port": int(os.getenv("UVICORN_PORT", "8000")),
-    # "workers": math.ceil(multiprocessing.cpu_count() / 2) + 1,
-    "workers": int(os.getenv("UVICORN_WORKERS", "8")),
+    # Optimized worker count: (2 * CPU cores) + 1 for I/O bound workloads
+    # For 2000 concurrent users, recommend 12-16 workers on 4-8 core systems
+    "workers": int(os.getenv("UVICORN_WORKERS", "12")),
     "log_level": os.getenv("UVICORN_LOG_LEVEL", "warning"),
     "access_log": True,
     "reload": os.getenv("UVICORN_RELOAD", "false").lower() == "true",
@@ -30,12 +31,19 @@ UVICORN_CONFIG = {
     ),
     "reload_excludes": ["*.pyc", "*.pyo", "*.pyd", "__pycache__", "*.so"],
     "reload_includes": ["*.py"],
-    "limit_concurrency": int(os.getenv("UVICORN_LIMIT_CONCURRENCY", "10000")),
-    "limit_max_requests": int(os.getenv("UVICORN_LIMIT_MAX_REQUESTS", "10000")),
-    "timeout_keep_alive": int(os.getenv("UVICORN_TIMEOUT_KEEP_ALIVE", "5")),
+    # Optimized concurrency: ~200-300 per worker for 2000 total users
+    "limit_concurrency": int(os.getenv("UVICORN_LIMIT_CONCURRENCY", "300")),
+    # Restart workers after processing many requests to prevent memory leaks
+    "limit_max_requests": int(os.getenv("UVICORN_LIMIT_MAX_REQUESTS", "5000")),
+    # Increased keep-alive for better connection reuse
+    "timeout_keep_alive": int(os.getenv("UVICORN_TIMEOUT_KEEP_ALIVE", "15")),
+    # Graceful shutdown timeout for high-load scenarios
     "timeout_graceful_shutdown": int(
-        os.getenv("UVICORN_TIMEOUT_GRACEFUL_SHUTDOWN", "50")
+        os.getenv("UVICORN_TIMEOUT_GRACEFUL_SHUTDOWN", "30")
     ),
+    # Additional performance optimizations
+    "backlog": int(os.getenv("UVICORN_BACKLOG", "2048")),  # Connection backlog
+    # "max_workers": int(os.getenv("UVICORN_MAX_WORKERS", "16")),  # Max worker limit
 }
 
 # Static and Media file configuration

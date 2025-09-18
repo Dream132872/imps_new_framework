@@ -49,11 +49,11 @@ class DjangoRepository(Repository[T], Generic[T]):
     def exists_by_id(self, id: str) -> bool:
         return self.model_class.objects.filter(pk=id).exists()
 
-    def _entity_to_model(self, entity: T) -> models.Model:
+    def _entity_to_model(self, entity: T) -> Any:
         """Convert domain entity to django model."""
         raise NotImplementedError
 
-    def _model_to_entity(self, model: models.Model) -> T:
+    def _model_to_entity(self, model: Any) -> T:
         """Convert django model to domain entity."""
         raise NotImplementedError
 

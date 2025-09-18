@@ -20,8 +20,25 @@ from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
+import os
 
-urlpatterns = []
+@require_http_methods(["GET"])
+def health_check(request):
+    """Health check endpoint for monitoring and load balancers."""
+    return JsonResponse({
+        "status": "healthy",
+        "workers": os.getenv("UVICORN_WORKERS", "12"),
+        "concurrency_limit": os.getenv("UVICORN_LIMIT_CONCURRENCY", "300"),
+        "gunicorn_workers": os.getenv("GUNICORN_WORKERS", "12"),
+        "gunicorn_connections": os.getenv("GUNICORN_WORKER_CONNECTIONS", "1000"),
+        "async_threads": os.getenv("ASYNC_THREADS", "16"),
+    })
+
+urlpatterns = [
+    path("health/", health_check, name="health_check"),
+]
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

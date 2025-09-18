@@ -4,7 +4,7 @@ Base entity and aggregate root classes.
 
 from abc import ABC, abstractmethod
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any
 from uuid import uuid4
 
 from django.utils import timezone
@@ -73,9 +73,9 @@ class AggregateRoot(Entity):
 
     def __init__(
         self,
-        id: Optional[str],
-        created_at: Optional[datetime] = None,
-        updated_at: Optional[datetime] = None,
+        id: str | None,
+        created_at: datetime | None = None,
+        updated_at: datetime | None = None,
     ) -> None:
         super().__init__(id=id, created_at=created_at, updated_at=updated_at)
         self._domain_events = []

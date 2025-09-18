@@ -70,18 +70,6 @@ class EventBus(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def publish_async(self, event: DomainEvent) -> None:
-        """Publish a domain event  asyncronously.
-
-        Args:
-            event (DomainEvent): Instance of domain event.
-
-        Raises:
-            NotImplementedError: You should implement this method.
-        """
-        raise NotImplementedError
-
-    @abstractmethod
     def subscribe(self, event_type: str, handler: EventHandler) -> None:
         """Subscribe to a specific event type.
 
@@ -120,11 +108,6 @@ class InMemoryEventBus(EventBus):
         handlers = self._handlers.get(event.event_type, [])
         for handler in handlers:
             handler.handle(event)
-
-    async def publish_async(self, event: DomainEvent) -> None:
-        handlers = self._handlers.get(event.event_type, [])
-        for handler in handlers:
-            await handler.handle_async(event)
 
     def subscribe(self, event_type: str, handler: EventHandler):
         if not event_type in self._handlers:
