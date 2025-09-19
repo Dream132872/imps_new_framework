@@ -60,5 +60,5 @@ urlpatterns += i18n_patterns(
 )
 
 
-if settings.DEBUG:
+if settings.DEBUG and not settings.TESTING:
     urlpatterns += debug_toolbar_urls()

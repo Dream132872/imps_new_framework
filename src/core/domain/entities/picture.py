@@ -29,8 +29,8 @@ class Picture(AggregateRoot):
         self._picture_type = picture_type
         self._alternative = alternative or ""
         self._title = title or ""
-        self._content_type = content_type
-        self._object_id = object_id
+        self._content_type = content_type or ""
+        self._object_id = object_id or ""
 
     @property
     def image(self) -> str:
@@ -47,6 +47,14 @@ class Picture(AggregateRoot):
     @property
     def picture_type(self) -> str:
         return self._picture_type
+
+    @property
+    def content_type(self) -> str:
+        return self._content_type
+
+    @property
+    def object_id(self) -> str:
+        return self._object_id
 
     def update_image(self, new_image_path: str) -> None:
         """Update the image itself.

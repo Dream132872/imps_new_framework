@@ -2,6 +2,7 @@
 Django repository implementation for picture.
 """
 
+import uuid
 from core.domain.entities import Picture
 from core.domain.repositories import PictureRepository
 from core.infrastructure.models import Picture as PictureModel
@@ -38,7 +39,19 @@ class DjangoPictureRepository(DjangoRepository[Picture], PictureRepository):
                 "image": entity.image,
                 "alternative": entity.alternative,
                 "title": entity.title,
+                "picture_type": entity.picture_type,
+                "content_type": entity.content_type,
+                "object_id": entity.object_id,
             },
         )
+
+        # If the model already existed, update its fields
+        if not created:
+            model.image = entity.image
+            model.alternative = entity.alternative
+            model.title = entity.title
+            model.picture_type = entity.picture_type
+            # model.content_type = entity.content_type
+            model.object_id = uuid.UUID(entity.object_id) if entity.object_id else None
 
         return model
