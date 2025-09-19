@@ -1,5 +1,6 @@
 Django==5.2.5
 django-modeltranslation
+django-rosetta
 djangorestframework==3.15.0
 django-cors-headers==4.3.1
 python-decouple==3.8
@@ -10,11 +11,18 @@ celery==5.3.4
 django-celery-results
 django-celery
 redis==5.0.1
-django-redis==5.4.0
+django-redis
 docutils
 django-injector
 adrf
 pillow
+django-debug-toolbar
+# Django cache management
+zstandard
+pyzstd
+lz4
+hiredis
+redis[hiredis]
 # Django Channels for WebSocket support
 channels==4.0.0
 daphne==4.0.0

@@ -81,20 +81,6 @@ class SharedInfrastructureConfig(AppConfig):
                     f"Failed to load ioc module for app {django_app_dot_location}: {e}"
                 )
 
-            # handle locale folder for each django app.
-            # a folder with name 'locale' should be created in each django app directory.
-            # after creating locale folder, we should config that path in LOCALE_PATHS.
-            ModuleNode(
-                name="locale",
-                parent_dir=django_app_dot_location.split(".")[0],
-            ).render()
-
-            settings.LOCALE_PATHS.append(
-                os.path.join(
-                    settings.BASE_DIR, django_app_dot_location.split(".")[0], "locale"
-                )
-            )
-
             # to manage migration histories, we should create a direcotry for app in migration history folder.
             # then we can configure it with settings.MIGRATION_HISTORY_PATH settings.
             ModuleNode(

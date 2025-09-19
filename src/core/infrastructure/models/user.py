@@ -20,5 +20,5 @@ class User(AbstractUser, BaseModel):
         """Meta definition for User."""
 
         db_table = "users"
-        verbose_name = "User"
-        verbose_name_plural = "Users"
+        verbose_name = _("User")
+        verbose_name_plural = _("Users")

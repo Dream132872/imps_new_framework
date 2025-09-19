@@ -17,6 +17,7 @@ Including another URLconf
 
 import os
 
+from debug_toolbar.toolbar import debug_toolbar_urls
 from django.conf import settings
 from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
@@ -43,6 +44,7 @@ def health_check(request: HttpRequest) -> JsonResponse:
 
 urlpatterns = [
     path("health/", health_check, name="health_check"),
+    path("admin-django/rosetta/", include("rosetta.urls")),
 ]
 
 if settings.DEBUG:
@@ -56,3 +58,7 @@ urlpatterns += i18n_patterns(
     path("", include("core.infrastructure.urls")),
     prefix_default_language=settings.MULTILANGUAGE_URL_PREFIX,
 )
+
+
+if settings.DEBUG:
+    urlpatterns += debug_toolbar_urls()

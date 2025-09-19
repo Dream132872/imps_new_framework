@@ -15,6 +15,7 @@ import mimetypes
 import os
 import sys
 from pathlib import Path
+from typing import Any
 
 from decouple import Csv, config
 from django.utils.translation import gettext_lazy as _
@@ -56,6 +57,7 @@ THIRD_PARTY_APPS = [
     "django_filters",
     "channels",
     "django_celery_results",
+    "rosetta",
 ]
 
 LOCAL_APPS = ["shared.infrastructure", "core.infrastructure"]
@@ -140,6 +142,10 @@ DATABASES = {
 
 AUTH_USER_MODEL = "core_infrastructure.User"
 
+# AUTHENTICATION_BACKENDS = [
+#     "core.infrastructure.auth_backends.CachedModelBackend",
+# ]
+
 MIGRATIONS_HISTORY_PATH = config(
     "MIGRATIONS_HISTORY_PATH", default="migrations_history", cast=str
 )
@@ -156,15 +162,47 @@ AUTH_PASSWORD_VALIDATORS = []
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
 LANGUAGES = (("en", _("English")), ("fa", _("Persian")))
-LOCALE_PATHS = []
+
 MODELTRANSLATION_LANGUAGES = ("fa", "en")
 MODELTRANSLATION_FALLBACK_LANGUAGES = ("fa", "en")
 MODELTRANSLATION_AUTO_POPULATE = False
+
+ROSETTA_LANGUAGES = [("fa", _("Persian")), ("en", _("English"))]
+ROSETTA_SHOW_AT_ADMIN_PANEL = True
+ROSETTA_MESSAGES_PER_PAGE = 20
+ROSETTA_ENABLE_TRANSLATION_SUGGESTIONS = True
+ROSETTA_ACCESS_CONTROL_FUNCTION = lambda user: user.is_superuser
+
 LANGUAGE_CODE = config("LANGUAGE_CODE", default="fa")
 MULTILANGUAGE_URL_PREFIX = config("MULTILANGUAGE_URL_PREFIX", default=False, cast=bool)
 TIME_ZONE = config("TIME_ZONE", default="UTC")
 USE_I18N = config("USE_I18N", default=True, cast=bool)
 USE_TZ = config("USE_TZ", default=True, cast=bool)
+
+
+# Auto-discover locale paths for all local apps
+def get_auto_locale_paths():
+    """Automatically discover locale paths for all LOCAL_APPS"""
+    locale_paths = []
+
+    for app in LOCAL_APPS:
+        # Convert app name to path (e.g., "core.infrastructure" -> "core")
+        app_base = app.split(".")[0]
+        locale_path = BASE_DIR / app_base / "locale"
+
+        # Only add if the directory exists
+        if locale_path.exists():
+            locale_paths.append(str(locale_path))
+
+    # Add config locale path if it exists
+    config_locale_path = BASE_DIR / "config" / "locale"
+    if config_locale_path.exists():
+        locale_paths.append(str(config_locale_path))
+
+    return locale_paths
+
+
+LOCALE_PATHS = get_auto_locale_paths()
 
 
 # Static files (CSS, JavaScript, Images)
@@ -195,18 +233,41 @@ CELERY_TIMEZONE = TIME_ZONE
 # Cache configuration for high performance
 CACHES = {
     "default": {
-        "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": config("REDIS_CACHE_URL", default="redis://localhost:6379/1"),
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": config(
+            "CACHES_DEFAULT_REDIS_URL", default="redis://localhost:6379/0"
+        ),
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
-            "CONNECTION_POOL_KWARGS": {
-                "max_connections": 50,
-                "retry_on_timeout": True,
-            },
+            "IGNORE_EXCEPTIONS": True,
+            "COMPRESSOR": "django_redis.compressors.zstd.ZStdCompressor",
         },
+        # Additional optimizations for your scale:
+        "CONNECTION_POOL_KWARGS": {
+            "max_connections": 50,  # Handle 200 concurrent users
+            "retry_on_timeout": True,
+            "socket_connect_timeout": 5,
+            "socket_timeout": 5,
+        },
+        # Serializer optimization for large JSON
+        "SERIALIZER": "django_redis.serializers.json.JSONSerializer",
+        # Connection pooling for high concurrency
+        "PARSER_CLASS": "redis.connection.HiredisParser",
         "KEY_PREFIX": "imps_framework",
-        "TIMEOUT": 300,  # 5 minutes default
-    }
+        "TIMEOUT": config("CACHES_DEFAULT_REDIS_TIMEOUT", cast=int, default=300),
+    },
+    "sessions": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": config(
+            "CACHES_SESSIONS_REDIS_URL", default="redis://localhost:6379/1"
+        ),
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "COMPRESSOR": "django_redis.compressors.lz4.Lz4Compressor",
+        },
+        "KEY_PREFIX": "imps_framework_session",
+        "TIMEOUT": config("CACHES_SESSIONS_REDIS_TIMEOUT", cast=int, default=1800),
+    },
 }
 
 # Security optimizations for production
@@ -218,6 +279,10 @@ X_FRAME_OPTIONS = "DENY"
 FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 1000
+
+# session settings
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "sessions"
 
 # Logging configuration for production
 LOGGING = {
@@ -265,3 +330,15 @@ LOGGING = {
 }
 
 os.makedirs("logs", exist_ok=True)
+
+# debug toolbar configuration
+if DEBUG:
+    INSTALLED_APPS.append(
+        "debug_toolbar",
+    )
+
+    MIDDLEWARE.append("debug_toolbar.middleware.DebugToolbarMiddleware")
+
+    INTERNAL_IPS = [
+        "127.0.0.1",
+    ]
