@@ -156,6 +156,7 @@ AUTH_PASSWORD_VALIDATORS = []
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
 LANGUAGES = (("en", _("English")), ("fa", _("Persian")))
+LOCALE_PATHS = []
 MODELTRANSLATION_LANGUAGES = ("fa", "en")
 MODELTRANSLATION_FALLBACK_LANGUAGES = ("fa", "en")
 MODELTRANSLATION_AUTO_POPULATE = False

@@ -36,6 +36,9 @@ class SharedInfrastructureConfig(AppConfig):
             name=settings.MIGRATIONS_HISTORY_PATH,
         ).render()
 
+        # create locale folder for config folder
+        os.makedirs(os.path.join(settings.BASE_DIR, "config", "locale"), exist_ok=True)
+
         for _, config in apps.app_configs.items():
             if not any(filter(lambda a: a == config.name, settings.LOCAL_APPS)):
                 continue
@@ -74,7 +77,9 @@ class SharedInfrastructureConfig(AppConfig):
                     # install found class to injector
                     self.injector.binder.install(klass)
             except ImportError as e:
-                logger.error(f"Error loading ioc module: {e}")
+                logger.error(
+                    f"Failed to load ioc module for app {django_app_dot_location}: {e}"
+                )
 
             # handle locale folder for each django app.
             # a folder with name 'locale' should be created in each django app directory.
@@ -86,7 +91,7 @@ class SharedInfrastructureConfig(AppConfig):
 
             settings.LOCALE_PATHS.append(
                 os.path.join(
-                    settings.BASE_DIR, *django_app_dot_location.split(".")[0], "locale"
+                    settings.BASE_DIR, django_app_dot_location.split(".")[0], "locale"
                 )
             )
 

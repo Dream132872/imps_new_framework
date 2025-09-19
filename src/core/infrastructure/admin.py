@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaesUserAdmin
+
 from shared.infrastructure.admin import BaseModelAdmin
+
 from .models import *
 
 
