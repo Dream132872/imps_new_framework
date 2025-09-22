@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import uuid
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from typing import Any, Generic, TypeVar
 
 from adrf.mixins import sync_to_async
@@ -68,12 +69,23 @@ class CommandBus:
         return await sync_to_async(handler.handle)(command)
 
 
+@dataclass
 class Query(ABC):
     """Base class for all queries."""
 
-    def __init__(self):
+    def __post_init__(self) -> None:
         self.query_id = str(uuid.uuid4())
         self.timestamp = uuid.uuid1().time
+
+        if hasattr(self, "page"):
+            page = getattr(self, "page")
+            if page is not None and page < 1:
+                self.page = 1
+
+        if hasattr(self, "page_size"):
+            page_size = getattr(self, "page_size")
+            if page_size is not None and page_size < 1:
+                self.page_size = 1
 
 
 class QueryHandler(ABC, Generic[Q, R]):
@@ -122,12 +134,16 @@ command_bus = CommandBus()
 query_bus = QueryBus()
 
 
-def register_command_handler(command_type: type[Command], handler: CommandHandler) -> None:
+def register_command_handler(
+    command_type: type[Command], handler: CommandHandler
+) -> None:
     """Register a command handler with the global command bus"""
     command_bus.registr_handler(command_type, handler)
 
 
-def register_query_handler(query_type: type[Query], handler: type[QueryHandler]) -> None:
+def register_query_handler(
+    query_type: type[Query], handler: type[QueryHandler]
+) -> None:
     """Register a query handler with the global query bus"""
     query_bus.register_handler(query_type, handler)
 

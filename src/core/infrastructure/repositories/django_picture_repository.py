@@ -28,7 +28,7 @@ class DjangoPictureRepository(DjangoRepository[Picture], PictureRepository):
             title=model.title,
             alternative=model.alternative,
             picture_type=model.picture_type,
-            content_type=model.content_type,
+            content_type=model.content_type_id,  # type: ignore
             object_id=model.object_id,
         )
 
@@ -47,11 +47,11 @@ class DjangoPictureRepository(DjangoRepository[Picture], PictureRepository):
 
         # If the model already existed, update its fields
         if not created:
-            model.image = entity.image
+            model.image = entity.image  # type: ignore
             model.alternative = entity.alternative
             model.title = entity.title
             model.picture_type = entity.picture_type
-            # model.content_type = entity.content_type
+            model.content_type_id = uuid.UUID(entity.content_type)  # type: ignore
             model.object_id = uuid.UUID(entity.object_id) if entity.object_id else None
 
         return model

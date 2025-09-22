@@ -17,9 +17,9 @@ class Entity(ABC):
 
     def __init__(
         self,
-        id: Optional[str] = None,
-        created_at: Optional[datetime] = None,
-        updated_at: Optional[datetime] = None,
+        id: str | None = None,
+        created_at: datetime | None = None,
+        updated_at: datetime | None = None,
     ):
         self._id = id or str(uuid4())
         self._created_at = created_at or timezone.now()
@@ -55,7 +55,7 @@ class Entity(ABC):
         """Returns the hash based on the entity's id."""
         return hash(self.id)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert entity to dictionary representation."""
 
         return {

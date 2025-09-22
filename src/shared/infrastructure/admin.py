@@ -2,7 +2,7 @@
 Django admin configuration for shared infrastructure.
 """
 
-from typing import Any, Optional
+from typing import Any
 
 from django.contrib import admin
 from django.db.models import QuerySet
@@ -28,7 +28,7 @@ class BaseModelAdmin(admin.ModelAdmin):
     list_per_page = 25
 
     def get_fieldsets(
-        self, request: HttpRequest, obj: Optional[Any] = None
+        self, request: HttpRequest, obj: Any | None = None
     ) -> list[tuple[str | None, dict[str, Any]]]:
         """
         Add system information fields to fieldsets.
@@ -56,7 +56,7 @@ class BaseModelAdmin(admin.ModelAdmin):
         return fieldsets
 
     def get_readonly_fields(
-        self, request: HttpRequest, obj: Optional[Any] = None
+        self, request: HttpRequest, obj: Any | None = None
     ) -> list[str]:
         """
         Ensure system fields are readonly.
@@ -74,7 +74,7 @@ class BaseModelAdmin(admin.ModelAdmin):
         return super().get_queryset(request)
 
     def has_delete_permission(
-        self, request: HttpRequest, obj: Optional[Any] = None
+        self, request: HttpRequest, obj: Any | None = None
     ) -> bool:
         """
         Custom delete permission logic.
@@ -83,7 +83,7 @@ class BaseModelAdmin(admin.ModelAdmin):
         return super().has_delete_permission(request, obj)
 
     def has_change_permission(
-        self, request: HttpRequest, obj: Optional[Any] = None
+        self, request: HttpRequest, obj: Any | None = None
     ) -> bool:
         """
         Custom change permission logic.
@@ -98,9 +98,7 @@ class BaseModelAdmin(admin.ModelAdmin):
         """
         return super().has_add_permission(request)
 
-    def has_view_permission(
-        self, request: HttpRequest, obj: Optional[Any] = None
-    ) -> bool:
+    def has_view_permission(self, request: HttpRequest, obj: Any | None = None) -> bool:
         """
         Custom view permission logic.
         Override this in subclasses for specific permission logic.

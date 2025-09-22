@@ -7,7 +7,11 @@ from dataclasses import dataclass
 
 from shared.application.cqrs import Query
 
-__all__ = ("GetUserByIdQuery", "GetActiveUsersQuery")
+__all__ = (
+    "GetUserByIdQuery",
+    "GetActiveUsersQuery",
+    "SearchUsersQuery",
+)
 
 
 @dataclass
@@ -20,3 +24,15 @@ class GetUserByIdQuery(Query):
 @dataclass
 class GetActiveUsersQuery(Query):
     """Query to get all active users."""
+
+
+@dataclass
+class SearchUsersQuery(Query):
+    # pagination parameters
+    page: int
+    page_size: int
+
+    # filter parameters
+    full_name: str = ""
+    email: str = ""
+    username: str = ""

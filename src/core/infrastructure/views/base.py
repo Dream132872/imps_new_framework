@@ -1,15 +1,24 @@
 import logging
-from typing import Any
 
-from django.http import HttpRequest
 from django.http.response import HttpResponse as HttpResponse
 
 from core.application.queries import *
-from shared.application.cqrs import dispatch_query_async
+from core.application.queries.user_queries import SearchUsersQuery
 from shared.infrastructure.views import TemplateView
+from shared.infrastructure.views.mixins import *
 
 logger = logging.getLogger(__name__)
 
 
-class HomeView(TemplateView):
+class HomeView(CQRSPaginatedViewMixin, AdminGenericMixin, TemplateView):
     template_name = "core/admin/home.html"
+    permission_required = ["core.view_user"]
+
+    def get_paginated_query(self) -> SearchUsersQuery:
+        return SearchUsersQuery(
+            page=int(self.request.GET.get("page", 1)),
+            page_size=int(self.request.GET.get("page_size", 10)),
+            full_name=self.request.GET.get("full_name", ""),
+            email=self.request.GET.get("email", ""),
+            username=self.request.GET.get("username", ""),
+        )

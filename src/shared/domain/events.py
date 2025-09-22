@@ -3,7 +3,7 @@ Domain events system.
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional
+from typing import Any
 from uuid import uuid4
 
 from django.utils import timezone
@@ -14,14 +14,14 @@ class DomainEvent(ABC):
     Base class for domain event.
     """
 
-    def __init__(self, aggregate_id: str, event_type: Optional[str] = None):
+    def __init__(self, aggregate_id: str, event_type: str | None = None):
         self.event_id = str(uuid4())
         self.aggregate_id = aggregate_id
         self.event_type = event_type or self.__class__.__name__
         self.occurred_on = timezone.now()
         self.version = 1
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert event to dictionary representation"""
         return {
             "event_id": self.event_id,
@@ -102,7 +102,7 @@ class InMemoryEventBus(EventBus):
     """
 
     def __init__(self):
-        self._handlers: Dict[str, List[EventHandler]] = {}
+        self._handlers: dict[str, list[EventHandler]] = {}
 
     def publish(self, event: DomainEvent):
         handlers = self._handlers.get(event.event_type, [])

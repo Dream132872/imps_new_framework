@@ -4,18 +4,24 @@ User Query Handlers for CQRS implementation
 
 from __future__ import annotations
 
-from injector import inject
 import logging
+
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
+from injector import inject
 
 from core.application.dtos.user_dtos import UserDTO
 from core.application.queries.user_queries import *
+from core.application.queries.user_queries import GetUserByIdQuery, SearchUsersQuery
 from core.domain.entities import User
 from core.domain.exceptions import UserNotFoundError
 from core.domain.repositories import UserRepository
 from shared.application.cqrs import *
+from shared.application.dtos import *
+from shared.application.dtos import PaginatedResultDTO
+from shared.application.pagination import *
+from shared.domain.pagination import *
 from shared.domain.repositories import UnitOfWork
-from django.utils.translation import gettext_lazy as _
-from django.core.exceptions import ValidationError
 
 __all__ = ("GetUserByIdQueryHandler",)
 
@@ -62,4 +68,33 @@ class GetUserByIdQueryHandler(
                 _("Failed to get user with ID '{user_id}': {message}").format(
                     user_id=query.user_id, message=str(e)
                 )
+            )
+
+
+class SearchUsersQueryHandler(
+    QueryHandler[SearchUsersQuery, PaginatedResultDTO], BaseUserQueryHandler
+):
+    @inject
+    def __init__(self, uow: UnitOfWork) -> None:
+        self.uow = uow
+
+    def handle(self, query: SearchUsersQuery) -> PaginatedResultDTO:
+        try:
+            with self.uow:
+                paginated_users = self.uow[UserRepository].search_users(
+                    full_name=query.full_name,
+                    email=query.email,
+                    username=query.username,
+                    page=query.page,
+                    page_size=query.page_size,
+                )
+
+                return convert_to_paginated_result_dto(
+                    paginated_entity=paginated_users,
+                    items=[self._to_dto(u) for u in paginated_users.items],
+                )
+
+        except Exception as e:
+            raise ValidationError(
+                _("Failed to get search users: {message}").format(message=str(e))
             )
