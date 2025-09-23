@@ -90,7 +90,7 @@ class SearchUsersQueryHandler(
                 )
 
                 return convert_to_paginated_result_dto(
-                    paginated_entity=paginated_users,
+                    paginated_object=paginated_users,
                     items=[self._to_dto(u) for u in paginated_users.items],
                 )
 

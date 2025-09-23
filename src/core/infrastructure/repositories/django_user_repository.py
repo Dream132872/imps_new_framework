@@ -12,6 +12,7 @@ from core.domain.entities import User
 from core.domain.repositories import UserRepository
 from shared.domain.pagination import DomainPaginator
 from shared.infrastructure.repositories import DjangoRepository
+from shared.infrastructure.pagination import DjangoPaginatorFactory
 
 __all__ = ("DjangoUserRepository",)
 
@@ -92,18 +93,10 @@ class DjangoUserRepository(DjangoRepository[User], UserRepository):
         if username:
             query = query.filter(username__icontains=username)
 
-        # Get total count
-        total_count = query.count()
-
-        # Apply pagination
-        start_index = (page - 1) * page_size
-        end_index = start_index + page_size
-        paginated_query = query[start_index:end_index]
-
-        # Convert to entities
-        users = [self._model_to_entity(user) for user in paginated_query]
-
         # Return domain paginator
-        return DomainPaginator(
-            items=users, page=page, page_size=page_size, total_count=total_count
+        return DjangoPaginatorFactory.create_domain_paginator(
+            queryset=query,
+            page=page,
+            page_size=page_size,
+            entity_converter=self._model_to_entity,
         )
