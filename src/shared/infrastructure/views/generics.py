@@ -6,18 +6,25 @@ each generic view has its own implementation, therefore, you should use them ins
 from django.views import generic as django_generics
 
 __all__ = (
-    'View',
-    'TemplateView'
+    "View",
+    "TemplateView",
+    "FormView",
 )
 
 
 class View(django_generics.View):
     """
-    Custom implementation of View
+    Custom implementation of View.
     """
 
 
 class TemplateView(django_generics.TemplateView):
     """
-    Custom implementation of TemplateView
+    Custom implementation of TemplateView.
+    """
+
+
+class FormView(django_generics.FormView):
+    """
+    Custom implementation of FormView.
     """

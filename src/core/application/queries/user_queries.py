@@ -31,6 +31,7 @@ class SearchUsersQuery(Query):
     # pagination parameters
     page: int
     page_size: int
+    paginated: bool = True
 
     # filter parameters
     full_name: str = ""

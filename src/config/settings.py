@@ -15,7 +15,6 @@ import mimetypes
 import os
 import sys
 from pathlib import Path
-from typing import Any
 
 from decouple import Csv, config
 from django.utils.translation import gettext_lazy as _

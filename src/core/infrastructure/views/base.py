@@ -11,8 +11,10 @@ logger = logging.getLogger(__name__)
 
 
 class HomeView(CQRSPaginatedViewMixin, AdminGenericMixin, TemplateView):
+    """Admin dashboard home view"""
+
     template_name = "core/admin/home.html"
-    permission_required = ["core.view_user"]
+    permission_required = []
 
     def get_paginated_query(self) -> SearchUsersQuery:
         return SearchUsersQuery(

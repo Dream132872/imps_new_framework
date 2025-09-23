@@ -24,7 +24,7 @@ class PaginationInfo:
     page_size: int
     total_count: int
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """Validate pagination parameters."""
         if self.current_page < 1:
             raise ValueError("Current page must be >= 1")
