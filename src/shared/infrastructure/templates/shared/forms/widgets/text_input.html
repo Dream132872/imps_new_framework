@@ -1,0 +1,25 @@
+<div class="form-group mb-3">
+  <div dir="ltr">{{ widget }}</div>
+  {% if widget.label %}
+    <label for="{{ widget.attrs.id }}" class="form-label">
+      {{ widget.label }}
+      {% if widget.required %}
+        <span class="text-danger">*</span>
+      {% endif %}
+    </label>
+  {% endif %}
+
+  <input type="text" name="{{ widget.name }}" value="{{ widget.value|default:'' }}" id="{{ widget.attrs.id }}" class="form-control {{ widget.css_class }}" placeholder="{{ widget.attrs.placeholder }}" {{ flat_attrs }} />
+
+  {% if widget.attrs.help_text %}
+    <div class="form-text">{{ widget.attrs.help_text }}</div>
+  {% endif %}
+
+  {% if widget.errors %}
+    <div class="invalid-feedback d-block">
+      {% for error in widget.errors %}
+        <div>{{ error }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>

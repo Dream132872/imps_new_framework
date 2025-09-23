@@ -1,0 +1,78 @@
+{% load static %}
+
+
+<form method="post"
+      {% if form.form_attrs.enctype %}enctype="{{ form.form_attrs.enctype }}"{% endif %}
+      class="{{ form_class }}"
+      {% for attr, value in form.form_attrs.items %}{% if attr != "enctype" %}{{ attr }}="{{ value }}"{% endif %}{% endfor %}>
+
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+        <div class="alert alert-danger" role="alert">
+            {% for error in form.non_field_errors %}
+                <div>{{ error }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="form-fields">
+        {% for field in form %}
+            <div class="field-wrapper field-{{ field.name }}">
+                {{ field }}
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save"></i> Submit
+        </button>
+        <button type="reset" class="btn btn-secondary">
+            <i class="fas fa-undo"></i> Reset
+        </button>
+    </div>
+</form>
+
+<style>
+.custom-form {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.form-fields .field-wrapper {
+    margin-bottom: 1.5rem;
+}
+
+.form-actions {
+    margin-top: 2rem;
+    text-align: center;
+}
+
+.form-actions .btn {
+    margin: 0 5px;
+    min-width: 120px;
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.invalid-feedback {
+    display: block;
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.form-text {
+    color: #6c757d;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+</style>
