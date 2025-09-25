@@ -106,18 +106,18 @@ class BaseCustomWidget(forms.Widget):
             attrs={
                 key: value
                 for key, value in attrs.items()
-                if key not in ["required", "disabled", "readonly"]
+                # if key not in ["required", "disabled", "readonly"]
             }
         )
 
-        if self.readonly:
-            flat_attrs += "readonly "
+        # if self.readonly:
+        #     flat_attrs += "readonly "
 
-        if self.disabled:
-            flat_attrs += "disabled "
+        # if self.disabled:
+        #     flat_attrs += "disabled "
 
-        if self.required:
-            flat_attrs += "required "
+        # if self.required:
+        #     flat_attrs += "required "
 
         return flat_attrs
 
