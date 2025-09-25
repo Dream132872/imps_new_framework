@@ -21,7 +21,7 @@ UserModel = get_user_model()
 
 class DjangoUserRepository(DjangoRepository[User], UserRepository):
     """
-    Django implementation of uesr repository.
+    Django implementation of user repository.
     """
 
     def __init__(self) -> None:

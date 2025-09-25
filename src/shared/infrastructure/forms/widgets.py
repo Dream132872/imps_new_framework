@@ -1,5 +1,5 @@
 """
-Custom implemention for form widgets.
+Custom implementation for form widgets.
 """
 
 from typing import Any
@@ -45,50 +45,54 @@ class BaseCustomWidget(forms.Widget):
     """
 
     template_name = None
-    css_class = ""
-    placeholder = ""
+    default_css_class = ""
     help_text = ""
-    required = False
-    disabled = False
-    readonly = False
+    field: Any = None
 
-    def __init__(self, attrs: Any = None, **kwargs) -> None:  # type: ignore
-        # Extract custom attributes
-        self.help_text = kwargs.pop("help_text", self.help_text)
-        self.placeholder = kwargs.pop("placeholder", self.placeholder)
-        self.css_class = kwargs.pop("css_class", self.css_class)
-        self.required = kwargs.pop("required", self.required)
-        self.disabled = kwargs.pop("disabled", self.disabled)
-        self.readonly = kwargs.pop("readonly", self.readonly)
-
+    def __init__(
+        self,
+        attrs: dict | None = None,
+        help_text: str = "",
+        placeholder: str = "",
+        css_class: str = "",
+        required: bool = False,
+        disabled: bool = False,
+        readonly: bool = False,
+    ) -> None:
         # Initialize parent
         super().__init__(attrs)
+
+        # Extract custom attributes
+        self.help_text = help_text
+        self.placeholder = placeholder
+
+        if required:
+            self.required = required
+
+        if disabled:
+            self.disabled = disabled
+
+        if readonly:
+            self.readonly = readonly
 
         # Set up default attributes
         if attrs is None:
             attrs = {}
 
+        # Add default CSS class of the widget
+        if self.default_css_class:
+            self.add_css_classes(self.default_css_class)
+
         # Add CSS class
-        if self.css_class:
-            current_class = attrs.get("class", "")
-            attrs["class"] = f"{current_class} {self.css_class}".strip()
-
-        # Add placeholder
-        if self.placeholder:
-            attrs["placeholder"] = self.placeholder
-
-        # Add readonly/disabled attributes
-        if self.readonly:
-            attrs["readonly"] = True
-        if self.disabled:
-            attrs["disabled"] = True
-        if self.required:
-            attrs["required"] = True
+        if css_class:
+            self.add_css_classes(css_class)
 
         self.attrs.update(attrs)
 
     def get_context(self, name: str, value: Any, attrs: Any):
         """Get context for template rendering."""
+        import pprint
+
         context = super().get_context(name, value, attrs)
         context.update(
             {
@@ -97,29 +101,90 @@ class BaseCustomWidget(forms.Widget):
                 "flat_attrs": self.generate_flat_attributes(context["widget"]["attrs"]),
             }
         )
-        import pprint
+
         pprint.pprint(context)
         return context
 
     def generate_flat_attributes(self, attrs: dict) -> str:
-        flat_attrs = flatatt(
-            attrs={
-                key: value
-                for key, value in attrs.items()
-                # if key not in ["required", "disabled", "readonly"]
-            }
-        )
+        """Generated flatten attributes for widget.
 
-        # if self.readonly:
-        #     flat_attrs += "readonly "
+        Args:
+            attrs (dict): all attributes of this widget.
 
-        # if self.disabled:
-        #     flat_attrs += "disabled "
-
-        # if self.required:
-        #     flat_attrs += "required "
+        Returns:
+            str: flatten attributes.
+        """
+        flat_attrs = flatatt(attrs={key: value for key, value in attrs.items()})
 
         return flat_attrs
+
+    def add_css_classes(self, css_classes: str) -> None:
+        """Adds new classes to the input.
+
+        Args:
+            css_classes (str): css class names
+        """
+
+        current_classes = self.attrs.get("class", "")
+        self.attrs["class"] = f"{current_classes} {css_classes}".strip()
+
+    @property
+    def css_class(self) -> str:
+        return self.attrs.get("class", "")
+
+    @css_class.setter
+    def css_class(self, value: str) -> None:
+        self.add_css_classes(value)
+
+    @property
+    def placeholder(self) -> str:
+        return self.attrs.get("placeholder", "")
+
+    @placeholder.setter
+    def placeholder(self, value: str) -> None:
+        self.attrs["placeholder"] = value
+
+    @property
+    def disabled(self) -> bool:
+        return self.attrs.get("disabled", False)
+
+    @disabled.setter
+    def disabled(self, value: bool) -> None:
+        if value:
+            self.attrs["disabled"] = True
+        else:
+            try:
+                self.attrs.pop("disabled")
+            except:
+                pass
+
+    @property
+    def readonly(self) -> bool:
+        return self.attrs.get("readonly", False)
+
+    @readonly.setter
+    def readonly(self, value: bool) -> None:
+        if value:
+            self.attrs["readonly"] = True
+        else:
+            try:
+                self.attrs.pop("readonly")
+            except:
+                pass
+
+    @property
+    def required(self) -> bool:
+        return self.attrs.get("required", False)
+
+    @required.setter
+    def required(self, value: bool) -> None:
+        if value:
+            self.attrs["required"] = True
+        else:
+            try:
+                self.attrs.pop("required")
+            except:
+                pass
 
     def render(
         self, name: str, value: Any, attrs: dict | None = None, renderer: Any = None
@@ -133,42 +198,42 @@ class BaseCustomWidget(forms.Widget):
 
 class TextInput(BaseCustomWidget, forms.TextInput):
     template_name = "shared/forms/widgets/text_input.html"
-    css_class = "form-control"
+    default_css_class = "form-control"
 
 
 class NumberInput(BaseCustomWidget, forms.NumberInput):
     template_name = "shared/forms/widgets/number_input.html"
-    css_class = "form-control"
+    default_css_class = "form-control"
 
 
 class EmailInput(BaseCustomWidget, forms.EmailInput):
     template_name = "shared/forms/widgets/email_input.html"
-    css_class = "form-control"
+    default_css_class = "form-control"
 
 
 class URLInput(BaseCustomWidget, forms.URLInput):
     template_name = "shared/forms/widgets/url_input.html"
-    css_class = "form-control"
+    default_css_class = "form-control"
 
 
 class ColorInput(BaseCustomWidget, forms.ColorInput):
     template_name = "shared/forms/widgets/color_input.html"
-    css_class = "form-control"
+    default_css_class = "form-control"
 
 
 class SearchInput(BaseCustomWidget, forms.SearchInput):
     template_name = "shared/forms/widgets/search_input.html"
-    css_class = "form-control"
+    default_css_class = "form-control"
 
 
 class TelInput(BaseCustomWidget, forms.TelInput):
     template_name = "shared/forms/widgets/tel_input.html"
-    css_class = "form-control"
+    default_css_class = "form-control"
 
 
 class PasswordInput(BaseCustomWidget, forms.PasswordInput):
     template_name = "shared/forms/widgets/password_input.html"
-    css_class = "form-control"
+    default_css_class = "form-control"
 
 
 class HiddenInput(BaseCustomWidget, forms.HiddenInput):
@@ -181,62 +246,62 @@ class MultipleHiddenInput(BaseCustomWidget, forms.MultipleHiddenInput):
 
 class FileInput(BaseCustomWidget, forms.FileInput):
     template_name = "shared/forms/widgets/file_input.html"
-    css_class = "form-control"
+    default_css_class = "form-control"
 
 
 class ClearableFileInput(BaseCustomWidget, forms.ClearableFileInput):
     template_name = "shared/forms/widgets/clearable_file_input.html"
-    css_class = "form-control"
+    default_css_class = "form-control"
 
 
 class Textarea(BaseCustomWidget, forms.Textarea):
     template_name = "shared/forms/widgets/textarea.html"
-    css_class = "form-control"
+    default_css_class = "form-control"
 
 
 class DateInput(BaseCustomWidget, forms.DateInput):
     template_name = "shared/forms/widgets/date_input.html"
-    css_class = "form-control"
+    default_css_class = "form-control"
 
 
 class DateTimeInput(BaseCustomWidget, forms.DateTimeInput):
     template_name = "shared/forms/widgets/datetime_input.html"
-    css_class = "form-control"
+    default_css_class = "form-control"
 
 
 class TimeInput(BaseCustomWidget, forms.TimeInput):
     template_name = "shared/forms/widgets/time_input.html"
-    css_class = "form-control"
+    default_css_class = "form-control"
 
 
 class CheckboxInput(BaseCustomWidget, forms.CheckboxInput):
     template_name = "shared/forms/widgets/checkbox_input.html"
-    css_class = "form-check-input"
+    default_css_class = "form-check-input"
 
 
 class Select(BaseCustomWidget, forms.Select):
     template_name = "shared/forms/widgets/select.html"
-    css_class = "form-select"
+    default_css_class = "form-select"
 
 
 class NullBooleanSelect(BaseCustomWidget, forms.NullBooleanSelect):
     template_name = "shared/forms/widgets/null_boolean_select.html"
-    css_class = "form-select"
+    default_css_class = "form-select"
 
 
 class SelectMultiple(BaseCustomWidget, forms.SelectMultiple):
     template_name = "shared/forms/widgets/select_multiple.html"
-    css_class = "form-select"
+    default_css_class = "form-select"
 
 
 class RadioSelect(BaseCustomWidget, forms.RadioSelect):
     template_name = "shared/forms/widgets/radio_select.html"
-    css_class = "form-check-input"
+    default_css_class = "form-check-input"
 
 
 class CheckboxSelectMultiple(BaseCustomWidget, forms.CheckboxSelectMultiple):
     template_name = "shared/forms/widgets/checkbox_select_multiple.html"
-    css_class = "form-check-input"
+    default_css_class = "form-check-input"
 
 
 class MultiWidget(BaseCustomWidget, forms.MultiWidget):

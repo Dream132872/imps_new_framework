@@ -4,10 +4,11 @@
       <p>{{ key }} : {{ value }}</p>
     {% endfor %}
   </div>
-  {% if widget.label %}
+
+  {% if widget_obj.field.label %}
     <label for="{{ widget.attrs.id }}" class="form-label">
-      {{ widget.label }}
-      {% if widget.required %}
+      {{ widget_obj.field.label }}
+      {% if widget_obj.field.required %}
         <span class="text-danger">*</span>
       {% endif %}
     </label>
@@ -15,13 +16,11 @@
 
   <input type="text" name="{{ widget.name }}" value="{{ widget.value|default:'' }}" {{ flat_attrs|safe }} />
 
-  {% if widget.attrs.help_text %}
-    <div class="form-text">{{ widget.attrs.help_text }}</div>
-  {% endif %}
+  <div class="form-text">help_text: {{ help_text }}</div>
 
-  {% if widget.errors %}
+  {% if widget_obj.errors %}
     <div class="invalid-feedback d-block">
-      {% for error in widget.errors %}
+      {% for error in widget_obj.errors %}
         <div>{{ error }}</div>
       {% endfor %}
     </div>

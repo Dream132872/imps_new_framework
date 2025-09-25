@@ -8,9 +8,11 @@ class TestWidgetsForm(forms.Form):
 
     text_input = forms.CharField(
         widget=forms.TextInput(
-            required=False,
+            css_class="new-class-of-widget",
             help_text="This is help_text",
-            placeholder="Placeholder text",
-            label="Label",
-        )
+        ),
+        placeholder="Placeholder text",
+        css_class="new-class-of-form-widget",
+        label="Label",
+        required=False,
     )

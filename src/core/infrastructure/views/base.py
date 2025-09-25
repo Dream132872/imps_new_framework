@@ -42,8 +42,8 @@ class HomeView(CQRSPaginatedViewMixin, AdminGenericMixin, TemplateView):
         base_context = super().get_context_data(**kwargs)
         form = TestWidgetsForm()
 
-        # if form.is_valid():
-        #     form.add_error("text_input", "this is error")
+        if form.is_valid():
+            form.add_error("text_input", "this is error")
 
         base_context.update(form=form)
         return base_context

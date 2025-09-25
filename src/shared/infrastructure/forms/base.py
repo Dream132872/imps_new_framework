@@ -35,17 +35,14 @@ class Form(forms.Form):
     def _apply_custom_styling(self):
         """Apply custom styling to all form fields"""
         for field_name, field in self.fields.items():
-            # Set field-specific attributes
+            # # Set field-specific attributes
             if hasattr(field.widget, "required"):
                 field.widget.required = field.required
 
             # Add field name as CSS class for styling
             if hasattr(field.widget, "attrs"):
-                current_class = field.widget.attrs.get("class", "")
-                css_field_name = field_name.replace("_", "-")
-                field.widget.attrs["class"] = (
-                    f"{current_class} field-{css_field_name}".strip()
-                )
+                css_field_name = field_name.strip()
+                field.widget.add_css_classes(f"input__{css_field_name}")
 
     def render_form(self, request=None, **context) -> SafeText:  # type: ignore
         """Render the entire form using custom template"""

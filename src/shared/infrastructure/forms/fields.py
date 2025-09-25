@@ -3,6 +3,7 @@ Custom implementation for form fields.
 """
 
 from django import forms as django_forms
+
 from .widgets import *
 
 __all__ = (
@@ -29,31 +30,39 @@ __all__ = (
 class Field(django_forms.Field):
     """Custom implementation of Field with enhanced functionality"""
 
+    widget = TextInput
+
     def __init__(self, *args, **kwargs) -> None:  # type: ignore
+        self.help_text = kwargs.get("help_text", "")
+        self.required = kwargs.get("required", False)
+        self.disabled = kwargs.get("disabled", False)
         # Extract custom parameters
-        # print(kwargs)
-        self.help_text = kwargs.pop("help_text", "")
         self.placeholder = kwargs.pop("placeholder", "")
         self.css_class = kwargs.pop("css_class", "")
-        self.required = kwargs.pop("required", False)
-        self.disabled = kwargs.pop("disabled", False)
         self.readonly = kwargs.pop("readonly", False)
 
         super().__init__(*args, **kwargs)
 
+        # set widget form field
+        if hasattr(self.widget, "field"):
+            self.widget.field = self
+
         # Set widget attributes
-        if hasattr(self.widget, "help_text"):
+        if hasattr(self.widget, "help_text") and self.help_text:
             self.widget.help_text = self.help_text
-        if hasattr(self.widget, "placeholder"):
+        if hasattr(self.widget, "placeholder") and self.placeholder:
             self.widget.placeholder = self.placeholder
-        if hasattr(self.widget, "css_class"):
-            self.widget.css_class = self.css_class
-        if hasattr(self.widget, "required"):
-            self.widget.required = self.required
-        if hasattr(self.widget, "disabled"):
+        if hasattr(self.widget, "add_css_classes") and self.css_class:
+            self.widget.add_css_classes(self.css_class)
+
+        if self.disabled:
             self.widget.disabled = self.disabled
-        if hasattr(self.widget, "readonly"):
+
+        if self.readonly:
             self.widget.readonly = self.readonly
+
+        if self.required:
+            self.widget.required = self.required
 
 
 class CharField(Field, django_forms.CharField):
