@@ -1,12 +1,12 @@
 {% extends 'shared/admin/layout/layout.html' %}
 
 {% block content %}
-  <ul>
+  {% comment %} <ul>
     {% for user in page_obj.items %}
       <li>{{ user.username }}</li>
     {% endfor %}
   </ul>
   <p dir="ltr">{{ page_obj.pagination_info.as_dict }}</p>
-  <hr />
+  <hr /> {% endcomment %}
   {{ form }}
 {% endblock %}

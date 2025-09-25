@@ -1,13 +1,24 @@
+from dataclasses import asdict
 import logging
 from typing import Any
 
+from adrf.mixins import sync_to_async
+from adrf.requests import AsyncRequest
+from adrf.views import APIView
 from django.http.response import HttpResponse as HttpResponse
+from rest_framework import status
+from rest_framework.response import Response
 
 from core.application.queries import *
 from core.application.queries.user_queries import SearchUsersQuery
+from core.domain.repositories import UserRepository
+from core.infrastructure.forms import TestWidgetsForm
+from shared.application.cqrs import dispatch_query_async
+from shared.application.dtos import PaginatedResultDTO
+from shared.domain.repositories import UnitOfWork
+from shared.infrastructure.ioc import inject_dependencies
 from shared.infrastructure.views import TemplateView
 from shared.infrastructure.views.mixins import *
-from core.infrastructure.forms import TestWidgetsForm
 
 logger = logging.getLogger(__name__)
 
@@ -36,3 +47,22 @@ class HomeView(CQRSPaginatedViewMixin, AdminGenericMixin, TemplateView):
 
         base_context.update(form=form)
         return base_context
+
+
+class SampleApiView(APIView):
+    @inject_dependencies()
+    def __init__(self, uow: UnitOfWork, **kwargs: Any) -> None:
+        self.uow = uow
+        super().__init__(**kwargs)
+
+    @sync_to_async()
+    def get_users(self):
+        with self.uow:
+            users = self.uow[UserRepository].search_users(page_size=10, page=1)
+            return [u.to_dict() for u in users.items]
+
+    async def get(self, request: AsyncRequest):
+        res: PaginatedResultDTO = await dispatch_query_async(
+            SearchUsersQuery(page=1, page_size=10, paginated=True)
+        )
+        return Response([asdict(u) for u in res.items], status=status.HTTP_200_OK)

@@ -53,12 +53,10 @@ class BaseCustomWidget(forms.Widget):
     readonly = False
 
     def __init__(self, attrs: Any = None, **kwargs) -> None:  # type: ignore
-        print(kwargs)
-
         # Extract custom attributes
-        self.css_class = kwargs.pop("css_class", self.css_class)
-        self.placeholder = kwargs.pop("placeholder", self.placeholder)
         self.help_text = kwargs.pop("help_text", self.help_text)
+        self.placeholder = kwargs.pop("placeholder", self.placeholder)
+        self.css_class = kwargs.pop("css_class", self.css_class)
         self.required = kwargs.pop("required", self.required)
         self.disabled = kwargs.pop("disabled", self.disabled)
         self.readonly = kwargs.pop("readonly", self.readonly)
@@ -99,7 +97,8 @@ class BaseCustomWidget(forms.Widget):
                 "flat_attrs": self.generate_flat_attributes(context["widget"]["attrs"]),
             }
         )
-        # pprint.pprint(context)
+        import pprint
+        pprint.pprint(context)
         return context
 
     def generate_flat_attributes(self, attrs: dict) -> str:

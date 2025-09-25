@@ -31,6 +31,7 @@ class Field(django_forms.Field):
 
     def __init__(self, *args, **kwargs) -> None:  # type: ignore
         # Extract custom parameters
+        # print(kwargs)
         self.help_text = kwargs.pop("help_text", "")
         self.placeholder = kwargs.pop("placeholder", "")
         self.css_class = kwargs.pop("css_class", "")

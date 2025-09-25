@@ -1,5 +1,9 @@
 <div class="form-group mb-3">
-  <div dir="ltr">{{ widget }}</div>
+  <div dir="ltr">
+    {% for key, value in widget.items %}
+      <p>{{ key }} : {{ value }}</p>
+    {% endfor %}
+  </div>
   {% if widget.label %}
     <label for="{{ widget.attrs.id }}" class="form-label">
       {{ widget.label }}

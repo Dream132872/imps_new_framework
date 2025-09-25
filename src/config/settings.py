@@ -36,6 +36,8 @@ CSRF_TRUSTED_ORIGINS = config("CSRF_TRUSTED_ORIGINS", default="", cast=Csv())
 LOGIN_URL = config("LOGIN_URL", default="/")
 # check that we are in testing mode or not
 TESTING = "test" in sys.argv or "PYTEST_VERSION" in os.environ
+# debug toolbar status
+SHOW_DEBUG_TOOLBAR = config("SHOW_DEBUG_TOOLBAR", default=True, cast=bool)
 
 # Application definition
 
@@ -61,7 +63,12 @@ THIRD_PARTY_APPS = [
     "rosetta",
 ]
 
-LOCAL_APPS = ["shared.infrastructure", "core.infrastructure"]
+LOCAL_APPS = [
+    # shared application contains all base features
+    "shared.infrastructure",
+    # core application that has core functionalities
+    "core.infrastructure",
+]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
@@ -97,6 +104,7 @@ TEMPLATES = [
     },
 ]
 
+# configuration of wsgi and asgi
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 
@@ -355,3 +363,5 @@ if DEBUG and not TESTING:
         "debug_toolbar.panels.redirects.RedirectsPanel",
         "debug_toolbar.panels.profiling.ProfilingPanel",
     ]
+
+    DEBUG_TOOLBAR_CONFIG = {"SHOW_TOOLBAR_CALLBACK": lambda request: SHOW_DEBUG_TOOLBAR}
