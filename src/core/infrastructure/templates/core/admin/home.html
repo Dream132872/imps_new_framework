@@ -1,4 +1,5 @@
 {% extends 'shared/admin/layout/layout.html' %}
+{% load forms %}
 
 {% block content %}
   {% comment %} <ul>
@@ -8,6 +9,8 @@
   </ul>
   <p dir="ltr">{{ page_obj.pagination_info.as_dict }}</p>
   <hr /> {% endcomment %}
-  {% csrf_token %}
-  {{ form }}
+
+  {% render_form form %}
+
+  {% comment %} {{ form }} {% endcomment %}
 {% endblock %}

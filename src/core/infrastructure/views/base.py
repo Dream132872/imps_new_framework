@@ -1,11 +1,13 @@
-from dataclasses import asdict
 import logging
+from dataclasses import asdict
 from typing import Any
 
 from adrf.mixins import sync_to_async
 from adrf.requests import AsyncRequest
 from adrf.views import APIView
+from django.http import HttpRequest
 from django.http.response import HttpResponse as HttpResponse
+from django.shortcuts import render
 from rest_framework import status
 from rest_framework.response import Response
 
@@ -17,8 +19,7 @@ from shared.application.cqrs import dispatch_query_async
 from shared.application.dtos import PaginatedResultDTO
 from shared.domain.repositories import UnitOfWork
 from shared.infrastructure.ioc import inject_dependencies
-from shared.infrastructure.views import TemplateView
-from shared.infrastructure.views.mixins import *
+from shared.infrastructure.views import *
 
 logger = logging.getLogger(__name__)
 

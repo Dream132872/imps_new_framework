@@ -91,8 +91,6 @@ class BaseCustomWidget(forms.Widget):
 
     def get_context(self, name: str, value: Any, attrs: Any):
         """Get context for template rendering."""
-        import pprint
-
         context = super().get_context(name, value, attrs)
         context.update(
             {
@@ -102,7 +100,6 @@ class BaseCustomWidget(forms.Widget):
             }
         )
 
-        pprint.pprint(context)
         return context
 
     def generate_flat_attributes(self, attrs: dict) -> str:

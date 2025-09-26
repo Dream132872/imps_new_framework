@@ -46,6 +46,19 @@ class Form(forms.Form):
 
     def render_form(self, request=None, **context) -> SafeText:  # type: ignore
         """Render the entire form using custom template"""
+        # Try to get request from context if not provided
+        if request is None:
+            request = context.get("request")
+
+        # If still no request, try to get it from Django's thread-local storage
+        if request is None:
+            try:
+                from django.template.context_processors import request
+
+                # This won't work, let's try a different approach
+            except:
+                pass
+
         form_context = {
             "form": self,
             "form_class": self.css_class,
@@ -53,7 +66,11 @@ class Form(forms.Form):
         }
         form_context.update(context)
 
-        return mark_safe(render_to_string(self.template_name, form_context))
+        return mark_safe(
+            render_to_string(
+                self.template_name, form_context, request=form_context["request"]
+            )
+        )
 
     def get_field_html(self, field_name: str, **kwargs) -> str:  # type: ignore
         """Get HTML for a specific field"""

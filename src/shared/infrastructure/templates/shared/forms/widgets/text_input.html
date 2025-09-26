@@ -1,28 +1,11 @@
-<div class="form-group mb-3">
-  <div dir="ltr">
+{% extends 'shared/forms/widgets/base_input.html' %}
+
+{% block content %}
+  <input type="{{ type }}" name="{{ widget.name }}" value="{{ widget.value|default:'' }}" {{ flat_attrs|safe }} />
+
+  {% comment %} <div dir="ltr">
     {% for key, value in widget.items %}
       <p>{{ key }} : {{ value }}</p>
     {% endfor %}
-  </div>
-
-  {% if widget_obj.field.label %}
-    <label for="{{ widget.attrs.id }}" class="form-label">
-      {{ widget_obj.field.label }}
-      {% if widget_obj.field.required %}
-        <span class="text-danger">*</span>
-      {% endif %}
-    </label>
-  {% endif %}
-
-  <input type="text" name="{{ widget.name }}" value="{{ widget.value|default:'' }}" {{ flat_attrs|safe }} />
-
-  <div class="form-text">help_text: {{ help_text }}</div>
-
-  {% if widget_obj.errors %}
-    <div class="invalid-feedback d-block">
-      {% for error in widget_obj.errors %}
-        <div>{{ error }}</div>
-      {% endfor %}
-    </div>
-  {% endif %}
-</div>
+  </div> {% endcomment %}
+{% endblock %}
