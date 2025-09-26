@@ -11,10 +11,3 @@ class TestWidgetsForm(forms.Form):
         required=False,
         label="Label",
     )
-
-    new_text_input = forms.CharField(
-        help_text="new help text",
-        placeholder="new placeholder",
-        required=False,
-        label="new label",
-    )

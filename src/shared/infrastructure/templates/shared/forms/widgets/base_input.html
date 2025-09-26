@@ -15,9 +15,11 @@
       {% endblock %}
       <div class="form-text">{{ help_text }}</div>
 
-      {% if widget_obj.errors %}
+      <p>errors : {{ widget_obj.field.errors }}</p>
+
+      {% if widget_obj.field.errors %}
         <div class="invalid-feedback d-block">
-          {% for error in widget_obj.errors %}
+          {% for error in widget.field.errors %}
             <div>{{ error }}</div>
           {% endfor %}
         </div>

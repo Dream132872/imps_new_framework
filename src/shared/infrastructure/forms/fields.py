@@ -28,17 +28,17 @@ __all__ = (
 
 
 class Field(django_forms.Field):
-    """Custom implementation of Field with enhanced functionality"""
+    """Custom implementation of Field with enhanced functionality."""
 
     widget = TextInput
 
     def __init__(self, *args, **kwargs) -> None:  # type: ignore
-        self.help_text = kwargs.get("help_text", "")
-        self.required = kwargs.get("required", False)
-        self.disabled = kwargs.get("disabled", False)
         # Extract custom parameters
+        self.help_text = kwargs.get("help_text", "")
         self.placeholder = kwargs.pop("placeholder", "")
         self.css_class = kwargs.pop("css_class", "")
+        self.required = kwargs.get("required", False)
+        self.disabled = kwargs.get("disabled", False)
         self.readonly = kwargs.pop("readonly", False)
 
         super().__init__(*args, **kwargs)

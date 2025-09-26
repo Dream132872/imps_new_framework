@@ -24,30 +24,48 @@ from shared.infrastructure.views import *
 logger = logging.getLogger(__name__)
 
 
-class HomeView(CQRSPaginatedViewMixin, AdminGenericMixin, TemplateView):
-    """Admin dashboard home view"""
+class HomeView(View):
+    def get(self, request: HttpRequest) -> HttpResponse:
+        context = {"form": TestWidgetsForm()}
+        return render(request, "core/admin/home.html", context)
 
-    template_name = "core/admin/home.html"
-    permission_required = []
-
-    def get_paginated_query(self) -> SearchUsersQuery:
-        return SearchUsersQuery(
-            page=int(self.request.GET.get("page", 1)),
-            page_size=int(self.request.GET.get("page_size", 10)),
-            full_name=self.request.GET.get("full_name", ""),
-            email=self.request.GET.get("email", ""),
-            username=self.request.GET.get("username", ""),
-        )
-
-    def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
-        base_context = super().get_context_data(**kwargs)
-        form = TestWidgetsForm()
-
+    def post(self, request: HttpRequest) -> HttpResponse:
+        form = TestWidgetsForm(request.POST)
         if form.is_valid():
-            form.add_error("text_input", "this is error")
+            print("hello")
+            form.add_error("text_input", "new error")
 
-        base_context.update(form=form)
-        return base_context
+        print(form.errors)
+
+        context = {"form": form}
+        return render(request, "core/admin/home.html", context)
+
+
+# class HomeView(CQRSPaginatedViewMixin, AdminGenericMixin, TemplateView):
+#     """Admin dashboard home view"""
+
+#     template_name = "core/admin/home.html"
+#     permission_required = []
+
+#     def get_paginated_query(self) -> SearchUsersQuery:
+#         return SearchUsersQuery(
+#             page=int(self.request.GET.get("page", 1)),
+#             page_size=int(self.request.GET.get("page_size", 10)),
+#             full_name=self.request.GET.get("full_name", ""),
+#             email=self.request.GET.get("email", ""),
+#             username=self.request.GET.get("username", ""),
+#         )
+
+#     def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
+#         base_context = super().get_context_data(**kwargs)
+#         form = TestWidgetsForm(initial={"text_input": "value"})
+#         data = form.get_form_data()
+
+#         if form.is_valid():
+#             form.add_error(None, "this is error")
+
+#         base_context.update(form=form)
+#         return base_context
 
 
 class SampleApiView(APIView):

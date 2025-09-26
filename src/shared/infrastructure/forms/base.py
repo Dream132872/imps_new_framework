@@ -10,7 +10,7 @@ __all__ = ("Form", "ModelForm")
 
 class Form(forms.Form):
     """
-    Custom Form class with enhanced functionality
+    Custom Form class with enhanced functionality.
     """
 
     # Custom form template
@@ -37,7 +37,7 @@ class Form(forms.Form):
         self._apply_custom_styling()
 
     def _apply_custom_styling(self):
-        """Apply custom styling to all form fields"""
+        """Apply custom styling to all form fields."""
         for field_name, field in self.fields.items():
             # # Set field-specific attributes
             if hasattr(field.widget, "required"):
@@ -58,7 +58,7 @@ class Form(forms.Form):
         return flatatt(attrs={key: value for key, value in self.form_attrs.items()})
 
     def render_form(self, request=None, **context) -> SafeText:  # type: ignore
-        """Render the entire form using custom template"""
+        """Render the entire form using custom template."""
         # Try to get request from context if not provided
         if request is None:
             request = context.get("request")
@@ -79,7 +79,7 @@ class Form(forms.Form):
         )
 
     def get_field_html(self, field_name: str, **kwargs) -> str:  # type: ignore
-        """Get HTML for a specific field"""
+        """Get HTML for a specific field."""
         if field_name not in self.fields:
             return ""
 
@@ -97,7 +97,7 @@ class Form(forms.Form):
         return mark_safe(render_to_string("shared/forms/field.html", context))
 
     def add_custom_validation(self, field_name: str, validator_func: Callable) -> None:
-        """Add custom validation to a field"""
+        """Add custom validation to a field."""
 
         def wrapper(value: Any) -> Any:
             try:
@@ -109,17 +109,17 @@ class Form(forms.Form):
             self.fields[field_name].validators.append(wrapper)  # type: ignore
 
     def get_form_data(self) -> Dict[str, Any]:
-        """Get cleaned form data as dictionary"""
+        """Get cleaned form data as dictionary."""
         if self.is_valid():
             return self.cleaned_data
         return {}
 
     def has_field_error(self, field_name: str) -> bool:
-        """Check if a specific field has errors"""
+        """Check if a specific field has errors."""
         return field_name in self.errors
 
     def get_field_error(self, field_name: str) -> Optional[str]:
-        """Get the first error for a specific field"""
+        """Get the first error for a specific field."""
         if field_name in self.errors:
             return self.errors[field_name][0]  # type: ignore
         return None
