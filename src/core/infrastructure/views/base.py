@@ -24,7 +24,9 @@ from shared.infrastructure.views import *
 logger = logging.getLogger(__name__)
 
 
-class HomeView(View):
+class HomeView(AdminGenericMixin, View):
+    permission_required = []
+
     def get(self, request: HttpRequest) -> HttpResponse:
         context = {"form": TestWidgetsForm()}
         return render(request, "core/admin/home.html", context)
@@ -32,8 +34,8 @@ class HomeView(View):
     def post(self, request: HttpRequest) -> HttpResponse:
         form = TestWidgetsForm(request.POST)
         if form.is_valid():
-            form.add_error("text_input", "این مورد قبلا ثبت شده")
-            form.add_error("text_input", "شما نمیتونین مجددا یک آیتم جدید ثبت کنین")
+            form.add_error("char_field", "این مورد قبلا ثبت شده")
+            form.add_error("char_field", "شما نمیتونین مجددا یک آیتم جدید ثبت کنین")
             form.add_error(None, "شما نمیتونین مجددا یک آیتم جدید ثبت کنین")
             form.add_error(None, "شما نمیتونین مجددا یک آیتم جدید ثبت کنین")
 

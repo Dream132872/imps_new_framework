@@ -199,11 +199,6 @@ class TextInput(BaseCustomWidget, forms.TextInput):
     default_css_class = "form-control"
 
 
-class NumberInput(BaseCustomWidget, forms.NumberInput):
-    template_name = "shared/forms/widgets/number_input.html"
-    default_css_class = "form-control"
-
-
 class EmailInput(BaseCustomWidget, forms.EmailInput):
     template_name = "shared/forms/widgets/email_input.html"
     default_css_class = "form-control"
@@ -211,6 +206,11 @@ class EmailInput(BaseCustomWidget, forms.EmailInput):
 
 class URLInput(BaseCustomWidget, forms.URLInput):
     template_name = "shared/forms/widgets/url_input.html"
+    default_css_class = "form-control"
+
+
+class NumberInput(BaseCustomWidget, forms.NumberInput):
+    template_name = "shared/forms/widgets/number_input.html"
     default_css_class = "form-control"
 
 

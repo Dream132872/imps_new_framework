@@ -2,17 +2,18 @@
 {% get_current_language_bidi as CURRENT_LANGUAGE_BIDI %}
 {% get_current_language as CURRENT_LANGUAGE %}
 
-<!--begin::Fonts-->
-<link rel="stylesheet" href="{% static 'shared/admin/assets/font-source/index.css' %}"/>
-<!--end::Fonts-->
-<!--begin::Third Party Plugin(OverlayScrollbars)-->
-<link rel="stylesheet" href="{% static 'shared/admin/assets/overlay-scrollbar/overlayscrollbars.min.css' %}"/>
-<!--end::Third Party Plugin(OverlayScrollbars)-->
-<!--begin::Third Party Plugin(Bootstrap Icons)-->
-<link rel="stylesheet" href="{% static 'shared/admin/assets/bootstrap-icons/bootstrap-icons.min.css' %}"/>
-<!--end::Third Party Plugin(Bootstrap Icons)-->
-<!--begin::Required Plugin(AdminLTE)-->
-
-<link rel="stylesheet" href="/static/shared/admin/css/adminlte{% if CURRENT_LANGUAGE_BIDI %}.rtl{% endif %}.css"/>
-
-<!--end::Required Plugin(AdminLTE)-->
+<!-- begin::Fonts -->
+<link rel="stylesheet" href="{% static 'shared/admin/assets/font-source/index.css' %}" />
+<!-- end::Fonts -->
+<!-- begin::Third Party Plugin(OverlayScrollbars) -->
+<link rel="stylesheet" href="{% static 'shared/admin/assets/overlay-scrollbar/overlayscrollbars.min.css' %}" />
+<!-- end::Third Party Plugin(OverlayScrollbars) -->
+<!-- begin::Third Party Plugin(Bootstrap Icons) -->
+<link rel="stylesheet" href="{% static 'shared/admin/assets/bootstrap-icons/bootstrap-icons.min.css' %}" />
+<!-- end::Third Party Plugin(Bootstrap Icons) -->
+<!-- begin::Required Plugin(AdminLTE) -->
+<link rel="stylesheet" href="/static/shared/admin/css/adminlte{% if CURRENT_LANGUAGE_BIDI %}.rtl{% endif %}.css" />
+<!-- end::Required Plugin(AdminLTE) -->
+<!-- begin::Custom CSS -->
+<link rel="stylesheet" href="{% static 'shared/admin/css/custom.css' %}" />
+<!-- end::Custom CSS -->

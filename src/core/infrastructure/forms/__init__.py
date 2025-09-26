@@ -6,9 +6,8 @@ from .auth import *
 
 
 class TestWidgetsForm(forms.Form):
-    text_input = forms.CharField(
-        help_text="This is help_text",
-        placeholder="Placeholder text",
-        required=True,
-        label="Label",
-    )
+    char_field = forms.CharField()
+
+    email_field = forms.EmailField()
+
+    url_field = forms.URLField()

@@ -1,4 +1,4 @@
-<div class="form-group">
+<div class="form-group mb-4 field-wrapper{% if field.errors %} has-error{% endif %}">
   <div class="row">
     <div class="col-lg-2">
       <label for="{{ field.id_for_label }}" class="form-label">
@@ -13,26 +13,24 @@
       </label>
 
       {% if help_text %}
-        <div class="form-text">{{ help_text }}</div>
+        <div class="form-help-text">{{ help_text }}</div>
       {% endif %}
     </div>
     <div class="col-lg-10">
-      <div class="field-wrapper field-{{ field.name }}{% if field.errors %} has-error{% endif %}">
-        {% block content %}
+      {% block content %}
 
-        {% endblock %}
-        <div class="d-flex justify-content-between align-items-center flex-wrap">
-          {% if field.errors %}
-            <div class="invalid-feedback">
-              {% for error in field.errors %}
-                <span>{{ error }}</span>
-                {% if not forloop.last %}
-                  <span>|</span>
-                {% endif %}
-              {% endfor %}
-            </div>
-          {% endif %}
-        </div>
+      {% endblock %}
+      <div class="d-flex justify-content-between align-items-center flex-wrap">
+        {% if field.errors %}
+          <div class="invalid-feedback">
+            {% for error in field.errors %}
+              <span>{{ error }}</span>
+              {% if not forloop.last %}
+                <span class="ms-1 me-1">|</span>
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% endif %}
       </div>
     </div>
   </div>
