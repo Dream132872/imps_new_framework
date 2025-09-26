@@ -96,13 +96,13 @@ class BaseCustomWidget(forms.Widget):
             {
                 "help_text": self.help_text,
                 "widget_obj": self,
-                "flat_attrs": self.generate_flat_attributes(context["widget"]["attrs"]),
+                "flat_attrs": self.generate_flatten_attrs(context["widget"]["attrs"]),
             }
         )
 
         return context
 
-    def generate_flat_attributes(self, attrs: dict) -> str:
+    def generate_flatten_attrs(self, attrs: dict) -> str:
         """Generated flatten attributes for widget.
 
         Args:

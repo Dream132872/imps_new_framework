@@ -1,6 +1,7 @@
 from typing import Any, Callable, Dict, Optional
 
 from django import forms
+from django.forms.utils import flatatt
 from django.template.loader import render_to_string
 from django.utils.safestring import SafeText, mark_safe
 
@@ -17,6 +18,9 @@ class Form(forms.Form):
 
     # Form styling
     css_class = "custom-form"
+
+    # Method
+    method = "post"
 
     # Form attributes
     form_attrs = {}
@@ -44,25 +48,27 @@ class Form(forms.Form):
                 css_field_name = field_name.strip()
                 field.widget.add_css_classes(f"input__{css_field_name}")
 
+    def generate_flattened_attrs(self):
+        """Generated flatten attributes for form.
+
+        Returns:
+            str: flatten attributes.
+        """
+
+        return flatatt(attrs={key: value for key, value in self.form_attrs.items()})
+
     def render_form(self, request=None, **context) -> SafeText:  # type: ignore
         """Render the entire form using custom template"""
         # Try to get request from context if not provided
         if request is None:
             request = context.get("request")
 
-        # If still no request, try to get it from Django's thread-local storage
-        if request is None:
-            try:
-                from django.template.context_processors import request
-
-                # This won't work, let's try a different approach
-            except:
-                pass
-
         form_context = {
             "form": self,
+            "flattened_attrs": self.generate_flattened_attrs(),
             "form_class": self.css_class,
             "request": request,
+            "method": self.method,
         }
         form_context.update(context)
 

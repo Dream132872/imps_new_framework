@@ -1,22 +1,27 @@
 <div class="form-group mb-3">
-  {% if widget_obj.field.label %}
-    <label for="{{ widget.attrs.id }}" class="form-label">
-      {{ widget_obj.field.label }}
-      {% if widget_obj.field.required %}
-        <span class="text-danger">*</span>
+  <div class="row">
+    <div class="col-lg-2">
+      {% if widget_obj.field.label %}
+        <label for="{{ widget.attrs.id }}" class="form-label">
+          {{ widget_obj.field.label }} :{% if widget_obj.field.required %}
+            <span class="text-danger">*</span>
+          {% endif %}
+        </label>
       {% endif %}
-    </label>
-  {% endif %}
-
-  {% block content %}
-  {% endblock %}
-  <div class="form-text">help_text: {{ help_text }}</div>
-
-  {% if widget_obj.errors %}
-    <div class="invalid-feedback d-block">
-      {% for error in widget_obj.errors %}
-        <div>{{ error }}</div>
-      {% endfor %}
     </div>
-  {% endif %}
+    <div class="col-lg-10">
+      {% block content %}
+
+      {% endblock %}
+      <div class="form-text">{{ help_text }}</div>
+
+      {% if widget_obj.errors %}
+        <div class="invalid-feedback d-block">
+          {% for error in widget_obj.errors %}
+            <div>{{ error }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
 </div>

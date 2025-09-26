@@ -1,33 +1,40 @@
 {% load static %}
-<!--begin::Script-->
-<!--begin::Third Party Plugin(OverlayScrollbars)-->
+<!-- begin::Script -->
+<!-- begin::Third Party Plugin(OverlayScrollbars) -->
 <script src="{% static 'shared/admin/assets/overlay-scrollbar/overlayscrollbars.browser.es6.min.js' %}"></script>
-<!--end::Third Party Plugin(OverlayScrollbars)--><!--begin::Required Plugin(popperjs for Bootstrap 5)-->
+<!-- end::Third Party Plugin(OverlayScrollbars) -->
+<!-- begin::Required Plugin(popperjs for Bootstrap 5) -->
 <script src="{% static 'shared/admin/assets/popper/popper.min.js' %}"></script>
-<!--end::Required Plugin(popperjs for Bootstrap 5)--><!--begin::Required Plugin(Bootstrap 5)-->
+<!-- end::Required Plugin(popperjs for Bootstrap 5) -->
+<!-- begin::Required Plugin(Bootstrap 5) -->
 <script src="{% static 'shared/admin/assets/bootstrap/bootstrap.min.js' %}"></script>
-<!--end::Required Plugin(Bootstrap 5)--><!--begin::Required Plugin(AdminLTE)-->
+<!-- end::Required Plugin(Bootstrap 5) -->
+<!-- begin::Required Plugin(AdminLTE) -->
 <script src="{% static 'shared/admin/js/adminlte.js' %}"></script>
-<!--end::Required Plugin(AdminLTE)--><!--begin::OverlayScrollbars Configure-->
+<!-- end::Required Plugin(AdminLTE) -->
+<!-- begin::OverlayScrollbars Configure -->
+<!-- begin::Custom js -->
+<script src="{% static 'shared/admin/js/custom.js' %}"></script>
+<!-- end::Custom js -->
 <script>
-    const SELECTOR_SIDEBAR_WRAPPER = '.sidebar-wrapper';
-    const Default = {
-        scrollbarTheme: 'os-theme-light',
-        scrollbarAutoHide: 'leave',
-        scrollbarClickScroll: true,
-    };
-    document.addEventListener('DOMContentLoaded', function () {
-        const sidebarWrapper = document.querySelector(SELECTOR_SIDEBAR_WRAPPER);
-        if (sidebarWrapper && typeof OverlayScrollbarsGlobal?.OverlayScrollbars !== 'undefined') {
-            OverlayScrollbarsGlobal.OverlayScrollbars(sidebarWrapper, {
-                scrollbars: {
-                    theme: Default.scrollbarTheme,
-                    autoHide: Default.scrollbarAutoHide,
-                    clickScroll: Default.scrollbarClickScroll,
-                },
-            });
+  const SELECTOR_SIDEBAR_WRAPPER = '.sidebar-wrapper'
+  const Default = {
+    scrollbarTheme: 'os-theme-light',
+    scrollbarAutoHide: 'leave',
+    scrollbarClickScroll: true
+  }
+  document.addEventListener('DOMContentLoaded', function () {
+    const sidebarWrapper = document.querySelector(SELECTOR_SIDEBAR_WRAPPER)
+    if (sidebarWrapper && typeof OverlayScrollbarsGlobal?.OverlayScrollbars !== 'undefined') {
+      OverlayScrollbarsGlobal.OverlayScrollbars(sidebarWrapper, {
+        scrollbars: {
+          theme: Default.scrollbarTheme,
+          autoHide: Default.scrollbarAutoHide,
+          clickScroll: Default.scrollbarClickScroll
         }
-    });
+      })
+    }
+  })
 </script>
-<!--end::OverlayScrollbars Configure-->
-<!--end::Script-->
+<!-- end::OverlayScrollbars Configure -->
+<!-- end::Script -->

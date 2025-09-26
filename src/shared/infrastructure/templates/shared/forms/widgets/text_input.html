@@ -2,10 +2,4 @@
 
 {% block content %}
   <input type="{{ type }}" name="{{ widget.name }}" value="{{ widget.value|default:'' }}" {{ flat_attrs|safe }} />
-
-  {% comment %} <div dir="ltr">
-    {% for key, value in widget.items %}
-      <p>{{ key }} : {{ value }}</p>
-    {% endfor %}
-  </div> {% endcomment %}
 {% endblock %}
