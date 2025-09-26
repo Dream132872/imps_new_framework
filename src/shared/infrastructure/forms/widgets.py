@@ -97,6 +97,7 @@ class BaseCustomWidget(forms.Widget):
                 "help_text": self.help_text,
                 "widget_obj": self,
                 "flat_attrs": self.generate_flatten_attrs(context["widget"]["attrs"]),
+                "field": self.field,
             }
         )
 

@@ -39,9 +39,13 @@ class Form(forms.Form):
     def _apply_custom_styling(self):
         """Apply custom styling to all form fields."""
         for field_name, field in self.fields.items():
-            # # Set field-specific attributes
+            # Set field-specific attributes
             if hasattr(field.widget, "required"):
                 field.widget.required = field.required
+
+            # Set bound field object to widget
+            if hasattr(field.widget, "field"):
+                field.widget.field = self[field_name]
 
             # Add field name as CSS class for styling
             if hasattr(field.widget, "attrs"):

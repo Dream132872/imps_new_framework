@@ -1,29 +1,39 @@
-<div class="form-group mb-3">
+<div class="form-group">
   <div class="row">
     <div class="col-lg-2">
-      {% if widget_obj.field.label %}
-        <label for="{{ widget.attrs.id }}" class="form-label">
-          {{ widget_obj.field.label }} :{% if widget_obj.field.required %}
-            <span class="text-danger">*</span>
-          {% endif %}
-        </label>
+      <label for="{{ field.id_for_label }}" class="form-label">
+        {% if field.label %}
+          {{ field.label }}
+        {% else %}
+          {{ field.name }}
+        {% endif %}
+        {% if field.required %}
+          <span class="text-danger">*</span>
+        {% endif %}
+      </label>
+
+      {% if help_text %}
+        <div class="form-text">{{ help_text }}</div>
       {% endif %}
     </div>
     <div class="col-lg-10">
-      {% block content %}
+      <div class="field-wrapper field-{{ field.name }}{% if field.errors %} has-error{% endif %}">
+        {% block content %}
 
-      {% endblock %}
-      <div class="form-text">{{ help_text }}</div>
-
-      <p>errors : {{ widget_obj.field.errors }}</p>
-
-      {% if widget_obj.field.errors %}
-        <div class="invalid-feedback d-block">
-          {% for error in widget.field.errors %}
-            <div>{{ error }}</div>
-          {% endfor %}
+        {% endblock %}
+        <div class="d-flex justify-content-between align-items-center flex-wrap">
+          {% if field.errors %}
+            <div class="invalid-feedback">
+              {% for error in field.errors %}
+                <span>{{ error }}</span>
+                {% if not forloop.last %}
+                  <span>|</span>
+                {% endif %}
+              {% endfor %}
+            </div>
+          {% endif %}
         </div>
-      {% endif %}
+      </div>
     </div>
   </div>
 </div>

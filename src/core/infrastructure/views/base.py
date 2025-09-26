@@ -32,10 +32,9 @@ class HomeView(View):
     def post(self, request: HttpRequest) -> HttpResponse:
         form = TestWidgetsForm(request.POST)
         if form.is_valid():
-            print("hello")
-            form.add_error("text_input", "new error")
-
-        print(form.errors)
+            form.add_error("text_input", "این مورد قبلا ثبت شده")
+            form.add_error("text_input", "شما نمیتونین مجددا یک آیتم جدید ثبت کنین")
+            form.add_error(None, "شما نمیتونین مجددا یک آیتم جدید ثبت کنین")
 
         context = {"form": form}
         return render(request, "core/admin/home.html", context)

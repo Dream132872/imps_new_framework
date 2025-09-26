@@ -1,5 +1,35 @@
 {% load static %}
 
+<style>
+  .invalid-feedback {
+    display: block !important;
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+  }
+
+  .form-group {
+    margin-bottom: 1rem;
+  }
+
+  .form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+  }
+
+  .form-text {
+    color: #6c757d;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+  }
+
+  .field-wrapper.has-error .form-control {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+  }
+</style>
+
 <div class="row">
   <div class="col-lg-12">
     <form method="{{ method }}" class="{{ form_class }}" {{ flattened_attrs }}>
@@ -19,7 +49,7 @@
 
           <div class="form-fields">
             {% for field in form %}
-              <div class="field-wrapper field-{{ field.name }}">{{ field }}</div>
+              {{ field }}
             {% endfor %}
           </div>
         </div>

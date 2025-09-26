@@ -43,10 +43,6 @@ class Field(django_forms.Field):
 
         super().__init__(*args, **kwargs)
 
-        # set widget form field
-        if hasattr(self.widget, "field"):
-            self.widget.field = self
-
         # Set widget attributes
         if hasattr(self.widget, "help_text") and self.help_text:
             self.widget.help_text = self.help_text
