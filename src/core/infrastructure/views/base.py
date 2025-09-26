@@ -35,6 +35,7 @@ class HomeView(View):
             form.add_error("text_input", "این مورد قبلا ثبت شده")
             form.add_error("text_input", "شما نمیتونین مجددا یک آیتم جدید ثبت کنین")
             form.add_error(None, "شما نمیتونین مجددا یک آیتم جدید ثبت کنین")
+            form.add_error(None, "شما نمیتونین مجددا یک آیتم جدید ثبت کنین")
 
         context = {"form": form}
         return render(request, "core/admin/home.html", context)

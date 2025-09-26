@@ -1,6 +1,8 @@
-from .auth import *
 from django import forms
+
 from shared.infrastructure import forms
+
+from .auth import *
 
 
 class TestWidgetsForm(forms.Form):
