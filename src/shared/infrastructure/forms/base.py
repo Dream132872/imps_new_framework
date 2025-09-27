@@ -1,4 +1,4 @@
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable
 
 from django import forms
 from django.forms.utils import flatatt
@@ -21,6 +21,9 @@ class Form(forms.Form):
 
     # Method
     method = "post"
+
+    # Form title
+    form_title = ""
 
     # Form attributes
     form_attrs = {}
@@ -69,8 +72,9 @@ class Form(forms.Form):
 
         form_context = {
             "form": self,
-            "flattened_attrs": self.generate_flattened_attrs(),
             "form_class": self.css_class,
+            "form_title": self.get_form_title(),
+            "flattened_attrs": self.generate_flattened_attrs(),
             "request": request,
             "method": self.method,
         }
@@ -112,7 +116,7 @@ class Form(forms.Form):
         if field_name in self.fields:
             self.fields[field_name].validators.append(wrapper)  # type: ignore
 
-    def get_form_data(self) -> Dict[str, Any]:
+    def get_form_data(self) -> dict[str, Any]:
         """Get cleaned form data as dictionary."""
         if self.is_valid():
             return self.cleaned_data
@@ -122,11 +126,14 @@ class Form(forms.Form):
         """Check if a specific field has errors."""
         return field_name in self.errors
 
-    def get_field_error(self, field_name: str) -> Optional[str]:
+    def get_field_error(self, field_name: str) -> str | None:
         """Get the first error for a specific field."""
         if field_name in self.errors:
             return self.errors[field_name][0]  # type: ignore
         return None
+
+    def get_form_title(self) -> str:
+        return self.form_title
 
 
 class ModelForm(forms.ModelForm):
@@ -214,7 +221,7 @@ class ModelForm(forms.ModelForm):
         if field_name in self.fields:
             self.fields[field_name].validators.append(wrapper)  # type: ignore
 
-    def get_form_data(self) -> Dict[str, Any]:
+    def get_form_data(self) -> dict[str, Any]:
         """Get cleaned form data as dictionary"""
         if self.is_valid():
             return self.cleaned_data
@@ -224,7 +231,7 @@ class ModelForm(forms.ModelForm):
         """Check if a specific field has errors"""
         return field_name in self.errors
 
-    def get_field_error(self, field_name: str) -> Optional[str]:
+    def get_field_error(self, field_name: str) -> str | None:
         """Get the first error for a specific field"""
         if field_name in self.errors:
             return self.errors[field_name][0]  # type: ignore

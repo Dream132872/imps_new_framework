@@ -1,0 +1,9 @@
+{% extends 'shared/forms/widgets/base_input.html' %}
+{% load i18n %}
+
+{% block content %}
+  <div class="form-check">
+    <input class="form-check-input" type="{{ widget.type }}" name="{{ widget.name }}" value="True" {{ flat_attrs|safe }} />
+    <label class="form-check-label" for="{{ field.id_for_label }}">{% trans 'Yes' %}/{% trans 'No' %}</label>
+  </div>
+{% endblock %}

@@ -214,6 +214,11 @@ class NumberInput(BaseCustomWidget, forms.NumberInput):
     default_css_class = "form-control"
 
 
+class CheckboxInput(BaseCustomWidget, forms.CheckboxInput):
+    template_name = "shared/forms/widgets/checkbox_input.html"
+    default_css_class = "form-check-input"
+
+
 class ColorInput(BaseCustomWidget, forms.ColorInput):
     template_name = "shared/forms/widgets/color_input.html"
     default_css_class = "form-control"
@@ -270,11 +275,6 @@ class DateTimeInput(BaseCustomWidget, forms.DateTimeInput):
 class TimeInput(BaseCustomWidget, forms.TimeInput):
     template_name = "shared/forms/widgets/time_input.html"
     default_css_class = "form-control"
-
-
-class CheckboxInput(BaseCustomWidget, forms.CheckboxInput):
-    template_name = "shared/forms/widgets/checkbox_input.html"
-    default_css_class = "form-check-input"
 
 
 class Select(BaseCustomWidget, forms.Select):

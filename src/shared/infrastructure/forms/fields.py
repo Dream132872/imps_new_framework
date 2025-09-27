@@ -114,6 +114,7 @@ class BooleanField(Field, django_forms.BooleanField):
 
     def __init__(self, *args, **kwargs) -> None:  # type: ignore
         kwargs.setdefault("widget", CheckboxInput)
+        kwargs.setdefault("required", False)
         super().__init__(*args, **kwargs)
 
 
