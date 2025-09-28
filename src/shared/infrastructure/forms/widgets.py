@@ -221,7 +221,6 @@ class CheckboxInput(BaseCustomWidget, forms.CheckboxInput):
 
 class ColorInput(BaseCustomWidget, forms.ColorInput):
     template_name = "shared/forms/widgets/color_input.html"
-    default_css_class = "form-control"
 
 
 class SearchInput(BaseCustomWidget, forms.SearchInput):
@@ -260,6 +259,10 @@ class ClearableFileInput(BaseCustomWidget, forms.ClearableFileInput):
 class Textarea(BaseCustomWidget, forms.Textarea):
     template_name = "shared/forms/widgets/textarea.html"
     default_css_class = "form-control"
+
+
+class RichText(BaseCustomWidget, forms.Textarea):
+    template_name = "shared/forms/widgets/rich_text.html"
 
 
 class DateInput(BaseCustomWidget, forms.DateInput):

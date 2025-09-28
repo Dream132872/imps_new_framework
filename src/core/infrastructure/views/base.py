@@ -8,6 +8,8 @@ from adrf.views import APIView
 from django.http import HttpRequest
 from django.http.response import HttpResponse as HttpResponse
 from django.shortcuts import render
+from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
 from rest_framework import status
 from rest_framework.response import Response
 
@@ -24,23 +26,32 @@ from shared.infrastructure.views import *
 logger = logging.getLogger(__name__)
 
 
-class HomeView(AdminGenericMixin, View):
+class HomeView(AdminGenericMixin, FormView):
+    page_title = _("Home view")
     permission_required = []
+    form_class = TestWidgetsForm
+    template_name = "core/admin/home.html"
+    success_url = reverse_lazy("core:index_view")
 
-    def get(self, request: HttpRequest) -> HttpResponse:
-        context = {"form": TestWidgetsForm()}
-        return render(request, "core/admin/home.html", context)
 
-    def post(self, request: HttpRequest) -> HttpResponse:
-        form = TestWidgetsForm(request.POST)
-        if form.is_valid():
-            form.add_error("char_field", "این مورد قبلا ثبت شده")
-            form.add_error("char_field", "شما نمیتونین مجددا یک آیتم جدید ثبت کنین")
-            form.add_error(None, "شما نمیتونین مجددا یک آیتم جدید ثبت کنین")
-            form.add_error(None, "شما نمیتونین مجددا یک آیتم جدید ثبت کنین")
+# class HomeView(AdminGenericMixin, View):
+#     permission_required = []
+#     page_title = _("Dashboard")
 
-        context = {"form": form}
-        return render(request, "core/admin/home.html", context)
+#     def get(self, request: HttpRequest) -> HttpResponse:
+#         context = {"form": TestWidgetsForm()}
+#         return render(request, "core/admin/home.html", context)
+
+#     def post(self, request: HttpRequest) -> HttpResponse:
+#         form = TestWidgetsForm(request.POST)
+#         if form.is_valid():
+#             form.add_error("char_field", "این مورد قبلا ثبت شده")
+#             form.add_error("char_field", "شما نمیتونین مجددا یک آیتم جدید ثبت کنین")
+#             form.add_error(None, "شما نمیتونین مجددا یک آیتم جدید ثبت کنین")
+#             form.add_error(None, "شما نمیتونین مجددا یک آیتم جدید ثبت کنین")
+
+#         context = {"form": form}
+#         return render(request, "core/admin/home.html", context)
 
 
 # class HomeView(CQRSPaginatedViewMixin, AdminGenericMixin, TemplateView):

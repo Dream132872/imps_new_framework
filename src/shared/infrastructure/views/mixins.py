@@ -26,8 +26,8 @@ class ViewTitleMixin(ContextMixin):
 
     page_title = ""
 
-    def get_title(self):
-        pass
+    def get_title(self) -> str:
+        return self.page_title
 
     def get_context_data(self, **kwargs: Dict[str, Any]) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
