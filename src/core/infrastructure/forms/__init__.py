@@ -20,14 +20,14 @@ class TestWidgetsForm(Form):
         label="Text Input",
         help_text="Basic text input field",
         placeholder="Enter some text",
-        required=True,
+        required=False,
     )
 
     email_input = EmailField(
         label="Email Input",
         help_text="Email input with validation",
         placeholder="Enter your email",
-        required=True,
+        required=False,
     )
 
     url_input = URLField(
@@ -41,7 +41,7 @@ class TestWidgetsForm(Form):
         label="Number Input",
         help_text="Numeric input field",
         placeholder="Enter a number",
-        required=True,
+        required=False,
     )
 
     decimal_input = DecimalField(
@@ -86,7 +86,7 @@ class TestWidgetsForm(Form):
         help_text="Password input field",
         widget=PasswordInput(),
         placeholder="Enter password",
-        required=True,
+        required=False,
     )
 
     # Hidden Inputs
@@ -153,7 +153,7 @@ class TestWidgetsForm(Form):
             ("option2", "Option 2"),
             ("option3", "Option 3"),
         ],
-        required=True,
+        required=False,
     )
 
     null_boolean_select = forms.NullBooleanField(
@@ -184,7 +184,7 @@ class TestWidgetsForm(Form):
             ("radio2", "Radio Option 2"),
             ("radio3", "Radio Option 3"),
         ],
-        required=True,
+        required=False,
     )
 
     checkbox_select_multiple_input = MultipleChoiceField(
@@ -229,23 +229,3 @@ class TestWidgetsForm(Form):
     #     widget=MultiWidget([TextInput(), TextInput()]),
     #     required=False,
     # )
-
-    def clean(self):
-        """Custom form validation"""
-        cleaned_data = super().clean()
-
-        # Example custom validation
-        if cleaned_data.get("text_input") == "invalid":
-            raise forms.ValidationError("Text input cannot be 'invalid'")
-
-        return cleaned_data
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        # Add some custom styling examples
-        self.fields["text_input"].widget.add_css_classes("custom-text-input")
-        self.fields["email_input"].widget.add_css_classes("custom-email-input")
-
-        # Set some fields as readonly for demonstration
-        self.fields["hidden_input"].widget.readonly = True

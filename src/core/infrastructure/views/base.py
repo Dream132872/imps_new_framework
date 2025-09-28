@@ -19,8 +19,6 @@ from core.domain.repositories import UserRepository
 from core.infrastructure.forms import TestWidgetsForm
 from shared.application.cqrs import dispatch_query_async
 from shared.application.dtos import PaginatedResultDTO
-from shared.domain.repositories import UnitOfWork
-from shared.infrastructure.ioc import inject_dependencies
 from shared.infrastructure.views import *
 
 logger = logging.getLogger(__name__)
@@ -32,6 +30,11 @@ class HomeView(AdminGenericMixin, FormView):
     form_class = TestWidgetsForm
     template_name = "core/admin/home.html"
     success_url = reverse_lazy("core:index_view")
+
+    def form_valid(self, form: TestWidgetsForm):
+        data = form.get_form_data()
+        print(data["split_datetime_input"])
+        return super().form_valid(form)
 
 
 # class HomeView(AdminGenericMixin, View):
