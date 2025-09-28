@@ -1,0 +1,5 @@
+{% extends 'shared/forms/widgets/base_input.html' %}
+
+{% block content %}
+  <input type="file" name="{{ widget.name }}" {{ flat_attrs|safe }} />
+{% endblock %}

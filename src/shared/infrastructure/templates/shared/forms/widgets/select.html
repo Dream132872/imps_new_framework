@@ -1,0 +1,19 @@
+{% extends 'shared/forms/widgets/base_input.html' %}
+
+{% block content %}
+  <select name="{{ widget.name }}" {{ flat_attrs|safe }}>
+    {% for option in widget.optgroups %}
+      {% if option.1.0.0 %}
+        <optgroup label="{{ option.0 }}">
+          {% for choice in option.1 %}
+            <option value="{{ choice.0 }}"{% if choice.0 == widget.value %} selected{% endif %}>{{ choice.1 }}</option>
+          {% endfor %}
+        </optgroup>
+      {% else %}
+        {% for choice in option.1 %}
+          <option value="{{ choice.0 }}"{% if choice.0 == widget.value %} selected{% endif %}>{{ choice.1 }}</option>
+        {% endfor %}
+      {% endif %}
+    {% endfor %}
+  </select>
+{% endblock %}

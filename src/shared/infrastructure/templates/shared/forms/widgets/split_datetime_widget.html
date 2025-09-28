@@ -1,0 +1,16 @@
+{% extends 'shared/forms/widgets/base_input.html' %}
+
+{% block content %}
+  <div class="split-datetime-widget">
+    <div class="row">
+      <div class="col-md-6">
+        <label for="{{ widget.subwidgets.0.attrs.id }}" class="form-label">Date:</label>
+        {{ widget.subwidgets.0 }}
+      </div>
+      <div class="col-md-6">
+        <label for="{{ widget.subwidgets.1.attrs.id }}" class="form-label">Time:</label>
+        {{ widget.subwidgets.1 }}
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,7 @@
+{% extends 'shared/forms/widgets/base_input.html' %}
+
+{% block content %}
+  {% for value in widget.value %}
+    <input type="hidden" name="{{ widget.name }}" value="{{ value }}" {{ flat_attrs|safe }} />
+  {% endfor %}
+{% endblock %}

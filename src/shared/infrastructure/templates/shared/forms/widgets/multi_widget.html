@@ -1,0 +1,9 @@
+{% extends 'shared/forms/widgets/base_input.html' %}
+
+{% block content %}
+  <div class="multi-widget">
+    {% for subwidget in widget.subwidgets %}
+      {{ subwidget }}
+    {% endfor %}
+  </div>
+{% endblock %}

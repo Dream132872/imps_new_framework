@@ -1,0 +1,20 @@
+{% extends 'shared/forms/widgets/base_input.html' %}
+
+{% block content %}
+  <div class="select-date-widget">
+    <div class="row">
+      <div class="col-md-4">
+        <label for="{{ widget.subwidgets.0.attrs.id }}" class="form-label">Year:</label>
+        {{ widget.subwidgets.0 }}
+      </div>
+      <div class="col-md-4">
+        <label for="{{ widget.subwidgets.1.attrs.id }}" class="form-label">Month:</label>
+        {{ widget.subwidgets.1 }}
+      </div>
+      <div class="col-md-4">
+        <label for="{{ widget.subwidgets.2.attrs.id }}" class="form-label">Day:</label>
+        {{ widget.subwidgets.2 }}
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,356 @@
+{% extends 'shared/admin/layout/layout.html' %}
+{% load static %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .widget-section {
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        border: 1px solid #dee2e6;
+        border-radius: 0.375rem;
+        background-color: #f8f9fa;
+    }
+    
+    .widget-section h3 {
+        color: #495057;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #007bff;
+    }
+    
+    .widget-demo {
+        margin-bottom: 1rem;
+        padding: 1rem;
+        background-color: white;
+        border-radius: 0.25rem;
+        border: 1px solid #e9ecef;
+    }
+    
+    .widget-info {
+        font-size: 0.875rem;
+        color: #6c757d;
+        margin-top: 0.5rem;
+    }
+    
+    .form-section {
+        margin-bottom: 2rem;
+    }
+    
+    .success-message {
+        background-color: #d4edda;
+        color: #155724;
+        padding: 1rem;
+        border-radius: 0.25rem;
+        margin-bottom: 1rem;
+    }
+    
+    .error-message {
+        background-color: #f8d7da;
+        color: #721c24;
+        padding: 1rem;
+        border-radius: 0.25rem;
+        margin-bottom: 1rem;
+    }
+    
+    .form-data-display {
+        background-color: #f8f9fa;
+        padding: 1rem;
+        border-radius: 0.25rem;
+        margin-top: 1rem;
+    }
+    
+    .form-data-display pre {
+        margin: 0;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h1 class="card-title">{{ page_title }}</h1>
+                    <p class="card-subtitle text-muted">{{ page_description }}</p>
+                </div>
+                
+                <div class="card-body">
+                    {% if success_message %}
+                        <div class="success-message">
+                            <i class="fas fa-check-circle"></i> {{ success_message }}
+                        </div>
+                    {% endif %}
+                    
+                    {% if error_message %}
+                        <div class="error-message">
+                            <i class="fas fa-exclamation-triangle"></i> {{ error_message }}
+                        </div>
+                    {% endif %}
+                    
+                    <form method="post" enctype="multipart/form-data" class="test-widgets-form">
+                        {% csrf_token %}
+                        
+                        <!-- Basic Input Widgets Section -->
+                        <div class="widget-section">
+                            <h3><i class="fas fa-keyboard"></i> Basic Input Widgets</h3>
+                            
+                            <div class="widget-demo">
+                                <h5>Text Input</h5>
+                                {{ form.text_input }}
+                                <div class="widget-info">Basic text input with placeholder and validation</div>
+                            </div>
+                            
+                            <div class="widget-demo">
+                                <h5>Email Input</h5>
+                                {{ form.email_input }}
+                                <div class="widget-info">Email input with built-in validation</div>
+                            </div>
+                            
+                            <div class="widget-demo">
+                                <h5>URL Input</h5>
+                                {{ form.url_input }}
+                                <div class="widget-info">URL input with validation</div>
+                            </div>
+                            
+                            <div class="widget-demo">
+                                <h5>Number Input</h5>
+                                {{ form.number_input }}
+                                <div class="widget-info">Numeric input field</div>
+                            </div>
+                            
+                            <div class="widget-demo">
+                                <h5>Decimal Input</h5>
+                                {{ form.decimal_input }}
+                                <div class="widget-info">Decimal number input</div>
+                            </div>
+                            
+                            <div class="widget-demo">
+                                <h5>Float Input</h5>
+                                {{ form.float_input }}
+                                <div class="widget-info">Floating point number input</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Special Input Widgets Section -->
+                        <div class="widget-section">
+                            <h3><i class="fas fa-magic"></i> Special Input Widgets</h3>
+                            
+                            <div class="widget-demo">
+                                <h5>Color Input</h5>
+                                {{ form.color_input }}
+                                <div class="widget-info">Color picker input</div>
+                            </div>
+                            
+                            <div class="widget-demo">
+                                <h5>Search Input</h5>
+                                {{ form.search_input }}
+                                <div class="widget-info">Search input field</div>
+                            </div>
+                            
+                            <div class="widget-demo">
+                                <h5>Telephone Input</h5>
+                                {{ form.tel_input }}
+                                <div class="widget-info">Telephone number input</div>
+                            </div>
+                            
+                            <div class="widget-demo">
+                                <h5>Password Input</h5>
+                                {{ form.password_input }}
+                                <div class="widget-info">Password input field</div>
+                            </div>
+                        </div>
+                        
+                        <!-- File Input Widgets Section -->
+                        <div class="widget-section">
+                            <h3><i class="fas fa-file-upload"></i> File Input Widgets</h3>
+                            
+                            <div class="widget-demo">
+                                <h5>File Input</h5>
+                                {{ form.file_input }}
+                                <div class="widget-info">Basic file upload input</div>
+                            </div>
+                            
+                            <div class="widget-demo">
+                                <h5>Clearable File Input</h5>
+                                {{ form.clearable_file_input }}
+                                <div class="widget-info">File input with clear option</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Text Area Widgets Section -->
+                        <div class="widget-section">
+                            <h3><i class="fas fa-align-left"></i> Text Area Widgets</h3>
+                            
+                            <div class="widget-demo">
+                                <h5>Textarea Input</h5>
+                                {{ form.textarea_input }}
+                                <div class="widget-info">Multi-line text input</div>
+                            </div>
+                            
+                            <div class="widget-demo">
+                                <h5>Rich Text Input</h5>
+                                {{ form.rich_text_input }}
+                                <div class="widget-info">Rich text editor</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Date/Time Widgets Section -->
+                        <div class="widget-section">
+                            <h3><i class="fas fa-calendar"></i> Date/Time Widgets</h3>
+                            
+                            <div class="widget-demo">
+                                <h5>Date Input</h5>
+                                {{ form.date_input }}
+                                <div class="widget-info">Date picker input</div>
+                            </div>
+                            
+                            <div class="widget-demo">
+                                <h5>DateTime Input</h5>
+                                {{ form.datetime_input }}
+                                <div class="widget-info">Date and time input</div>
+                            </div>
+                            
+                            <div class="widget-demo">
+                                <h5>Time Input</h5>
+                                {{ form.time_input }}
+                                <div class="widget-info">Time picker input</div>
+                            </div>
+                            
+                            <div class="widget-demo">
+                                <h5>Split DateTime Input</h5>
+                                {{ form.split_datetime_input }}
+                                <div class="widget-info">Separate date and time inputs</div>
+                            </div>
+                            
+                            <div class="widget-demo">
+                                <h5>Select Date Input</h5>
+                                {{ form.select_date_input }}
+                                <div class="widget-info">Year/Month/Day selectors</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Selection Widgets Section -->
+                        <div class="widget-section">
+                            <h3><i class="fas fa-list"></i> Selection Widgets</h3>
+                            
+                            <div class="widget-demo">
+                                <h5>Checkbox Input</h5>
+                                {{ form.checkbox_input }}
+                                <div class="widget-info">Single checkbox</div>
+                            </div>
+                            
+                            <div class="widget-demo">
+                                <h5>Select Input</h5>
+                                {{ form.select_input }}
+                                <div class="widget-info">Dropdown selection</div>
+                            </div>
+                            
+                            <div class="widget-demo">
+                                <h5>Null Boolean Select</h5>
+                                {{ form.null_boolean_select }}
+                                <div class="widget-info">Boolean with null option</div>
+                            </div>
+                            
+                            <div class="widget-demo">
+                                <h5>Select Multiple Input</h5>
+                                {{ form.select_multiple_input }}
+                                <div class="widget-info">Multiple selection dropdown</div>
+                            </div>
+                            
+                            <div class="widget-demo">
+                                <h5>Radio Select Input</h5>
+                                {{ form.radio_select_input }}
+                                <div class="widget-info">Radio button selection</div>
+                            </div>
+                            
+                            <div class="widget-demo">
+                                <h5>Checkbox Select Multiple</h5>
+                                {{ form.checkbox_select_multiple_input }}
+                                <div class="widget-info">Multiple checkbox selection</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Advanced Widgets Section -->
+                        <div class="widget-section">
+                            <h3><i class="fas fa-cogs"></i> Advanced Widgets</h3>
+                            
+                            <div class="widget-demo">
+                                <h5>Multi Widget Input</h5>
+                                {{ form.multi_widget_input }}
+                                <div class="widget-info">Example of multi-widget</div>
+                            </div>
+                            
+                            <div class="widget-demo">
+                                <h5>Split Hidden DateTime Input</h5>
+                                {{ form.split_hidden_datetime_input }}
+                                <div class="widget-info">Hidden split date and time inputs</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Hidden Fields -->
+                        {{ form.hidden_input }}
+                        
+                        <!-- Submit Button -->
+                        <div class="form-section">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-paper-plane"></i> Test All Widgets
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <!-- Display Form Data if Submitted -->
+                    {% if form_submitted and cleaned_data %}
+                        <div class="form-data-display">
+                            <h4><i class="fas fa-database"></i> Form Data Received:</h4>
+                            <pre>{{ cleaned_data|pprint }}</pre>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add some interactive functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add form validation feedback
+        const form = document.querySelector('.test-widgets-form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                // Add loading state
+                const submitBtn = form.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Testing Widgets...';
+                    submitBtn.disabled = true;
+                }
+            });
+        }
+        
+        // Add color input change handler
+        const colorInput = document.querySelector('input[type="color"]');
+        if (colorInput) {
+            colorInput.addEventListener('change', function() {
+                console.log('Color changed to:', this.value);
+            });
+        }
+        
+        // Add file input change handler
+        const fileInputs = document.querySelectorAll('input[type="file"]');
+        fileInputs.forEach(function(input) {
+            input.addEventListener('change', function() {
+                if (this.files.length > 0) {
+                    console.log('File selected:', this.files[0].name);
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,7 @@
+{% extends 'shared/forms/widgets/base_input.html' %}
+
+{% block content %}
+  <div class="rich-text-editor">
+    <textarea name="{{ widget.name }}" {{ flat_attrs|safe }}>{{ widget.value|default:'' }}</textarea>
+  </div>
+{% endblock %}

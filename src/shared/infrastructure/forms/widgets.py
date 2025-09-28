@@ -36,6 +36,7 @@ __all__ = (
     "SplitDateTimeWidget",
     "SplitHiddenDateTimeWidget",
     "SelectDateWidget",
+    "RichText"
 )
 
 

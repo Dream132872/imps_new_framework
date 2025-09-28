@@ -1,0 +1,16 @@
+{% extends 'shared/forms/widgets/base_input.html' %}
+
+{% block content %}
+  <div class="file-input-wrapper">
+    {% if widget.is_initial %}
+      <div class="current-file mb-2">
+        <p class="mb-1">Current file: <a href="{{ widget.value.url }}">{{ widget.value.name }}</a></p>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" name="{{ widget.checkbox_name }}" id="{{ widget.checkbox_id }}" />
+          <label class="form-check-label" for="{{ widget.checkbox_id }}">Clear</label>
+        </div>
+      </div>
+    {% endif %}
+    <input type="file" name="{{ widget.name }}" {{ flat_attrs|safe }} />
+  </div>
+{% endblock %}

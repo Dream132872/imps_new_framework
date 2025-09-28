@@ -1,0 +1,26 @@
+{% extends 'shared/forms/widgets/base_input.html' %}
+
+{% block content %}
+  <div class="radio-group">
+    {% for option in widget.optgroups %}
+      {% if option.1.0.0 %}
+        <fieldset>
+          <legend>{{ option.0 }}</legend>
+          {% for choice in option.1 %}
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="{{ widget.name }}" value="{{ choice.0 }}" id="{{ widget.attrs.id }}_{{ forloop.counter0 }}"{% if choice.0 == widget.value %} checked{% endif %} />
+              <label class="form-check-label" for="{{ widget.attrs.id }}_{{ forloop.counter0 }}">{{ choice.1 }}</label>
+            </div>
+          {% endfor %}
+        </fieldset>
+      {% else %}
+        {% for choice in option.1 %}
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="{{ widget.name }}" value="{{ choice.0 }}" id="{{ widget.attrs.id }}_{{ forloop.counter0 }}"{% if choice.0 == widget.value %} checked{% endif %} />
+            <label class="form-check-label" for="{{ widget.attrs.id }}_{{ forloop.counter0 }}">{{ choice.1 }}</label>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endfor %}
+  </div>
+{% endblock %}
