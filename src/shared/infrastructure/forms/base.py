@@ -15,18 +15,14 @@ class Form(forms.Form):
 
     # Custom form template
     template_name = "shared/forms/form.html"
-
     # Form styling
     css_class = "custom-form"
-
-    # Method
-    method = "post"
-
-    # Form title
-    form_title = ""
-
     # Form attributes
     form_attrs = {}
+    # Method
+    method = "post"
+    # Form title
+    form_title = ""
 
     def __init__(self, *args, **kwargs) -> None:  # type: ignore
         # Extract custom parameters
@@ -39,7 +35,7 @@ class Form(forms.Form):
         # Apply custom styling to all fields
         self._apply_custom_styling()
 
-    def _apply_custom_styling(self):
+    def _apply_custom_styling(self) -> None:
         """Apply custom styling to all form fields."""
         for field_name, field in self.fields.items():
             # Set field-specific attributes
@@ -143,12 +139,14 @@ class ModelForm(forms.ModelForm):
 
     # Custom form template
     template_name = "shared/forms/form.html"
-
     # Form styling
-    css_class = "custom-model-form"
-
+    css_class = "custom-form"
     # Form attributes
     form_attrs = {}
+    # Method
+    method = "post"
+    # Form title
+    form_title = ""
 
     def __init__(self, *args, **kwargs) -> None:  # type: ignore
         # Extract custom parameters
@@ -161,35 +159,52 @@ class ModelForm(forms.ModelForm):
         # Apply custom styling to all fields
         self._apply_custom_styling()
 
-    def _apply_custom_styling(self):
-        """Apply custom styling to all form fields"""
+    def _apply_custom_styling(self) -> None:
+        """Apply custom styling to all form fields."""
         for field_name, field in self.fields.items():
-            # Set custom attributes if not already set
-            if hasattr(field.widget, "css_class") and not field.widget.css_class:
-                field.widget.css_class = f"form-control"
-
             # Set field-specific attributes
             if hasattr(field.widget, "required"):
                 field.widget.required = field.required
 
+            # Set bound field object to widget
+            if hasattr(field.widget, "field"):
+                field.widget.field = self[field_name]
+
             # Add field name as CSS class for styling
             if hasattr(field.widget, "attrs"):
-                current_class = field.widget.attrs.get("class", "")
-                field.widget.attrs["class"] = (
-                    f"{current_class} field-{field_name}".strip()
-                )
+                css_field_name = field_name.strip()
+                field.widget.add_css_classes(f"input__{css_field_name}")
+
+    def generate_flattened_attrs(self):
+        """Generated flatten attributes for form.
+
+        Returns:
+            str: flatten attributes.
+        """
+
+        return flatatt(attrs={key: value for key, value in self.form_attrs.items()})
 
     def render_form(self, request=None, **context) -> SafeText:  # type: ignore
-        """Render the entire form using custom template"""
+        """Render the entire form using custom template."""
+        # Try to get request from context if not provided
+        if request is None:
+            request = context.get("request")
+
         form_context = {
             "form": self,
             "form_class": self.css_class,
-            "form_attrs": self.form_attrs,
+            "form_title": self.get_form_title(),
+            "flattened_attrs": self.generate_flattened_attrs(),
             "request": request,
+            "method": self.method,
         }
         form_context.update(context)
 
-        return mark_safe(render_to_string(self.template_name, form_context))
+        return mark_safe(
+            render_to_string(
+                self.template_name, form_context, request=form_context["request"]
+            )
+        )
 
     def get_field_html(self, field_name: str, **kwargs) -> str:  # type: ignore
         """Get HTML for a specific field"""
@@ -250,3 +265,6 @@ class ModelForm(forms.ModelForm):
             instance.save()
 
         return instance
+
+    def get_form_title(self) -> str:
+        return self.form_title

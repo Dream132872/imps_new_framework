@@ -9,6 +9,7 @@ __all__ = (
     "View",
     "TemplateView",
     "FormView",
+    "UpdateView",
 )
 
 
@@ -27,4 +28,10 @@ class TemplateView(django_generics.TemplateView):
 class FormView(django_generics.FormView):
     """
     Custom implementation of FormView.
+    """
+
+
+class UpdateView(django_generics.UpdateView):
+    """
+    Custom implementation of UpdateView.
     """
