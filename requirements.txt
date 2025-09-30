@@ -1,6 +1,7 @@
 Django==5.2.5
 django-modeltranslation
 django-rosetta
+django-parsley
 djangorestframework==3.15.0
 django-cors-headers==4.3.1
 python-decouple==3.8

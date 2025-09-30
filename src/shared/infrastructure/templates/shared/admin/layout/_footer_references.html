@@ -1,4 +1,4 @@
-{% load static %}
+{% load static i18n %}
 <!-- begin::Script -->
 <!-- begin::Third Party Plugin(OverlayScrollbars) -->
 <script src="{% static 'shared/admin/assets/overlay-scrollbar/overlayscrollbars.browser.es6.min.js' %}"></script>
@@ -18,6 +18,10 @@
 <!-- begin::Waitme -->
 <script src="{% static 'shared/libs/waitme/waitMe.min.js' %}"></script>
 <!-- end::Waitme -->
+<!-- begin::Parsley -->
+<script src="{% static 'shared/libs/parsley/parsley.min.js' %}"></script>
+<script src="/static/shared/libs/parsley/i18n/{{ LANGUAGE_CODE }}.js"></script>
+<!-- end::Parsley -->
 <!-- begin::OverlayScrollbars Configure -->
 <!-- begin::Custom js -->
 <script src="{% static 'shared/admin/js/custom.js' %}"></script>

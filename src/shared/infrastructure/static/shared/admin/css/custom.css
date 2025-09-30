@@ -127,6 +127,26 @@
 
 /* start form related classes */
 
+ul.parsley-errors-list {
+    margin-top: 10px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+ul.parsley-errors-list li {
+    margin-inline-end: 10px;
+}
+
+ul.parsley-errors-list li::after {
+    content: " | ";
+}
+
+ul.parsley-errors-list li:last-child::after {
+    content: none;
+}
+
 .invalid-feedback {
     display: block !important;
     color: #dc3545;

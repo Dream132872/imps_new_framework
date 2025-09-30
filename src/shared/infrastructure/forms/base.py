@@ -18,7 +18,12 @@ class Form(forms.Form):
     # Form styling
     css_class = "custom-form"
     # Form attributes
-    form_attrs = {}
+    form_attrs = {
+        # handle form parsley validation
+        "data-parsley-validate": True,
+        "data-parsley-ui-enabled": "true",
+        "data-parsley-focus": "first",
+    }
     # Method
     method = "post"
     # Form title
@@ -49,6 +54,11 @@ class Form(forms.Form):
             # Add field name as CSS class for styling
             if hasattr(field.widget, "attrs"):
                 css_field_name = field_name.strip()
+
+                # set the parsley treigger event for this widget
+                if not field.widget.attrs.get("data-parsley-trigger"):
+                    field.widget.attrs["data-parsley-trigger"] = "input focusout"
+
                 field.widget.add_css_classes(f"input__{css_field_name}")
 
     def generate_flattened_attrs(self):

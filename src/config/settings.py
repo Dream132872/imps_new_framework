@@ -61,6 +61,7 @@ THIRD_PARTY_APPS = [
     "channels",
     "django_celery_results",
     "rosetta",
+    "parsley",
 ]
 
 LOCAL_APPS = [

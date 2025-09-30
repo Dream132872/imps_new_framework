@@ -3,18 +3,25 @@ Comprehensive test form for all custom widgets.
 This form demonstrates all available widget types in the shared domain.
 """
 
-from django import forms
 from shared.infrastructure.forms import *
+from parsley.decorators import parsleyfy
+from django.utils.translation import gettext_lazy as _
 
 
+@parsleyfy
 class TestWidgetsForm(Form):
     """
     Comprehensive test form showcasing all available custom widgets.
     This form can be used to test the rendering and functionality of all widgets.
     """
 
-    class Media:
-        css = {"all": ("shared/forms/test.css",)}
+    class Meta:
+        parsley_extras = {
+            "email_input": {
+                "equalto": "text_input",
+                "equalto-message": _("This value should be equal to text_input"),
+            }
+        }
 
     form_title = "Custom Widgets Test Form"
 
@@ -25,14 +32,14 @@ class TestWidgetsForm(Form):
         label="Text Input",
         help_text="Basic text input field",
         placeholder="Enter some text",
-        required=False,
+        required=True,
     )
 
     email_input = EmailField(
         label="Email Input",
         help_text="Email input with validation",
         placeholder="Enter your email",
-        required=False,
+        required=True,
     )
 
     url_input = URLField(
