@@ -185,6 +185,10 @@ class BaseCustomWidget(forms.Widget):
             except:
                 pass
 
+    @property
+    def flattened_attrs(self) -> str:
+        return self.generate_flatten_attrs(self.attrs)
+
     def render(
         self, name: str, value: Any, attrs: dict | None = None, renderer: Any = None
     ) -> SafeText:

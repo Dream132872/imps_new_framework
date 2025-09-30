@@ -80,7 +80,7 @@ class Form(forms.Form):
             "form": self,
             "form_class": self.css_class,
             "form_title": self.get_form_title(),
-            "flattened_attrs": self.generate_flattened_attrs(),
+            "flattened_attrs": self.flattened_attrs,
             "request": request,
             "method": self.method,
         }
@@ -161,6 +161,10 @@ class Form(forms.Form):
     def media(self) -> forms.Media:
         """Return the media files for this form and all its widgets."""
         return self.get_media()
+
+    @property
+    def flattened_attrs(self) -> str:
+        return self.generate_flattened_attrs()
 
 
 class ModelForm(forms.ModelForm):
