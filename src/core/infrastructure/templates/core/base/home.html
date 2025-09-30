@@ -1,6 +1,10 @@
 {% extends 'shared/admin/layout/layout.html' %}
 {% load forms %}
 
+{% block head_ref %}
+  {{ form.media.css }}
+{% endblock %}
+
 {% block content %}
   {% comment %} <ul>
     {% for user in page_obj.items %}
@@ -17,4 +21,8 @@
   </div>
 
   {% comment %} {{ form }} {% endcomment %}
+{% endblock %}
+
+{% block footer_ref %}
+  {{ form.media.js }}
 {% endblock %}

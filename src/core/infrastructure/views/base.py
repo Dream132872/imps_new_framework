@@ -1,16 +1,17 @@
 import logging
 from dataclasses import asdict
-from typing import Any
+from typing import Any, Dict
 
 from adrf.mixins import sync_to_async
 from adrf.requests import AsyncRequest
 from adrf.views import APIView
 from django.contrib.auth import get_user_model
+from django.forms import BaseModelForm
 from django.forms.forms import BaseForm
 from django.http import HttpRequest
 from django.http.response import HttpResponse as HttpResponse
 from django.shortcuts import render
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from rest_framework import status
 from rest_framework.response import Response
@@ -19,51 +20,32 @@ from core.application.queries import *
 from core.application.queries.user_queries import SearchUsersQuery
 from core.domain.repositories import UserRepository
 from core.infrastructure.forms import TestWidgetsForm
-from core.infrastructure.forms.auth import UpdateUserForm
 from shared.application.cqrs import dispatch_query_async
 from shared.application.dtos import PaginatedResultDTO
 from shared.domain.repositories import UnitOfWork
 from shared.infrastructure.ioc import inject_dependencies
-from shared.infrastructure.views import *
+from shared.infrastructure import views
 
 logger = logging.getLogger(__name__)
 
 User = get_user_model()
 
 
-class HomeView(AdminGenericMixin, UpdateView):
-    page_title = _("Home view")
+class HomeView(views.AdminGenericMixin, views.TemplateView):
     permission_required = []
-    form_class = UpdateUserForm
-    queryset = User.objects.all()
-    template_name = "core/admin/home.html"
-    success_url = reverse_lazy("core:index_view")
+    page_title = _("Dashboard")
+    template_name = "core/base/home.html"
 
-
-# class HomeView(AdminGenericMixin, View):
-#     permission_required = []
-#     page_title = _("Dashboard")
-
-#     def get(self, request: HttpRequest) -> HttpResponse:
-#         context = {"form": TestWidgetsForm()}
-#         return render(request, "core/admin/home.html", context)
-
-#     def post(self, request: HttpRequest) -> HttpResponse:
-#         form = TestWidgetsForm(request.POST)
-#         if form.is_valid():
-#             form.add_error("char_field", "این مورد قبلا ثبت شده")
-#             form.add_error("char_field", "شما نمیتونین مجددا یک آیتم جدید ثبت کنین")
-#             form.add_error(None, "شما نمیتونین مجددا یک آیتم جدید ثبت کنین")
-#             form.add_error(None, "شما نمیتونین مجددا یک آیتم جدید ثبت کنین")
-
-#         context = {"form": form}
-#         return render(request, "core/admin/home.html", context)
+    def get_context_data(self, **kwargs: Dict[str, Any]) -> Dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context["form"] = TestWidgetsForm()
+        return context
 
 
 # class HomeView(CQRSPaginatedViewMixin, AdminGenericMixin, TemplateView):
 #     """Admin dashboard home view"""
 
-#     template_name = "core/admin/home.html"
+#     template_name = "core/base/home.html"
 #     permission_required = []
 
 #     def get_paginated_query(self) -> SearchUsersQuery:

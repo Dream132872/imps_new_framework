@@ -8,14 +8,22 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-19 09:57+0330\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2025-09-30 16:16+0330\n"
+"PO-Revision-Date: 2025-09-30 16:19+0000\n"
+"Last-Translator:   <>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: fa \n"
+"Language: fa\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Translated-Using: django-rosetta 0.10.2\n"
+
+#: .\src\shared\application\pagination.py:48
+#, python-brace-format
+msgid ""
+"Failed to convert DomainPaginator instance to PaginatedResultDTO: {message}"
+msgstr ""
+"تبدیل نمونه DomainPaginator به PaginatedResultDTO ناموفق بود: {message}"
 
 #: .\src\shared\infrastructure\apps.py:20
 msgid "Shared infrastrucutre"
@@ -33,10 +41,18 @@ msgstr "تاریخ ایجاد"
 msgid "Updated at"
 msgstr "تاریخ ویرایش"
 
-#: .\src\shared\infrastructure\templates\shared\admin\layout\layout.html:38
+#: .\src\shared\infrastructure\templates\shared\admin\layout\layout.html:36
 #: .\src\shared\infrastructure\templates\shared\templatetags\layout\admin_site_header.html:13
 msgid "Home"
 msgstr "خانه"
+
+#: .\src\shared\infrastructure\templates\shared\forms\widgets\checkbox_input.html:7
+msgid "Yes"
+msgstr "بله"
+
+#: .\src\shared\infrastructure\templates\shared\forms\widgets\checkbox_input.html:7
+msgid "No"
+msgstr "خیر"
 
 #: .\src\shared\infrastructure\templates\shared\templatetags\layout\admin_fixed_footer.html:4
 msgid "All rights reserved"

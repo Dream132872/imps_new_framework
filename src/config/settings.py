@@ -219,7 +219,7 @@ STATIC_URL = config("STATIC_URL", default="/static/")
 STATIC_ROOT = config(
     "STATIC_ROOT", default=os.path.join(BASE_DIR.parent, "cdn", "static")
 )
-STATICFILES_DIRS = []
+STATICFILES_DIRS = [BASE_DIR / "static"]
 
 # configure media
 MEDIA_URL = config("MEDIA_URL", default="/media/")

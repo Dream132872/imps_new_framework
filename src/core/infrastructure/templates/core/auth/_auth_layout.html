@@ -1,0 +1,31 @@
+{% load static i18n %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
+  <!-- begin::Head -->
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>{{ title|default:'Login' }}</title>
+
+    <!-- begin::Accessibility Meta Tags -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#007bff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)" />
+    <!-- end::Accessibility Meta Tags -->
+    <!-- begin::Accessibility Features -->
+    <!-- Skip links will be dynamically added by accessibility.js -->
+    <meta name="supported-color-schemes" content="light dark" />
+    <!-- end::Accessibility Features -->
+    <!-- end::Primary Meta Tags -->
+    {% include 'shared/admin/layout/_head_references.html' %}
+    {% block head_ref %}{% endblock %}
+  </head>
+  <!-- end::Head -->
+  <!-- begin::Body -->
+  <body class="{% block body_class %}login-page{% endblock %} bg-body-secondary">
+    {% block content %}{% endblock %}
+    {% include 'shared/admin/layout/_footer_references.html' %}
+    {% block footer_ref %}{% endblock %}
+  </body>
+  <!-- end::Body -->
+</html>

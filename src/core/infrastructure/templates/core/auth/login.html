@@ -1,0 +1,41 @@
+{% extends 'core/auth/_auth_layout.html' %}
+{% load i18n forms static %}
+
+{% block content %}
+  <div class="login-box">
+    <!-- /.login-logo -->
+    <div class="card">
+      <div class="card-body login-card-body">
+        <div class="login-logo">
+          <img src="{% static 'shared/images/logos/logo_black.png' %}" class="w-50" alt="" />
+        </div>
+        <p class="login-box-msg font-size-12">
+          {% trans 'Management of the Iranian Social and Economic Observatory (RASA)' %}
+        </p>
+        <form method="post">
+          {% csrf_token %}
+          <div class="input-group mb-3">
+            <div class="input-group-text">
+              <span class="bi bi-envelope"></span>
+            </div>
+            <input type="text" name="{{ form.username_or_email.name }}" placeholder="{{ form.username_or_email.label }}" class="form-control" autocomplete="off" required />
+          </div>
+          <div class="input-group mb-3">
+            <div class="input-group-text">
+              <span class="bi bi-lock-fill"></span>
+            </div>
+            <input type="password" name="{{ form.password.name }}" placeholder="{{ form.password.label }}" class="form-control" autocomplete="new-password" required />
+          </div>
+          <!-- begin::Row -->
+          <div class="row justify-content-end">
+            <div class="col-12 col-lg-4">
+              <button type="submit" class="btn btn-success w-100">{% trans 'Login' %}</button>
+            </div>
+          </div>
+          <!-- end::Row -->
+        </form>
+      </div>
+      <!-- /.login-card-body -->
+    </div>
+  </div>
+{% endblock %}

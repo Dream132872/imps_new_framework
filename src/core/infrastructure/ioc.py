@@ -1,5 +1,5 @@
 """
-Inversion of Control in Core layer
+Inversion of Control in Core layer.
 """
 
 from injector import Binder, Module

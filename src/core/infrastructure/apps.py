@@ -12,9 +12,9 @@ class InfrastructureConfig(AppConfig):
     verbose_name = _("Core")
     menu_items = [
         MenuItem(
-            name="core:index_view",
+            name="core:base:home",
             title=_("Dashboard"),
-            url=reverse_lazy("core:index_view"),
+            url=reverse_lazy("core:base:home"),
             icon="bi bi-house",
             display_order=-999999999,
         ),

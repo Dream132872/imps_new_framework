@@ -13,8 +13,8 @@ from shared.application.dtos import PaginatedResultDTO
 
 __all__ = (
     "ViewTitleMixin",
-    "CQRSPaginatedViewMixin",
     "AdminGenericMixin",
+    "CQRSPaginatedViewMixin",
 )
 
 

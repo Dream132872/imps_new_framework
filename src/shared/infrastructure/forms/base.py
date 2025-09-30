@@ -131,6 +131,27 @@ class Form(forms.Form):
     def get_form_title(self) -> str:
         return self.form_title
 
+    def get_media(self) -> forms.Media:
+        """Get all media files from form and all its widgets."""
+        # Start with form's own media
+        media = forms.Media()
+
+        # Add form's own media
+        if hasattr(self.__class__, "Media"):
+            media += forms.Media(self.__class__.Media)
+
+        # Add media from all widgets
+        for field in self.fields.values():
+            if hasattr(field.widget, "Media"):
+                media += forms.Media(field.widget.__class__.Media)
+
+        return media
+
+    @property
+    def media(self) -> forms.Media:
+        """Return the media files for this form and all its widgets."""
+        return self.get_media()
+
 
 class ModelForm(forms.ModelForm):
     """
@@ -160,8 +181,57 @@ class ModelForm(forms.ModelForm):
         self._apply_custom_styling()
 
     def _apply_custom_styling(self) -> None:
-        """Apply custom styling to all form fields."""
+        """Apply custom styling to all form fields and replace widgets with custom ones."""
+        # Import widgets here to avoid circular imports
+        from .widgets import (
+            TextInput,
+            EmailInput,
+            URLInput,
+            NumberInput,
+            PasswordInput,
+            DateInput,
+            DateTimeInput,
+            TimeInput,
+            CheckboxInput,
+            Select,
+            SelectMultiple,
+            RadioSelect,
+            CheckboxSelectMultiple,
+            Textarea,
+            FileInput,
+            ClearableFileInput,
+        )
+
+        # Widget mapping for automatic widget replacement
+        # Using actual Django widget class names
+        widget_mapping = {
+            "TextInput": TextInput,
+            "EmailInput": EmailInput,
+            "URLInput": URLInput,
+            "NumberInput": NumberInput,
+            "PasswordInput": PasswordInput,
+            "DateInput": DateInput,
+            "DateTimeInput": DateTimeInput,
+            "TimeInput": TimeInput,
+            "CheckboxInput": CheckboxInput,
+            "Select": Select,
+            "SelectMultiple": SelectMultiple,
+            "RadioSelect": RadioSelect,
+            "CheckboxSelectMultiple": CheckboxSelectMultiple,
+            "Textarea": Textarea,
+            "FileInput": FileInput,
+            "ClearableFileInput": ClearableFileInput,
+        }
+
         for field_name, field in self.fields.items():
+            # Replace default widgets with custom widgets
+            current_widget_class = field.widget.__class__.__name__
+            if current_widget_class in widget_mapping:
+                custom_widget_class = widget_mapping[current_widget_class]
+                # Preserve existing attributes
+                attrs = field.widget.attrs.copy()
+                field.widget = custom_widget_class(attrs=attrs)
+
             # Set field-specific attributes
             if hasattr(field.widget, "required"):
                 field.widget.required = field.required
