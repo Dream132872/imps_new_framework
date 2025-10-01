@@ -37,3 +37,4 @@ class SearchUsersQuery(Query):
     full_name: str = ""
     email: str = ""
     username: str = ""
+

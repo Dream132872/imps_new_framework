@@ -15,10 +15,10 @@ User = get_user_model()
 
 @parsleyfy
 class LoginForm(forms.Form):
-    username_or_email = forms.CharField(
-        label=_("Username or email"),
+    username = forms.CharField(
+        label=_("Username"),
         required=True,
-        placeholder=_("Username or email"),
+        placeholder=_("Username"),
         widget=forms.TextInput(
             attrs={
                 "data-parsley-errors-container": "#username_errors",

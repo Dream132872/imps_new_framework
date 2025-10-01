@@ -59,6 +59,10 @@ class Form(forms.Form):
                 if not field.widget.attrs.get("data-parsley-trigger"):
                     field.widget.attrs["data-parsley-trigger"] = "input focusout"
 
+                # set the parsley validation threshold
+                if not field.widget.attrs.get("data-parsley-validation-threshold"):
+                    field.widget.attrs["data-parsley-validation-threshold"] = "0"
+
                 field.widget.add_css_classes(f"input__{css_field_name}")
 
     def generate_flattened_attrs(self):

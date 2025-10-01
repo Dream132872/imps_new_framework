@@ -17,6 +17,7 @@ import sys
 from pathlib import Path
 
 from decouple import Csv, config
+from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -151,10 +152,11 @@ DATABASES = {
 }
 
 AUTH_USER_MODEL = "core_infrastructure.User"
+LOGIN_URL = reverse_lazy("core:auth:login")
 
-# AUTHENTICATION_BACKENDS = [
-#     "core.infrastructure.auth_backends.CachedModelBackend",
-# ]
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+]
 
 MIGRATIONS_HISTORY_PATH = config(
     "MIGRATIONS_HISTORY_PATH", default="migrations_history", cast=str

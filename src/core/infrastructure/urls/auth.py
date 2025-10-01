@@ -9,7 +9,7 @@ urlpatterns = [
         include(
             (
                 [
-                    path("login/", auth.LoginView.as_view(), name="login_view"),
+                    path("login/", auth.LoginView.as_view(), name="login"),
                 ],
                 "auth",
             ),

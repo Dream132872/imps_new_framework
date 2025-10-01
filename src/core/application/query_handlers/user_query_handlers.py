@@ -12,7 +12,11 @@ from injector import inject
 
 from core.application.dtos.user_dtos import UserDTO
 from core.application.queries.user_queries import *
-from core.application.queries.user_queries import GetUserByIdQuery, SearchUsersQuery
+from core.application.queries.user_queries import (
+    GetUserByIdQuery,
+    GetUserByUserNameOrEmail,
+    SearchUsersQuery,
+)
 from core.domain.entities import User
 from core.domain.exceptions import UserNotFoundError
 from core.domain.repositories import UserRepository
@@ -23,13 +27,21 @@ from shared.application.pagination import *
 from shared.domain.pagination import *
 from shared.domain.repositories import UnitOfWork
 
-__all__ = ("GetUserByIdQueryHandler",)
+__all__ = (
+    "GetUserByIdQueryHandler",
+    "GetUserByIdQueryHandler",
+    "SearchUsersQueryHandler",
+)
 
 logger = logging.getLogger(__file__)
 
 
 class BaseUserQueryHandler:
     """Base class for user query handlers with common functionalities."""
+
+    @inject
+    def __init__(self, uow: UnitOfWork) -> None:
+        self.uow = uow
 
     def _to_dto(self, user: User) -> UserDTO:
         return UserDTO(
@@ -49,10 +61,6 @@ class BaseUserQueryHandler:
 class GetUserByIdQueryHandler(
     QueryHandler[GetUserByIdQuery, UserDTO], BaseUserQueryHandler
 ):
-    @inject
-    def __init__(self, uow: UnitOfWork) -> None:
-        self.uow = uow
-
     def handle(self, query: GetUserByIdQuery) -> UserDTO:
         try:
             with self.uow:
@@ -74,10 +82,6 @@ class GetUserByIdQueryHandler(
 class SearchUsersQueryHandler(
     QueryHandler[SearchUsersQuery, PaginatedResultDTO], BaseUserQueryHandler
 ):
-    @inject
-    def __init__(self, uow: UnitOfWork) -> None:
-        self.uow = uow
-
     def handle(self, query: SearchUsersQuery) -> PaginatedResultDTO:
         try:
             with self.uow:
