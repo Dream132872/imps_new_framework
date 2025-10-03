@@ -7,6 +7,8 @@ import multiprocessing
 import os
 from pathlib import Path
 
+from decouple import Csv, config
+
 # Base directory
 BASE_DIR = Path(__file__).parent
 
@@ -16,34 +18,33 @@ DJANGO_SETTINGS_MODULE = "config.settings"
 # Uvicorn configuration optimized for 2000+ concurrent users
 UVICORN_CONFIG = {
     "app": "config.asgi:application",
-    "host": os.getenv("UVICORN_HOST", "0.0.0.0"),
-    "port": int(os.getenv("UVICORN_PORT", "8000")),
+    "host": config("UVICORN_HOST", default="0.0.0.0"),
+    "port": config("UVICORN_PORT", default=8000, cast=int),
     # Optimized worker count: (2 * CPU cores) + 1 for I/O bound workloads
     # For 2000 concurrent users, recommend 12-16 workers on 4-8 core systems
-    "workers": int(os.getenv("UVICORN_WORKERS", "12")),
-    "log_level": os.getenv("UVICORN_LOG_LEVEL", "warning"),
-    "access_log": True,
-    "reload": os.getenv("UVICORN_RELOAD", "false").lower() == "true",
+    "workers": config("UVICORN_WORKERS", default=12, cast=int),
+    "log_level": config("UVICORN_LOG_LEVEL", default="warning"),
+    "access_log": config("UVICORN_ACCESS_LOG", default=True, cast=bool),
+    "reload": config("UVICORN_RELOAD", default="false"),
     "reload_dirs": (
         [str(BASE_DIR)]
-        if os.getenv("UVICORN_RELOAD", "false").lower() == "true"
+        if config("UVICORN_RELOAD", default="false").lower() == "true"
         else None
     ),
     "reload_excludes": ["*.pyc", "*.pyo", "*.pyd", "__pycache__", "*.so"],
-    "reload_includes": ["*.py"],
+    "reload_includes": ["*.py", "*.env"],
     # Optimized concurrency: ~200-300 per worker for 2000 total users
-    "limit_concurrency": int(os.getenv("UVICORN_LIMIT_CONCURRENCY", "300")),
+    "limit_concurrency": config("UVICORN_LIMIT_CONCURRENCY", default=300, cast=int),
     # Restart workers after processing many requests to prevent memory leaks
-    "limit_max_requests": int(os.getenv("UVICORN_LIMIT_MAX_REQUESTS", "5000")),
+    "limit_max_requests": config("UVICORN_LIMIT_MAX_REQUESTS", default=5000, cast=int),
     # Increased keep-alive for better connection reuse
-    "timeout_keep_alive": int(os.getenv("UVICORN_TIMEOUT_KEEP_ALIVE", "15")),
+    "timeout_keep_alive": config("UVICORN_TIMEOUT_KEEP_ALIVE", default=15, cast=int),
     # Graceful shutdown timeout for high-load scenarios
-    "timeout_graceful_shutdown": int(
-        os.getenv("UVICORN_TIMEOUT_GRACEFUL_SHUTDOWN", "30")
+    "timeout_graceful_shutdown": config(
+        "UVICORN_TIMEOUT_GRACEFUL_SHUTDOWN", default=30, cast=int
     ),
     # Additional performance optimizations
-    "backlog": int(os.getenv("UVICORN_BACKLOG", "2048")),  # Connection backlog
-    # "max_workers": int(os.getenv("UVICORN_MAX_WORKERS", "16")),  # Max worker limit
+    "backlog": config("UVICORN_BACKLOG", default=2048, cast=int),  # Connection backlog
 }
 
 # Static and Media file configuration
