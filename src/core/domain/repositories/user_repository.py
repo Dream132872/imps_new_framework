@@ -3,7 +3,6 @@ User domain repository interface.
 """
 
 from abc import abstractmethod
-from typing import Any
 
 from core.domain.entities import User
 from shared.domain.pagination import DomainPaginator

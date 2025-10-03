@@ -126,28 +126,50 @@ CHANNEL_LAYERS = {
     },
 }
 
-
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get("DATABASE_NAME", "imps_new_framework_db"),
-        "USER": os.environ.get("DATABASE_USER", "root"),
-        "PASSWORD": os.environ.get("DATABASE_PASSWORD", "admin"),
-        "HOST": os.environ.get("DATABASE_HOST", "localhost"),
-        "PORT": os.environ.get("DATABASE_PORT", "6432"),  # PgBouncer port
+        "NAME": config("DATABASE_NAME", default="imps_new_framework_db"),
+        "USER": config("DATABASE_USER", default="root"),
+        "PASSWORD": config("DATABASE_PASSWORD", default="admin"),
+        "HOST": config("DATABASE_HOST", default="127.0.0.1"),
+        "PORT": config("DATABASE_PORT", default="6432"),  # PgBouncer port
         "OPTIONS": {
             # PgBouncer-specific options for high concurrency
-            "application_name": "django_imps_framework",
-            "connect_timeout": 10,  # Reduced timeout for faster failure detection
+            "application_name": config(
+                "DATABASE_OPTIONS_APPLICATION_NAME", default="django_imps_framework"
+            ),
+            "connect_timeout": config(
+                "DATABASE_OPTIONS_CONNECTION_TIMEOUT", default=5, cast=int
+            ),
+            "keepalives": config("DATABASE_OPTIONS_KEEP_ALIVES", default=1, cast=int),
+            "keepalives_idle": config(
+                "DATABASE_OPTIONS_KEEP_ALIVES_IDLE", default=30, cast=int
+            ),
+            "keepalives_interval": config(
+                "DATABASE_OPTIONS_KEEP_ALIVES_INTERVAL", default=10, cast=int
+            ),
+            "keepalives_count": config(
+                "DATABASE_OPTIONS_KEEP_ALIVES_COUNT", default=5, cast=int
+            ),
         },
         # Connection pooling settings optimized for PgBouncer
-        "CONN_MAX_AGE": 0,  # Disable Django's connection pooling since PgBouncer handles it
-        "CONN_HEALTH_CHECKS": True,
+        # Keep a short-lived persistent connection to reduce ephemeral port churn on Windows
+        "CONN_MAX_AGE": config("DATABASE_CONN_MAX_AGE", default=60, cast=int),
+        "CONN_HEALTH_CHECKS": config(
+            "DATABASE_CONN_HEALTH_CHECKS", default=True, cast=bool
+        ),
+        # PgBouncer does not support server-side cursors reliably
+        "DISABLE_SERVER_SIDE_CURSORS": config(
+            "DATABASE_DISABLE_SERVER_SIDE_CURSORS", default=True, cast=bool
+        ),
         # Additional settings for high concurrency
-        "ATOMIC_REQUESTS": False,  # Disable for better performance with PgBouncer
+        "ATOMIC_REQUESTS": config(
+            "DATABASE_ATOMIC_REQUESTS", default=False, cast=bool
+        ),  # Disable for better performance with PgBouncer
     }
 }
 

@@ -14,7 +14,6 @@ from core.application.dtos.user_dtos import UserDTO
 from core.application.queries.user_queries import *
 from core.application.queries.user_queries import (
     GetUserByIdQuery,
-    GetUserByUserNameOrEmail,
     SearchUsersQuery,
 )
 from core.domain.entities import User

@@ -3,17 +3,18 @@ Authentication and authorization views.
 """
 
 from typing import Any
+
 from django.contrib.auth import authenticate, login
 from django.core.exceptions import PermissionDenied
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext_lazy as _
 from rest_framework.permissions import IsAuthenticated
 
 from core.infrastructure.forms.auth import LoginForm
 from shared.infrastructure import views
-from django.utils.http import url_has_allowed_host_and_scheme
 
 
 class LoginView(views.ViewTitleMixin, views.FormView):

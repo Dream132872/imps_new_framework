@@ -28,6 +28,8 @@ class Form(forms.Form):
     method = "post"
     # Form title
     form_title = ""
+    # form action url
+    form_action_url = ""
 
     def __init__(self, *args, **kwargs) -> None:  # type: ignore
         # Extract custom parameters
@@ -36,6 +38,9 @@ class Form(forms.Form):
         self.form_attrs = kwargs.pop("form_attrs", self.form_attrs)
 
         super().__init__(*args, **kwargs)
+
+        if self.get_form_action_url():
+            self.form_attrs["action"] = self.get_form_action_url()
 
         # Apply custom styling to all fields
         self._apply_custom_styling()
@@ -131,6 +136,9 @@ class Form(forms.Form):
         if self.is_valid():
             return self.cleaned_data
         return {}
+
+    def get_form_action_url(self) -> str:
+        return self.form_action_url
 
     def has_field_error(self, field_name: str) -> bool:
         """Check if a specific field has errors."""

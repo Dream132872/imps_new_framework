@@ -131,7 +131,7 @@ input.parsley-error:focus,
 select.parsley-error:focus,
 textarea.parsley-error:focus {
     border: 1px tomato solid;
-    box-shadow: var(--bs-box-shadow-inset), 0 0 0 0.25rem rgba(242, 55, 22, 0.3);
+    box-shadow: var(--bs-box-shadow-inset), 0 0 0 0.25rem rgba(255, 38, 0, 0.2);
 }
 
 ul.parsley-errors-list {
