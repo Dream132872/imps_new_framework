@@ -72,6 +72,9 @@ def admin_fixed_footer(
 def admin_header_messages_box(
     context: dict[str, Any], *args: Tuple, **kwargs: dict[str, Any]
 ) -> dict[Any, Any]:
+    """
+    Admin header messages box inclusion.
+    """
     return {"request": context.get("request", None)}
 
 
@@ -81,6 +84,9 @@ def admin_header_messages_box(
 def admin_header_notifications_box(
     context: dict[str, Any], *args: Tuple, **kwargs: dict[str, Any]
 ) -> dict[Any, Any]:
+    """
+    Admin header notifications box inclusion.
+    """
     return {"request": context.get("request", None)}
 
 
@@ -90,4 +96,7 @@ def admin_header_notifications_box(
 def admin_header_user_menu_box(
     context: dict[str, Any], *args: Tuple, **kwargs: dict[str, Any]
 ) -> dict[Any, Any]:
+    """
+    Admin header user menu box inclusion.
+    """
     return {"request": context.get("request", None)}
