@@ -22,3 +22,7 @@ class User(AbstractUser, BaseModel):
         db_table = "users"
         verbose_name = _("User")
         verbose_name_plural = _("Users")
+
+    @property
+    def display_name(self) -> str:
+        return self.get_full_name() or self.username

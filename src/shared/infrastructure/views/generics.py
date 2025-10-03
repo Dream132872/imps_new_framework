@@ -10,6 +10,7 @@ __all__ = (
     "TemplateView",
     "FormView",
     "UpdateView",
+    "RedirectView",
 )
 
 
@@ -34,4 +35,10 @@ class FormView(django_generics.FormView):
 class UpdateView(django_generics.UpdateView):
     """
     Custom implementation of UpdateView.
+    """
+
+
+class RedirectView(django_generics.RedirectView):
+    """
+    Custom implementation of RedirectView
     """

@@ -4,7 +4,7 @@ Authentication and authorization views.
 
 from typing import Any
 
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, alogout
 from django.core.exceptions import PermissionDenied
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect
@@ -57,3 +57,12 @@ class LoginView(views.ViewTitleMixin, views.FormView):
             form.add_error(None, str(e))
 
         return self.form_invalid(form)
+
+
+class LogoutView(views.View):
+    async def get(self, request: HttpRequest):
+        user = await request.auser()
+        if user.is_authenticated:
+            await alogout(request)
+
+        return redirect(reverse("core:auth:login"))
