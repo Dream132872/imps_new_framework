@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-30 16:16+0330\n"
-"PO-Revision-Date: 2025-09-30 16:18+0000\n"
-"Last-Translator:   <>\n"
+"POT-Creation-Date: 2025-10-04 02:12+0330\n"
+"PO-Revision-Date: 2025-10-04 02:14+0000\n"
+"Last-Translator:   <admin@admin.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: fa\n"
 "MIME-Version: 1.0\n"
@@ -18,19 +18,18 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Translated-Using: django-rosetta 0.10.2\n"
 
-#: .\src\core\application\query_handlers\user_query_handlers.py:64
+#: .\src\core\application\query_handlers\user_query_handlers.py:71
 #, python-brace-format
 msgid "User with ID {user_id} not found"
 msgstr "کاربری با آی دی {user_id} یافت نشد"
 
-#: .\src\core\application\query_handlers\user_query_handlers.py:68
+#: .\src\core\application\query_handlers\user_query_handlers.py:75
 #, python-brace-format
 msgid "Failed to get user with ID '{user_id}': {message}"
 msgstr "دریافت کاربر با آی دی {user_id} ناموفق بود : {message}"
 
-#: .\src\core\application\query_handlers\user_query_handlers.py:99
+#: .\src\core\application\query_handlers\user_query_handlers.py:102
 #, python-brace-format
-#| msgid "Failed to get user with ID '{user_id}': {message}"
 msgid "Failed to get search users: {message}"
 msgstr "دریافت کاربر با آی دی {user_id} ناموفق بود : {message}"
 
@@ -43,12 +42,18 @@ msgstr "هسته"
 msgid "Dashboard"
 msgstr "پیشخوان"
 
-#: .\src\core\infrastructure\forms\auth.py:16
-msgid "Username or email"
-msgstr "نام کاربری یا آدرس ایمیل"
+#: .\src\core\infrastructure\forms\__init__.py:22
+msgid "This value should be equal to text_input"
+msgstr "این مقدار باید برابر با مقدار text_input باشد"
 
-#: .\src\core\infrastructure\forms\auth.py:17
-#: .\src\core\infrastructure\templates\core\auth\login.html:27
+#: .\src\core\infrastructure\forms\auth.py:19
+#: .\src\core\infrastructure\forms\auth.py:21
+#| msgid "User"
+msgid "Username"
+msgstr "نام کاربری"
+
+#: .\src\core\infrastructure\forms\auth.py:30
+#: .\src\core\infrastructure\forms\auth.py:32
 msgid "Password"
 msgstr "کلمه عبور"
 
@@ -116,7 +121,18 @@ msgstr "کاربران"
 msgid "Management of the Iranian Social and Economic Observatory (RASA)"
 msgstr "مدیریت رصدخانه اجتماعی و اقتصادی ایران ( رصا )"
 
-#: .\src\core\infrastructure\templates\core\auth\login.html:32
-#: .\src\core\infrastructure\views\auth.py:14
+#: .\src\core\infrastructure\templates\core\auth\login.html:56
+#: .\src\core\infrastructure\views\auth.py:21
 msgid "Login"
 msgstr "ورود"
+
+#: .\src\core\infrastructure\views\auth.py:53
+msgid "You'r account is not activated"
+msgstr "حساب کاربری شما فعال نمی باشد"
+
+#: .\src\core\infrastructure\views\auth.py:55
+msgid "There is no user with these credentials"
+msgstr "کاربری با اطلاعات وارد شده یافت نشد"
+
+#~ msgid "Username or email"
+#~ msgstr "نام کاربری یا آدرس ایمیل"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-30 16:16+0330\n"
+"POT-Creation-Date: 2025-10-04 02:12+0330\n"
 "PO-Revision-Date: 2025-09-30 16:19+0000\n"
 "Last-Translator:   <>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -41,7 +41,7 @@ msgstr "تاریخ ایجاد"
 msgid "Updated at"
 msgstr "تاریخ ویرایش"
 
-#: .\src\shared\infrastructure\templates\shared\admin\layout\layout.html:36
+#: .\src\shared\infrastructure\templates\shared\admin\layout\layout.html:35
 #: .\src\shared\infrastructure\templates\shared\templatetags\layout\admin_site_header.html:13
 msgid "Home"
 msgstr "خانه"
