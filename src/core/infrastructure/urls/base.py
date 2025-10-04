@@ -10,6 +10,7 @@ urlpatterns = [
             (
                 [
                     path("", base.HomeView.as_view(), name="home"),
+                    path("test/", base.TestView.as_view(), name="test"),
                 ],
                 "base",
             ),

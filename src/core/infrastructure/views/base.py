@@ -42,6 +42,11 @@ class HomeView(views.AdminGenericMixin, views.TemplateView):
         return context
 
 
+class TestView(views.AdminGenericMixin, views.TemplateView):
+    template_name = "core/base/test.html"
+    permission_required = []
+
+
 # class HomeView(CQRSPaginatedViewMixin, AdminGenericMixin, TemplateView):
 #     """Admin dashboard home view"""
 
