@@ -1,0 +1,171 @@
+{% extends 'shared/admin/layout/layout.html' %}
+{% load i18n %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">
+                        {% if is_popup %}
+                            <i class="fas fa-external-link-alt"></i> Popup Mode
+                        {% else %}
+                            <i class="fas fa-desktop"></i> Normal Mode
+                        {% endif %}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h5><i class="fas fa-info-circle"></i> Page Detection Status</h5>
+                        <p><strong>Mode:</strong>
+                            {% if is_popup %}
+                                <span class="badge badge-success">Popup Window</span>
+                            {% else %}
+                                <span class="badge badge-primary">Normal Window</span>
+                            {% endif %}
+                        </p>
+                        <p><strong>URL Parameter:</strong> popup_page={{ request.GET.popup_page|default:"not set" }}</p>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6>Server-Side Detection</h6>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-unstyled">
+                                        <li><strong>is_popup:</strong> {{ is_popup|yesno:"True,False" }}</li>
+                                        <li><strong>popup_mode:</strong> {{ popup_mode|yesno:"True,False" }}</li>
+                                        <li><strong>Request Method:</strong> {{ request.method }}</li>
+                                        <li><strong>Full URL:</strong> {{ request.get_full_path }}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6>Client-Side Detection</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div id="client-detection">
+                                        <p><em>Loading client-side detection...</em></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if is_popup %}
+                        <div class="alert alert-warning">
+                            <h5><i class="fas fa-exclamation-triangle"></i> Popup Mode Active</h5>
+                            <p>This page is being displayed in popup mode. You can use the PopupDetectionMixin to customize the content based on popup status.</p>
+                        </div>
+
+                        <div class="text-center">
+                            <button class="btn btn-danger" onclick="window.close()">
+                                <i class="fas fa-times"></i> Close Popup
+                            </button>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-success">
+                            <h5><i class="fas fa-check-circle"></i> Normal Mode Active</h5>
+                            <p>This page is being displayed in normal mode with the full admin layout.</p>
+                        </div>
+
+                        <div class="text-center">
+                            <button class="btn btn-primary" onclick="openInPopup()">
+                                <i class="fas fa-external-link-alt"></i> Open in Popup
+                            </button>
+                        </div>
+                    {% endif %}
+
+                    <hr>
+
+                    <h5>Test Content</h5>
+                    <p>This is the main content area. You can use the PopupDetectionMixin to customize the content based on whether the page is opened in a popup or not.</p>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6>Feature 1</h6>
+                                    <p>Some content here...</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6>Feature 2</h6>
+                                    <p>Some content here...</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6>Feature 3</h6>
+                                    <p>Some content here...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block footer_ref %}
+    <script>
+        // Client-side popup detection
+        function updateClientDetection() {
+            const detectionDiv = document.getElementById('client-detection');
+            if (!detectionDiv) return;
+
+            const hasOpener = window.opener !== null;
+            const hasParent = window.parent !== window;
+            const isNewWindow = hasOpener && window.parent === window;
+            const windowName = window.name || 'unnamed';
+            const referrer = document.referrer;
+
+            detectionDiv.innerHTML = `
+                <ul class="list-unstyled">
+                    <li><strong>window.opener:</strong> ${hasOpener ? 'Yes' : 'No'}</li>
+                    <li><strong>window.parent !== window:</strong> ${hasParent ? 'Yes' : 'No'}</li>
+                    <li><strong>Is New Window:</strong> ${isNewWindow ? 'Yes' : 'No'}</li>
+                    <li><strong>Window Name:</strong> ${windowName}</li>
+                    <li><strong>Referrer:</strong> ${referrer || 'None'}</li>
+                    <li><strong>Window Size:</strong> ${window.innerWidth}x${window.innerHeight}</li>
+                </ul>
+            `;
+        }
+
+        // Open current page in popup
+        function openInPopup() {
+            const currentUrl = window.location.href;
+
+            // Create a button element with popup attributes
+            const button = document.createElement('button');
+            button.setAttribute('custom-popup-page', '');
+            button.setAttribute('custom-popup-page-url', currentUrl);
+            button.setAttribute('custom-popup-page-width', '1000');
+            button.setAttribute('custom-popup-page-height', '700');
+            button.setAttribute('custom-popup-page-layout', 'empty');
+            button.style.display = 'none';
+
+            // Add to body and trigger click
+            document.body.appendChild(button);
+            button.click();
+            document.body.removeChild(button);
+        }
+
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            updateClientDetection();
+        });
+    </script>
+{% endblock %}
