@@ -25,13 +25,14 @@ from shared.application.dtos import PaginatedResultDTO
 from shared.domain.repositories import UnitOfWork
 from shared.infrastructure.ioc import inject_dependencies
 from shared.infrastructure import views
+from shared.infrastructure.views.mixins import PopupDetectionMixin
 
 logger = logging.getLogger(__name__)
 
 User = get_user_model()
 
 
-class HomeView(views.AdminGenericMixin, views.TemplateView):
+class HomeView(PopupDetectionMixin, views.AdminGenericMixin, views.TemplateView):
     permission_required = []
     page_title = _("Dashboard")
     template_name = "core/base/home.html"
@@ -42,7 +43,7 @@ class HomeView(views.AdminGenericMixin, views.TemplateView):
         return context
 
 
-class TestView(views.AdminGenericMixin, views.TemplateView):
+class TestView(PopupDetectionMixin, views.AdminGenericMixin, views.TemplateView):
     template_name = "core/base/test.html"
     permission_required = []
 

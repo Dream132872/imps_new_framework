@@ -22,13 +22,11 @@
  * - custom-popup-page-target: Popup window target name (default: 'custom-popup')
  * - custom-popup-page-layout: Layout type - 'empty' or 'admin' (default: 'empty')
  * - custom-popup-page-center: Center popup on screen (default: true)
- * - custom-popup-page-toolbar: Show toolbar (default: false)
- * - custom-popup-page-menubar: Show menubar (default: false)
  * - custom-popup-page-location: Show location bar (default: false)
  */
 
-(function($) {
-    'use strict';
+(function ($) {
+    "use strict";
 
     // Popup manager configuration
     const PopupManager = {
@@ -36,45 +34,45 @@
         defaults: {
             width: 1000,
             height: 700,
-            target: 'custom-popup',
-            layout: 'empty',
+            target: "custom-popup",
+            layout: "empty",
             center: true,
-            toolbar: false,
-            menubar: false,
             location: false,
-            dataKey: 'popupData',
-            handlerKey: 'closeHandler'
+            dataKey: "popupData",
+            handlerKey: "closeHandler",
+            showLoading: true,
         },
+
 
         // Active popup windows
         activePopups: new Map(),
 
         // Storage key for popup data
-        storageKey: 'customPopupWindow',
+        storageKey: "customPopupWindow",
 
         /**
          * Initialize the popup manager
          */
-        init: function() {
+        init: function () {
             this.bindEvents();
             this.setupStorageListener();
-            console.log('Custom Popup Manager initialized');
+            console.log("Custom Popup Manager initialized");
         },
 
         /**
          * Bind click events to elements with custom-popup-page attribute
          */
-        bindEvents: function() {
+        bindEvents: function () {
             const self = this;
 
             // Use event delegation for dynamic content
-            $(document).on('click', '[custom-popup-page]', function(e) {
+            $(document).on("click", "[custom-popup-page]", function (e) {
                 e.preventDefault();
                 self.openPopup($(this));
             });
 
             // Handle popup close events
-            $(window).on('beforeunload', function() {
+            $(window).on("beforeunload", function () {
                 self.cleanup();
             });
         },
@@ -82,19 +80,22 @@
         /**
          * Setup storage listener for popup communication
          */
-        setupStorageListener: function() {
+        setupStorageListener: function () {
             const self = this;
 
             // Listen for storage changes (popup communication)
-            $(window).on('storage', function(e) {
+            $(window).on("storage", function (e) {
                 if (e.originalEvent.key === self.storageKey) {
                     self.handlePopupMessage(e.originalEvent);
                 }
             });
 
             // Listen for popup close messages
-            $(window).on('message', function(e) {
-                if (e.originalEvent.data && e.originalEvent.data.type === 'popup-close') {
+            $(window).on("message", function (e) {
+                if (
+                    e.originalEvent.data &&
+                    e.originalEvent.data.type === "popup-close"
+                ) {
                     self.handlePopupClose(e.originalEvent.data);
                 }
             });
@@ -104,7 +105,7 @@
          * Open a popup window
          * @param {jQuery} $element - The element that triggered the popup
          */
-        openPopup: function($element) {
+        openPopup: function ($element) {
             try {
                 const config = this.getPopupConfig($element);
 
@@ -112,6 +113,8 @@
                 if (!this.validateConfig(config)) {
                     return;
                 }
+
+                // Loading disabled - using PopupDetectionMixin for server-side handling
 
                 // Prepare popup URL
                 const popupUrl = this.preparePopupUrl(config);
@@ -129,18 +132,22 @@
                 this.storePopupData(popupData, config.handler);
 
                 // Debug: Log the parameters being used
-                console.log('Popup parameters:', params);
-                console.log('Popup config:', config);
+                console.log("Popup parameters:", params);
+                console.log("Popup config:", config);
 
                 // Open popup window
-                const popupWindow = this.openWindow(popupUrl, config.target, params);
+                const popupWindow = this.openWindow(
+                    popupUrl,
+                    config.target,
+                    params
+                );
 
                 if (popupWindow) {
                     // Store popup reference
                     this.activePopups.set(config.target, {
                         window: popupWindow,
                         config: config,
-                        element: $element
+                        element: $element,
                     });
 
                     // Focus popup
@@ -149,14 +156,17 @@
                     // Setup popup monitoring
                     this.monitorPopup(config.target, popupWindow);
 
-                    console.log('Popup opened:', config.target, popupUrl);
-                } else {
-                    this.showError('Failed to open popup. Please check your popup blocker settings.');
-                }
+                    // Loading handling removed - using PopupDetectionMixin
 
+                    console.log("Popup opened:", config.target, popupUrl);
+                } else {
+                    this.showError(
+                        "Failed to open popup. Please check your popup blocker settings."
+                    );
+                }
             } catch (error) {
-                console.error('Error opening popup:', error);
-                this.showError('An error occurred while opening the popup.');
+                console.error("Error opening popup:", error);
+                this.showError("An error occurred while opening the popup.");
             }
         },
 
@@ -165,33 +175,40 @@
          * @param {jQuery} $element - The element
          * @returns {Object} Configuration object
          */
-        getPopupConfig: function($element) {
+        getPopupConfig: function ($element) {
             const config = Object.assign({}, this.defaults);
 
             // Required attributes
-            config.url = $element.attr('custom-popup-page-url');
+            config.url = $element.attr("custom-popup-page-url");
 
             // Optional attributes with validation
-            const width = $element.attr('custom-popup-page-width');
+            const width = $element.attr("custom-popup-page-width");
             if (width && !isNaN(width) && parseInt(width) > 0) {
                 config.width = parseInt(width);
             }
 
-            const height = $element.attr('custom-popup-page-height');
+            const height = $element.attr("custom-popup-page-height");
             if (height && !isNaN(height) && parseInt(height) > 0) {
                 config.height = parseInt(height);
             }
 
-            config.target = $element.attr('custom-popup-page-target') || config.target;
-            config.layout = $element.attr('custom-popup-page-layout') || config.layout;
-            config.dataKey = $element.attr('custom-popup-page-data') || config.dataKey;
-            config.handler = $element.attr('custom-popup-page-handler');
+            config.target =
+                $element.attr("custom-popup-page-target") || config.target;
+            config.layout =
+                $element.attr("custom-popup-page-layout") || config.layout;
+            config.dataKey =
+                $element.attr("custom-popup-page-data") || config.dataKey;
+            config.handler = $element.attr("custom-popup-page-handler");
 
             // Boolean attributes
-            config.center = this.parseBoolean($element.attr('custom-popup-page-center'), config.center);
-            config.toolbar = this.parseBoolean($element.attr('custom-popup-page-toolbar'), config.toolbar);
-            config.menubar = this.parseBoolean($element.attr('custom-popup-page-menubar'), config.menubar);
-            config.location = this.parseBoolean($element.attr('custom-popup-page-location'), config.location);
+            config.center = this.parseBoolean(
+                $element.attr("custom-popup-page-center"),
+                config.center
+            );
+            config.location = this.parseBoolean(
+                $element.attr("custom-popup-page-location"),
+                config.location
+            );
 
             return config;
         },
@@ -202,11 +219,11 @@
          * @param {boolean} defaultValue - Default value
          * @returns {boolean}
          */
-        parseBoolean: function(value, defaultValue) {
+        parseBoolean: function (value, defaultValue) {
             if (value === null || value === undefined) {
                 return defaultValue;
             }
-            return value === 'true' || value === '1' || value === 'yes';
+            return value === "true" || value === "1" || value === "yes";
         },
 
         /**
@@ -214,23 +231,29 @@
          * @param {Object} config - Configuration object
          * @returns {boolean} True if valid
          */
-        validateConfig: function(config) {
+        validateConfig: function (config) {
             if (!config.url) {
-                this.showError('Popup URL is required. Please set the custom-popup-page-url attribute.');
+                this.showError(
+                    "Popup URL is required. Please set the custom-popup-page-url attribute."
+                );
                 return false;
             }
 
             if (config.width < 100 || config.width > 4000) {
-                this.showError('Popup width must be between 100 and 4000 pixels.');
+                this.showError(
+                    "Popup width must be between 100 and 4000 pixels."
+                );
                 return false;
             }
 
             if (config.height < 100 || config.height > 4000) {
-                this.showError('Popup height must be between 100 and 4000 pixels.');
+                this.showError(
+                    "Popup height must be between 100 and 4000 pixels."
+                );
                 return false;
             }
 
-            if (!['empty', 'admin'].includes(config.layout)) {
+            if (!["empty", "admin"].includes(config.layout)) {
                 this.showError('Invalid layout. Must be "empty" or "admin".');
                 return false;
             }
@@ -243,15 +266,37 @@
          * @param {Object} config - Configuration object
          * @returns {string} Prepared URL
          */
-        preparePopupUrl: function(config) {
+        preparePopupUrl: function (config) {
             let url = config.url;
-            const separator = url.includes('?') ? '&' : '?';
 
-            if (config.layout === 'empty') {
-                url += separator + 'popup_page=True';
+            // Add popup_page parameter to indicate this is a popup request
+            try {
+                const urlObj = new URL(url, window.location.origin);
+                urlObj.searchParams.set("popup_page", "1");
+                return urlObj.toString();
+            } catch (error) {
+                // Fallback for relative URLs or invalid URLs
+                const separator = url.includes("?") ? "&" : "?";
+                return url + separator + "popup_page=1";
             }
+        },
 
-            return url;
+        /**
+         * Remove popup_page parameter from URL
+         * @param {string} url - URL to clean
+         * @returns {string} Cleaned URL
+         */
+        removePopupPageParam: function (url) {
+            try {
+                const urlObj = new URL(url, window.location.origin);
+                urlObj.searchParams.delete("popup_page");
+                return urlObj.toString();
+            } catch (error) {
+                // Fallback for relative URLs or invalid URLs
+                return url
+                    .replace(/[?&]popup_page=True/gi, "")
+                    .replace(/[?&]popup_page=true/gi, "");
+            }
         },
 
         /**
@@ -259,7 +304,7 @@
          * @param {Object} config - Configuration object
          * @returns {Object} Position object with x, y coordinates
          */
-        calculatePosition: function(config) {
+        calculatePosition: function (config) {
             if (!config.center) {
                 return { x: 0, y: 0 };
             }
@@ -281,7 +326,7 @@
          * @param {Object} position - Position object
          * @returns {string} Window parameters string
          */
-        buildPopupParams: function(config, position) {
+        buildPopupParams: function (config, position) {
             const params = [];
 
             // Basic dimensions and position
@@ -292,34 +337,23 @@
 
             // Window features
             if (config.location) {
-                params.push('location=yes');
+                params.push("location=yes");
             } else {
-                params.push('location=no');
-            }
-
-            if (config.toolbar) {
-                params.push('toolbar=yes');
-                params.push('directories=yes');
-            } else {
-                params.push('toolbar=no');
-                params.push('directories=no');
-            }
-
-            if (config.menubar) {
-                params.push('menubar=yes');
-            } else {
-                params.push('menubar=no');
+                params.push("location=no");
             }
 
             // Additional parameters for better control
-            params.push('scrollbars=no');
-            params.push('resizable=no');
-            params.push('status=no');
-            params.push('copyhistory=no');
-            params.push('noopener=no');
-            params.push('noreferrer=no');
+            params.push("toolbar=no");
+            params.push("menubar=no");
+            params.push("directories=no");
+            params.push("scrollbars=no");
+            params.push("resizable=no");
+            params.push("status=no");
+            params.push("copyhistory=no");
+            params.push("noopener=no");
+            params.push("noreferrer=no");
 
-            return params.join(',');
+            return params.join(",");
         },
 
         /**
@@ -327,7 +361,7 @@
          * @param {Object} config - Configuration object
          * @returns {Object} Data object
          */
-        preparePopupData: function(config) {
+        preparePopupData: function (config) {
             let data = {};
 
             if (config.dataKey && window[config.dataKey]) {
@@ -342,17 +376,20 @@
          * @param {Object} data - Data to store
          * @param {string} handler - Handler function name
          */
-        storePopupData: function(data, handler) {
+        storePopupData: function (data, handler) {
             try {
                 const popupData = {
                     popupData: data,
                     handler: handler,
-                    timestamp: Date.now()
+                    timestamp: Date.now(),
                 };
 
-                localStorage.setItem(this.storageKey, JSON.stringify(popupData));
+                localStorage.setItem(
+                    this.storageKey,
+                    JSON.stringify(popupData)
+                );
             } catch (error) {
-                console.error('Error storing popup data:', error);
+                console.error("Error storing popup data:", error);
             }
         },
 
@@ -363,11 +400,11 @@
          * @param {string} params - Window parameters
          * @returns {Window|null} Popup window or null
          */
-        openWindow: function(url, target, params) {
+        openWindow: function (url, target, params) {
             try {
                 return window.open(url, target, params);
             } catch (error) {
-                console.error('Error opening window:', error);
+                console.error("Error opening window:", error);
                 return null;
             }
         },
@@ -377,9 +414,9 @@
          * @param {string} target - Window target name
          * @param {Window} popupWindow - Popup window reference
          */
-        monitorPopup: function(target, popupWindow) {
+        monitorPopup: function (target, popupWindow) {
             const self = this;
-            const checkClosed = setInterval(function() {
+            const checkClosed = setInterval(function () {
                 if (popupWindow.closed) {
                     clearInterval(checkClosed);
                     self.handlePopupClose({ target: target });
@@ -391,17 +428,23 @@
          * Handle popup close event
          * @param {Object} data - Close event data
          */
-        handlePopupClose: function(data) {
+        handlePopupClose: function (data) {
             const target = data.target;
             const popupInfo = this.activePopups.get(target);
 
             if (popupInfo) {
                 // Execute close handler if specified
-                if (popupInfo.config.handler && typeof window[popupInfo.config.handler] === 'function') {
+                if (
+                    popupInfo.config.handler &&
+                    typeof window[popupInfo.config.handler] === "function"
+                ) {
                     try {
-                        window[popupInfo.config.handler](popupInfo.config, popupInfo.element);
+                        window[popupInfo.config.handler](
+                            popupInfo.config,
+                            popupInfo.element
+                        );
                     } catch (error) {
-                        console.error('Error executing close handler:', error);
+                        console.error("Error executing close handler:", error);
                     }
                 }
 
@@ -411,7 +454,7 @@
                 // Clean up storage
                 this.cleanupStorage();
 
-                console.log('Popup closed:', target);
+                console.log("Popup closed:", target);
             }
         },
 
@@ -419,21 +462,21 @@
          * Handle popup message
          * @param {StorageEvent} event - Storage event
          */
-        handlePopupMessage: function(event) {
+        handlePopupMessage: function (event) {
             try {
                 const data = JSON.parse(event.newValue);
-                if (data && data.type === 'popup-close') {
+                if (data && data.type === "popup-close") {
                     this.handlePopupClose(data);
                 }
             } catch (error) {
-                console.error('Error handling popup message:', error);
+                console.error("Error handling popup message:", error);
             }
         },
 
         /**
          * Clean up popup data
          */
-        cleanup: function() {
+        cleanup: function () {
             this.activePopups.clear();
             this.cleanupStorage();
         },
@@ -441,11 +484,11 @@
         /**
          * Clean up localStorage
          */
-        cleanupStorage: function() {
+        cleanupStorage: function () {
             try {
                 localStorage.removeItem(this.storageKey);
             } catch (error) {
-                console.error('Error cleaning up storage:', error);
+                console.error("Error cleaning up storage:", error);
             }
         },
 
@@ -453,12 +496,12 @@
          * Show error message
          * @param {string} message - Error message
          */
-        showError: function(message) {
-            console.error('Popup Manager Error:', message);
+        showError: function (message) {
+            console.error("Popup Manager Error:", message);
 
             // You can customize this to show user-friendly error messages
-            if (typeof alert !== 'undefined') {
-                alert('Popup Error: ' + message);
+            if (typeof alert !== "undefined") {
+                alert("Popup Error: " + message);
             }
         },
 
@@ -466,7 +509,7 @@
          * Get active popup count
          * @returns {number} Number of active popups
          */
-        getActivePopupCount: function() {
+        getActivePopupCount: function () {
             return this.activePopups.size;
         },
 
@@ -475,7 +518,7 @@
          * @param {string} target - Popup target name
          * @returns {boolean} True if closed successfully
          */
-        closePopup: function(target) {
+        closePopup: function (target) {
             const popupInfo = this.activePopups.get(target);
             if (popupInfo && popupInfo.window) {
                 popupInfo.window.close();
@@ -487,22 +530,22 @@
         /**
          * Close all popups
          */
-        closeAllPopups: function() {
+        closeAllPopups: function () {
             this.activePopups.forEach((popupInfo, target) => {
                 if (popupInfo.window) {
                     popupInfo.window.close();
                 }
             });
             this.cleanup();
-        }
+        },
+
     };
 
     // Initialize when document is ready
-    $(document).ready(function() {
+    $(document).ready(function () {
         PopupManager.init();
     });
 
     // Expose to global scope for external access
     window.CustomPopupManager = PopupManager;
-
 })(jQuery);

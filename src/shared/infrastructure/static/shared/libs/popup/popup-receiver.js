@@ -38,6 +38,7 @@
         // Initialization flag
         initialized: false,
 
+
         /**
          * Initialize the popup receiver
          */
@@ -256,6 +257,93 @@
         },
 
         /**
+         * Get detailed popup detection information
+         * @returns {Object} Popup detection details
+         */
+        getPopupInfo: function() {
+            const isPopup = this.isPopupMode();
+            const hasOpener = window.opener !== null;
+            const hasParent = window.parent !== window;
+            const isIframe = window.parent !== window && !window.opener;
+            const isNewWindow = window.opener !== null;
+
+            return {
+                isPopup: isPopup,
+                hasOpener: hasOpener,
+                hasParent: hasParent,
+                isIframe: isIframe,
+                isNewWindow: isNewWindow,
+                windowName: window.name || 'unnamed',
+                referrer: document.referrer,
+                openerUrl: hasOpener ? (window.opener.location ? window.opener.location.href : 'unknown') : null,
+                parentUrl: hasParent ? (window.parent.location ? window.parent.location.href : 'unknown') : null
+            };
+        },
+
+        /**
+         * Check if opened via custom popup manager
+         * @returns {boolean} True if opened via custom popup manager
+         */
+        isCustomPopup: function() {
+            // Check if we have popup data in storage (primary method)
+            const hasPopupData = localStorage.getItem(this.storageKey) !== null;
+
+            // Check window name pattern
+            const hasCustomTarget = window.name && window.name.startsWith('custom-popup');
+
+            // Check if opened via window.open with specific parameters
+            const hasOpener = window.opener !== null;
+            const isNewWindow = hasOpener && window.parent === window;
+
+            // Check for popup-specific window features (if available)
+            const hasPopupFeatures = this.checkPopupFeatures();
+
+            return hasPopupData || hasCustomTarget || (hasOpener && isNewWindow && hasPopupFeatures);
+        },
+
+        /**
+         * Check for popup-specific window features
+         * @returns {boolean} True if window has popup features
+         */
+        checkPopupFeatures: function() {
+            try {
+                // Check if window has popup-like characteristics
+                const hasSmallSize = window.innerWidth < 1200 || window.innerHeight < 800;
+                const hasNoHistory = window.history.length <= 1;
+                const hasOpener = window.opener !== null;
+
+                // Check if window was opened with specific features
+                const isResizable = window.outerWidth !== window.innerWidth || window.outerHeight !== window.innerHeight;
+                const hasScrollbars = window.innerWidth < document.body.scrollWidth || window.innerHeight < document.body.scrollHeight;
+
+                return hasOpener && (hasSmallSize || hasNoHistory);
+            } catch (error) {
+                return false;
+            }
+        },
+
+        /**
+         * Get popup layout configuration
+         * @returns {Object} Layout configuration
+         */
+        getLayoutConfig: function() {
+            const popupInfo = this.getPopupInfo();
+            const isCustomPopup = this.isCustomPopup();
+
+            return {
+                isPopup: popupInfo.isPopup,
+                isCustomPopup: isCustomPopup,
+                layout: isCustomPopup ? 'popup' : 'normal',
+                showHeader: !isCustomPopup,
+                showFooter: !isCustomPopup,
+                showSidebar: !isCustomPopup,
+                fullWidth: isCustomPopup,
+                compactMode: isCustomPopup,
+                windowInfo: popupInfo
+            };
+        },
+
+        /**
          * Get popup dimensions
          * @returns {Object} Object with width and height
          */
@@ -309,7 +397,8 @@
             } catch (error) {
                 console.error('Error centering popup:', error);
             }
-        }
+        },
+
     };
 
     // Initialize when document is ready

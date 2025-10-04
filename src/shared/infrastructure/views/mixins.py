@@ -69,6 +69,22 @@ class CQRSPaginatedViewMixin(ContextMixin):
         return context
 
 
+class PopupDetectionMixin(ContextMixin):
+    """
+    Mixin to detect if the current request is from a popup window.
+    """
+
+    def is_popup_request(self) -> bool:
+        """Check if the current request is from a popup window."""
+        return self.request.GET.get('popup_page') == '1'
+
+    def get_context_data(self, **kwargs: Dict[str, Any]) -> Dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context['is_popup'] = self.is_popup_request()
+        context['popup_mode'] = self.is_popup_request()
+        return context
+
+
 class AdminGenericMixin(ViewTitleMixin, LoginRequiredMixin, PermissionRequiredMixin):
     """
     This class contains basic mixins that every admin view should have like:
