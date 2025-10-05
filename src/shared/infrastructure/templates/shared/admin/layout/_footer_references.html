@@ -1,5 +1,8 @@
 {% load static i18n %}
 <!-- begin::Script -->
+<!-- begin::Jquery -->
+<script src="{% static 'shared/libs/jquery/jquery.min.js' %}"></script>
+<!-- end::Jquery -->
 <!-- begin::Third Party Plugin(OverlayScrollbars) -->
 <script src="{% static 'shared/admin/assets/overlay-scrollbar/overlayscrollbars.browser.es6.min.js' %}"></script>
 <!-- end::Third Party Plugin(OverlayScrollbars) -->
@@ -9,9 +12,6 @@
 <!-- begin::Required Plugin(Bootstrap 5) -->
 <script src="{% static 'shared/admin/assets/bootstrap/bootstrap.min.js' %}"></script>
 <!-- end::Required Plugin(Bootstrap 5) -->
-<!-- begin::Jquery -->
-<script src="{% static 'shared/libs/jquery/jquery.min.js' %}"></script>
-<!-- end::Jquery -->
 <!-- begin::Required Plugin(AdminLTE) -->
 <script src="{% static 'shared/admin/js/adminlte.js' %}"></script>
 <!-- end::Required Plugin(AdminLTE) -->
@@ -24,7 +24,6 @@
 <!-- end::Parsley -->
 <!-- begin::Custom js -->
 <script src="{% static 'shared/libs/popup/popup-manager.js' %}"></script>
-<script src="{% static 'shared/libs/popup/popup-receiver.js' %}"></script>
 <script src="{% static 'shared/admin/js/custom.js' %}"></script>
 <!-- end::Custom js -->
 <script>

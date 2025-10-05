@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Popup System Demo</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div class="container">
+      <h1>Base Page</h1>
+      <section class="card">
+        <h2>Open Popup with JSON from attribute</h2>
+        <button class="btn"
+                data-popup-open="popup.html"
+                data-popup-name="custom-popup"
+                data-popup-features="width=1000,height=700"
+                data-popup-center
+                data-popup-data='{"from":"base","message":"Hello from Base via attribute"}'>
+          Open Popup (attribute data)
+        </button>
+      </section>
+      <section class="card">
+        <h2>Open Popup with data from form</h2>
+        <form id="baseForm" class="stack">
+          <label>
+            Name
+            <input name="name" placeholder="Ada" value="Ada" />
+          </label>
+          <label>
+            Note
+            <input name="note" placeholder="Write a note" value="Base form note" />
+          </label>
+        </form>
+        <button class="btn"
+                data-popup-open="popup.html"
+                data-popup-features="width=520,height=520"
+                data-popup-center
+                data-popup-data-from="#baseForm">Open Popup (form data)</button>
+      </section>
+      <section class="card">
+        <h2>Reply Listener</h2>
+        <p>Replies from any popup will appear below:</p>
+        <pre id="replyLog" class="log"></pre>
+      </section>
+    </div>
+    <script src="popup-manager.js"></script>
+    <script>
+    $(function(){
+      // Listen for replies coming back from popups
+      window.PopupManager_onReply = function(payload){
+        const log = document.getElementById('replyLog');
+        const time = new Date().toLocaleTimeString();
+        log.textContent += `[#${time}] Reply: ${JSON.stringify(payload)}\n`;
+      };
+    });
+    </script>
+  </body>
+</html>

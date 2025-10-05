@@ -1,74 +1,139 @@
-# Popup Detection System
+### Popup System (jQuery + data-attributes)
 
-This system provides server-side popup detection using URL parameters, allowing you to customize content for popup windows without relying on client-side JavaScript or complex layout management.
+Attribute-driven popup windows with data passing, reply routing, nested popups, persistent per-popup storage, centering, and named windows.
 
-## How It Works
+### Files
+- `popup-manager.js`: Core logic (auto-inits on DOM ready)
+- `index.html`: Base page demo
+- `popup.html`: Popup page demo
 
-1. **URL Parameter**: When a popup is opened, the system automatically adds `popup_page=1` to the URL
-2. **Server-Side Detection**: Django views use the `PopupDetectionMixin` to detect popup requests
-3. **Template Customization**: Templates can conditionally render different content based on popup status
-4. **Context Variables**: The mixin provides `is_popup` and `popup_mode` variables to templates
+### Features
+- Open popups via attributes (`data-popup-open`)
+- Pass data via JSON or form serialization
+- Persistent per-popup data in `localStorage` (cleared only when that popup closes)
+- Nested popups (popups can open popups)
+- Replies back to the immediate opener; optional controlled bubbling upstream
+- Window centering (`data-popup-center`)
+- Named popups (`data-popup-name`)
 
-## Usage
+### How it Works
+- Each popup has an id (`popupId`). If `data-popup-name` is provided, that exact value is used; otherwise a random id is generated.
+- The opener persists sent data under `localStorage["popup:<popupId>:data"]` and opens `popup.html?popupId=<id>`.
+- In the popup, `PopupManager.getData()` reads that payload.
+- When a popup replies with `PopupManager.reply(payload)` or via attributes, the message goes to the immediate opener (using `window.opener.postMessage`). Parents can optionally forward upstream.
+- Data is removed from `localStorage` only when the popup window actually closes (the opener watches `win.closed`). Reloads do not remove data.
+- No `parentId` query param is used or required; parent/child relationships rely on `window.opener`.
 
-### 1. In Django Views
+### Quick Reference (Attributes)
+| Attribute | Where | Type | Default | Description |
+| --- | --- | --- | --- | --- |
+| `data-popup-open` | opener | string (URL) | — | URL to open in a popup (supports nested) |
+| `data-popup-features` | opener | string | `width=520,height=520,resizable=yes,scrollbars=yes` | Native `window.open` features |
+| `data-popup-center` | opener | "true" | true | Center popup using width/height; accepts `"true"|"false"`. Bare attribute implies true |
+| `data-popup-data` | opener | JSON string | `{}` | Static JSON payload sent to popup and stored |
+| `data-popup-data-from` | opener | CSS selector | — | Serialize a form to payload |
+| `data-popup-name` | opener | string | random id | Name/id of popup window; reuses same named window if open |
+| `data-popup-reply` | popup | JSON string | `{}` | Reply payload to opener |
+| `data-popup-reply-from` | popup | CSS selector | — | Reply with serialized form fields |
 
-```python
-from shared.infrastructure.views.mixins import PopupDetectionMixin
+### Attributes (Openers)
+- `data-popup-open="popup.html"`: URL to open.
+- `data-popup-features="width=600,height=500,resizable=yes,scrollbars=yes"`: Native `window.open` features string.
+- `data-popup-center`: Center the popup using `width/height` from features (defaults to 520x520). Accepts `"true"|"false"`; default is `true`. Using the bare attribute also implies `true`.
+- `data-popup-data='{"k":"v"}'`: JSON payload to send and persist.
+- `data-popup-data-from="#formSelector"`: Serialize a form to the payload.
+- Alternatively, you can pass a global variable name or dot-path via `data-popup-data` (resolved in the opener). Example: `data-popup-data="myData"` or `data-popup-data="App.state.user"`.
+- `data-popup-name="my_popup"`: Name/id of the popup window (reuses the existing named window if open).
 
-class MyView(PopupDetectionMixin, views.AdminGenericMixin, views.TemplateView):
-    template_name = "my_template.html"
-    # The mixin automatically adds is_popup and popup_mode to context
+### Attributes (Replies from a popup)
+- `data-popup-reply='{"k":"v"}'`: Send static JSON payload back to the opener.
+- `data-popup-reply-from="#formSelector"`: Send serialized form fields as payload.
+
+### JavaScript API (in popups)
+- `PopupManager.getData()`: Returns data sent to this popup.
+- `PopupManager.reply(payload)`: Sends a reply to the immediate opener.
+
+### Reply Handling Hook (optional)
+In any window (base or popup), define an optional handler:
+```javascript
+window.PopupManager_onReply = function(payload) {
+  // Handle the reply locally.
+  // Return nothing or { bubble: false } to stop.
+  // Return { bubble: true, payload } to forward upstream to your opener.
+};
 ```
 
-### 2. In Templates
-
+### Examples
+Open popup with JSON, centered, named:
 ```html
-{% extends 'shared/admin/layout/layout.html' %}
-
-{% block content %}
-    <h1>My Content</h1>
-    {% if is_popup %}
-        <p>This is displayed in popup mode</p>
-        <button onclick="window.close()">Close Popup</button>
-    {% else %}
-        <p>This is displayed in normal mode</p>
-    {% endif %}
-{% endblock %}
-```
-
-### 3. Opening Popups
-
-Use the existing popup manager with the `custom-popup-page` attribute:
-
-```html
-<button custom-popup-page
-        custom-popup-page-url="{% url 'my:view' %}"
-        custom-popup-page-width="1000"
-        custom-popup-page-height="700">
-    Open in Popup
+<button
+  data-popup-open="popup.html"
+  data-popup-name="user_profile_popup"
+  data-popup-features="width=600,height=500"
+  data-popup-center="true"
+  data-popup-data='{"userId":123,"from":"base"}'>
+  Open User Profile
 </button>
 ```
 
-## Available Context Variables
+Open popup using a form as payload:
+```html
+<form id="userForm">
+  <input name="userId" value="123" />
+  <input name="note" value="Hello" />
+  <!-- include other fields as needed -->
+  <button
+    type="button"
+    data-popup-open="popup.html"
+    data-popup-features="width=520,height=520"
+    data-popup-center="true"
+    data-popup-data-from="#userForm">Open</button>
+</form>
+```
 
-- `is_popup`: Boolean indicating if the request is from a popup
-- `popup_mode`: Alias for `is_popup` for consistency
-- `request.GET.popup_page`: The actual URL parameter value
+Reply from popup via attributes:
+```html
+<button class="btn" data-popup-reply='{"status":"ok"}'>Send Quick Reply</button>
+<button class="btn" data-popup-reply-from="#replyForm">Send Form Reply</button>
+```
 
-## Template Customization
+Reply from popup via JS:
+```javascript
+PopupManager.reply({ status: 'ok', at: Date.now() });
+```
 
-The system uses a single layout template (`shared/admin/layout/layout.html`) and allows you to customize content based on popup status using template conditionals.
+Consume replies on the opener (no bubbling):
+```javascript
+window.PopupManager_onReply = function(payload) {
+  console.log('Reply received:', payload);
+  // stop here (return nothing)
+};
+```
 
-## Benefits
+Forward replies upstream (controlled bubbling):
+```javascript
+window.PopupManager_onReply = function(payload) {
+  // Optionally transform
+  const transformed = { fromChild: true, child: payload };
+  return { bubble: true, payload: transformed };
+};
+```
 
-1. **Server-Side Control**: No dependency on client-side JavaScript for popup detection
-2. **SEO Friendly**: Popup pages can be accessed directly via URL
-3. **Reliable**: URL parameters are more reliable than JavaScript detection
-4. **Simple**: Uses a single layout template with conditional content
-5. **Lightweight**: No complex layout management or loading indicators
-6. **Backward Compatible**: Works with existing popup system
+Nested popup reply (non-bubbling in intermediate popup):
+```html
+<!-- In popup.html (the intermediate parent) -->
+<script>
+  window.PopupManager_onReply = function(childPayload) {
+    console.log('Child replied to me only:', childPayload);
+    // Returning nothing prevents bubbling to the base window
+  };
+</script>
+```
 
-## Example Implementation
+### Notes and Tips
+- Named windows (`data-popup-name`) let you reuse existing popups instead of opening duplicates.
+- Ensure popups are not blocked: interactions (click) should trigger opening.
+- Width/height must be present to center precisely; defaults to 520x520 if omitted.
+- Same-origin: For replies and `localStorage` to work seamlessly, popups should be opened from the same origin. Cross-origin windows will not allow direct `localStorage` sharing and may restrict `postMessage` unless you provide an explicit target origin and handle messages accordingly.
 
-See `src/core/infrastructure/templates/core/base/test.html` for a complete example showing both server-side and client-side detection methods.
+

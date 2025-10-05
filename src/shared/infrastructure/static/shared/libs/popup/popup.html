@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1">
+    <title>Popup</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet"
+        href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Popup Page</h1>
+        <section class="card">
+            <h2>Received Data</h2>
+            <pre id="received"
+                class="log"></pre>
+        </section>
+        <section class="card">
+            <h2>Reply to Opener</h2>
+            <form id="replyForm"
+                class="stack">
+                <label>
+                    Reply message
+                    <input name="message"
+                        placeholder="Hello back!"
+                        value="Reply from popup" />
+                </label>
+                <label>
+                    Extra info
+                    <input name="info"
+                        placeholder="Optional info" />
+                </label>
+            </form>
+            <div class="row">
+                <button class="btn"
+                    data-popup-reply='{"status":"ok"}'>Quick Reply (JSON)</button>
+                <button class="btn"
+                    data-popup-reply-from="#replyForm">Reply From Form</button>
+            </div>
+        </section>
+        <section class="card">
+            <h2>Open Nested Popup</h2>
+            <form id="childForm"
+                class="stack">
+                <label>
+                    Note to child
+                    <input name="note"
+                        placeholder="Message for child"
+                        value="Hello, child popup" />
+                </label>
+                <label>
+                    Level
+                    <input name="level"
+                        value="1" />
+                </label>
+            </form>
+            <div class="row">
+                <button class="btn"
+                    data-popup-open="popup.html"
+                    data-popup-name="child-popup"
+                    data-popup-center
+                    data-popup-data-from="#childForm"
+                    data-popup-features="width=520,height=520">Open Child Popup</button>
+            </div>
+        </section>
+    </div>
+    <script src="popup-manager.js"></script>
+    <script>
+        $(function () {
+            const data = window.PopupManager.getData();
+            const el = document.getElementById('received');
+            el.textContent = JSON.stringify(data, null, 2);
+
+            // Handle replies from a child popup locally (do not bubble upstream)
+            window.PopupManager_onReply = function (childPayload) {
+                console.log('Reply from child (handled by immediate opener):', childPayload);
+                // Return nothing -> no bubbling to the base window
+                return { bubble: false, payload: { key: "hello" } }
+            };
+        });
+    </script>
+</body>
+
+</html>

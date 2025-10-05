@@ -40,6 +40,7 @@ class HomeView(PopupDetectionMixin, views.AdminGenericMixin, views.TemplateView)
     def get_context_data(self, **kwargs: Dict[str, Any]) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
         context["form"] = TestWidgetsForm()
+        context["popupData"] = {"key": "value"}
         return context
 
 
