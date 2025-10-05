@@ -76,12 +76,12 @@ class PopupDetectionMixin(ContextMixin):
 
     def is_popup_request(self) -> bool:
         """Check if the current request is from a popup window."""
-        return self.request.GET.get('popup_page') == '1'
+        return self.request.GET.get("popupId", "") != ""
 
     def get_context_data(self, **kwargs: Dict[str, Any]) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        context['is_popup'] = self.is_popup_request()
-        context['popup_mode'] = self.is_popup_request()
+        context["is_popup"] = self.is_popup_request()
+        context["popup_mode"] = self.is_popup_request()
         return context
 
 

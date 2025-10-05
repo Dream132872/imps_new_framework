@@ -1,551 +1,282 @@
-/**
- * Enhanced Custom Popup Manager
- *
- * This module provides a robust popup management system with the following features:
- * - Data passing between parent and popup windows
- * - Customizable popup dimensions and positioning
- * - Multiple layout support (empty, admin)
- * - Event handling and callbacks
- * - Error handling and validation
- * - Popup state management
- * - Cross-browser compatibility
- *
- * Usage:
- * Add the 'custom-popup-page' attribute to any element to enable popup functionality.
- *
- * Available attributes:
- * - custom-popup-page-url: URL to open in popup (required)
- * - custom-popup-page-width: Popup width (default: 1000)
- * - custom-popup-page-height: Popup height (default: 700)
- * - custom-popup-page-data: Global variable name containing data to pass
- * - custom-popup-page-handler: Function name to call when popup closes
- * - custom-popup-page-target: Popup window target name (default: 'custom-popup')
- * - custom-popup-page-layout: Layout type - 'empty' or 'admin' (default: 'empty')
- * - custom-popup-page-center: Center popup on screen (default: true)
- * - custom-popup-page-location: Show location bar (default: false)
- */
-
+/* PopupManager: attribute-driven popup system with data passing and localStorage lifecycle */
 (function ($) {
-    "use strict";
+    const STORAGE_PREFIX = "popup:";
+    const MESSAGE_TYPE_REPLY = "popup-reply";
 
-    // Popup manager configuration
-    const PopupManager = {
-        // Default configuration
-        defaults: {
-            width: 1000,
-            height: 700,
-            target: "custom-popup",
-            layout: "empty",
-            center: true,
-            location: false,
-            dataKey: "popupData",
-            handlerKey: "closeHandler",
-            showLoading: true,
-        },
+    function generateId() {
+        return (
+            "pm-" + Date.now() + "-" + Math.random().toString(36).slice(2, 10)
+        );
+    }
 
+    function buildFeatures(featureStr) {
+        if (!featureStr)
+            return "width=1000,height=700,resizable=yes,scrollbars=yes";
+        return featureStr;
+    }
 
-        // Active popup windows
-        activePopups: new Map(),
+    function parseFeatures(featureStr) {
+        const obj = {};
+        if (!featureStr) return obj;
+        featureStr.split(",").forEach(function (part) {
+            const [k, v] = part.split("=");
+            if (!k) return;
+            obj[k.trim()] = (v || "").trim();
+        });
+        return obj;
+    }
 
-        // Storage key for popup data
-        storageKey: "customPopupWindow",
+    function stringifyFeatures(obj) {
+        return Object.keys(obj)
+            .map(function (k) {
+                return k + "=" + obj[k];
+            })
+            .join(",");
+    }
 
-        /**
-         * Initialize the popup manager
-         */
-        init: function () {
-            this.bindEvents();
-            this.setupStorageListener();
-            console.log("Custom Popup Manager initialized");
-        },
+    function shouldCenterFromAttr($el) {
+        const raw = $el.attr("data-popup-center");
+        if (raw === undefined) return true; // default: center
+        const v = String(raw).trim().toLowerCase();
+        if (v === "") return true; // boolean attribute without value => true
+        return !(v === "false" || v === "0" || v === "no" || v === "off");
+    }
 
-        /**
-         * Bind click events to elements with custom-popup-page attribute
-         */
-        bindEvents: function () {
-            const self = this;
-
-            // Use event delegation for dynamic content
-            $(document).on("click", "[custom-popup-page]", function (e) {
-                e.preventDefault();
-                self.openPopup($(this));
-            });
-
-            // Handle popup close events
-            $(window).on("beforeunload", function () {
-                self.cleanup();
-            });
-        },
-
-        /**
-         * Setup storage listener for popup communication
-         */
-        setupStorageListener: function () {
-            const self = this;
-
-            // Listen for storage changes (popup communication)
-            $(window).on("storage", function (e) {
-                if (e.originalEvent.key === self.storageKey) {
-                    self.handlePopupMessage(e.originalEvent);
-                }
-            });
-
-            // Listen for popup close messages
-            $(window).on("message", function (e) {
-                if (
-                    e.originalEvent.data &&
-                    e.originalEvent.data.type === "popup-close"
-                ) {
-                    self.handlePopupClose(e.originalEvent.data);
-                }
-            });
-        },
-
-        /**
-         * Open a popup window
-         * @param {jQuery} $element - The element that triggered the popup
-         */
-        openPopup: function ($element) {
-            try {
-                const config = this.getPopupConfig($element);
-
-                // Validate configuration
-                if (!this.validateConfig(config)) {
-                    return;
-                }
-
-                // Loading disabled - using PopupDetectionMixin for server-side handling
-
-                // Prepare popup URL
-                const popupUrl = this.preparePopupUrl(config);
-
-                // Calculate popup position
-                const position = this.calculatePosition(config);
-
-                // Build popup parameters
-                const params = this.buildPopupParams(config, position);
-
-                // Prepare data for popup
-                const popupData = this.preparePopupData(config);
-
-                // Store data in localStorage
-                this.storePopupData(popupData, config.handler);
-
-                // Debug: Log the parameters being used
-                console.log("Popup parameters:", params);
-                console.log("Popup config:", config);
-
-                // Open popup window
-                const popupWindow = this.openWindow(
-                    popupUrl,
-                    config.target,
-                    params
-                );
-
-                if (popupWindow) {
-                    // Store popup reference
-                    this.activePopups.set(config.target, {
-                        window: popupWindow,
-                        config: config,
-                        element: $element,
-                    });
-
-                    // Focus popup
-                    popupWindow.focus();
-
-                    // Setup popup monitoring
-                    this.monitorPopup(config.target, popupWindow);
-
-                    // Loading handling removed - using PopupDetectionMixin
-
-                    console.log("Popup opened:", config.target, popupUrl);
-                } else {
-                    this.showError(
-                        "Failed to open popup. Please check your popup blocker settings."
-                    );
-                }
-            } catch (error) {
-                console.error("Error opening popup:", error);
-                this.showError("An error occurred while opening the popup.");
-            }
-        },
-
-        /**
-         * Get popup configuration from element attributes
-         * @param {jQuery} $element - The element
-         * @returns {Object} Configuration object
-         */
-        getPopupConfig: function ($element) {
-            const config = Object.assign({}, this.defaults);
-
-            // Required attributes
-            config.url = $element.attr("custom-popup-page-url");
-
-            // Optional attributes with validation
-            const width = $element.attr("custom-popup-page-width");
-            if (width && !isNaN(width) && parseInt(width) > 0) {
-                config.width = parseInt(width);
-            }
-
-            const height = $element.attr("custom-popup-page-height");
-            if (height && !isNaN(height) && parseInt(height) > 0) {
-                config.height = parseInt(height);
-            }
-
-            config.target =
-                $element.attr("custom-popup-page-target") || config.target;
-            config.layout =
-                $element.attr("custom-popup-page-layout") || config.layout;
-            config.dataKey =
-                $element.attr("custom-popup-page-data") || config.dataKey;
-            config.handler = $element.attr("custom-popup-page-handler");
-
-            // Boolean attributes
-            config.center = this.parseBoolean(
-                $element.attr("custom-popup-page-center"),
-                config.center
-            );
-            config.location = this.parseBoolean(
-                $element.attr("custom-popup-page-location"),
-                config.location
-            );
-
-            return config;
-        },
-
-        /**
-         * Parse boolean attribute value
-         * @param {string} value - Attribute value
-         * @param {boolean} defaultValue - Default value
-         * @returns {boolean}
-         */
-        parseBoolean: function (value, defaultValue) {
-            if (value === null || value === undefined) {
-                return defaultValue;
-            }
-            return value === "true" || value === "1" || value === "yes";
-        },
-
-        /**
-         * Validate popup configuration
-         * @param {Object} config - Configuration object
-         * @returns {boolean} True if valid
-         */
-        validateConfig: function (config) {
-            if (!config.url) {
-                this.showError(
-                    "Popup URL is required. Please set the custom-popup-page-url attribute."
-                );
-                return false;
-            }
-
-            if (config.width < 100 || config.width > 4000) {
-                this.showError(
-                    "Popup width must be between 100 and 4000 pixels."
-                );
-                return false;
-            }
-
-            if (config.height < 100 || config.height > 4000) {
-                this.showError(
-                    "Popup height must be between 100 and 4000 pixels."
-                );
-                return false;
-            }
-
-            if (!["empty", "admin"].includes(config.layout)) {
-                this.showError('Invalid layout. Must be "empty" or "admin".');
-                return false;
-            }
-
-            return true;
-        },
-
-        /**
-         * Prepare popup URL with layout parameter
-         * @param {Object} config - Configuration object
-         * @returns {string} Prepared URL
-         */
-        preparePopupUrl: function (config) {
-            let url = config.url;
-
-            // Add popup_page parameter to indicate this is a popup request
-            try {
-                const urlObj = new URL(url, window.location.origin);
-                urlObj.searchParams.set("popup_page", "1");
-                return urlObj.toString();
-            } catch (error) {
-                // Fallback for relative URLs or invalid URLs
-                const separator = url.includes("?") ? "&" : "?";
-                return url + separator + "popup_page=1";
-            }
-        },
-
-        /**
-         * Remove popup_page parameter from URL
-         * @param {string} url - URL to clean
-         * @returns {string} Cleaned URL
-         */
-        removePopupPageParam: function (url) {
-            try {
-                const urlObj = new URL(url, window.location.origin);
-                urlObj.searchParams.delete("popup_page");
-                return urlObj.toString();
-            } catch (error) {
-                // Fallback for relative URLs or invalid URLs
-                return url
-                    .replace(/[?&]popup_page=True/gi, "")
-                    .replace(/[?&]popup_page=true/gi, "");
-            }
-        },
-
-        /**
-         * Calculate popup position
-         * @param {Object} config - Configuration object
-         * @returns {Object} Position object with x, y coordinates
-         */
-        calculatePosition: function (config) {
-            if (!config.center) {
-                return { x: 0, y: 0 };
-            }
-
-            const screenWidth = window.screen.availWidth;
-            const screenHeight = window.screen.availHeight;
-            const windowWidth = window.outerWidth || window.innerWidth;
-            const windowHeight = window.outerHeight || window.innerHeight;
-
-            const x = Math.max(0, (screenWidth - config.width) / 2);
-            const y = Math.max(0, (screenHeight - config.height) / 2);
-
-            return { x: Math.round(x), y: Math.round(y) };
-        },
-
-        /**
-         * Build popup window parameters
-         * @param {Object} config - Configuration object
-         * @param {Object} position - Position object
-         * @returns {string} Window parameters string
-         */
-        buildPopupParams: function (config, position) {
-            const params = [];
-
-            // Basic dimensions and position
-            params.push(`width=${config.width}`);
-            params.push(`height=${config.height}`);
-            params.push(`left=${position.x}`);
-            params.push(`top=${position.y}`);
-
-            // Window features
-            if (config.location) {
-                params.push("location=yes");
+    function resolvePath(root, path) {
+        if (!root || !path) return undefined;
+        const parts = String(path).split(".");
+        let node = root;
+        for (let i = 0; i < parts.length; i++) {
+            const key = parts[i];
+            if (key in node) {
+                node = node[key];
             } else {
-                params.push("location=no");
+                return undefined;
             }
+        }
+        return node;
+    }
 
-            // Additional parameters for better control
-            params.push("toolbar=no");
-            params.push("menubar=no");
-            params.push("directories=no");
-            params.push("scrollbars=no");
-            params.push("resizable=no");
-            params.push("status=no");
-            params.push("copyhistory=no");
-            params.push("noopener=no");
-            params.push("noreferrer=no");
-
-            return params.join(",");
-        },
-
-        /**
-         * Prepare data to pass to popup
-         * @param {Object} config - Configuration object
-         * @returns {Object} Data object
-         */
-        preparePopupData: function (config) {
-            let data = {};
-
-            if (config.dataKey && window[config.dataKey]) {
-                data = window[config.dataKey];
-            }
-
-            return data;
-        },
-
-        /**
-         * Store popup data in localStorage
-         * @param {Object} data - Data to store
-         * @param {string} handler - Handler function name
-         */
-        storePopupData: function (data, handler) {
-            try {
-                const popupData = {
-                    popupData: data,
-                    handler: handler,
-                    timestamp: Date.now(),
-                };
-
-                localStorage.setItem(
-                    this.storageKey,
-                    JSON.stringify(popupData)
-                );
-            } catch (error) {
-                console.error("Error storing popup data:", error);
-            }
-        },
-
-        /**
-         * Open popup window
-         * @param {string} url - URL to open
-         * @param {string} target - Window target name
-         * @param {string} params - Window parameters
-         * @returns {Window|null} Popup window or null
-         */
-        openWindow: function (url, target, params) {
-            try {
-                return window.open(url, target, params);
-            } catch (error) {
-                console.error("Error opening window:", error);
-                return null;
-            }
-        },
-
-        /**
-         * Monitor popup window
-         * @param {string} target - Window target name
-         * @param {Window} popupWindow - Popup window reference
-         */
-        monitorPopup: function (target, popupWindow) {
-            const self = this;
-            const checkClosed = setInterval(function () {
-                if (popupWindow.closed) {
-                    clearInterval(checkClosed);
-                    self.handlePopupClose({ target: target });
-                }
-            }, 1000);
-        },
-
-        /**
-         * Handle popup close event
-         * @param {Object} data - Close event data
-         */
-        handlePopupClose: function (data) {
-            const target = data.target;
-            const popupInfo = this.activePopups.get(target);
-
-            if (popupInfo) {
-                // Execute close handler if specified
-                if (
-                    popupInfo.config.handler &&
-                    typeof window[popupInfo.config.handler] === "function"
-                ) {
+    function getDataPayloadFromAttributes($el) {
+        const hasDataAttr = $el.is('[data-popup-data]');
+        if (hasDataAttr) {
+            const raw = $el.attr('data-popup-data');
+            if (raw && raw.trim() !== '') {
+                // Try JSON first
+                try {
+                    return JSON.parse(raw);
+                } catch (_) {
+                    // Fallback: treat as global variable path on opener window
                     try {
-                        window[popupInfo.config.handler](
-                            popupInfo.config,
-                            popupInfo.element
-                        );
-                    } catch (error) {
-                        console.error("Error executing close handler:", error);
+                        return resolvePath(window, raw.trim());
+                    } catch (_) {
+                        return undefined;
                     }
                 }
-
-                // Remove from active popups
-                this.activePopups.delete(target);
-
-                // Clean up storage
-                this.cleanupStorage();
-
-                console.log("Popup closed:", target);
             }
-        },
+        }
+        const fromSelector = $el.attr('data-popup-data-from');
+        if (fromSelector) {
+            const $form = $(fromSelector);
+            if ($form.length) {
+                return toObjectFromForm($form);
+            }
+        }
+        return undefined;
+    }
 
-        /**
-         * Handle popup message
-         * @param {StorageEvent} event - Storage event
-         */
-        handlePopupMessage: function (event) {
-            try {
-                const data = JSON.parse(event.newValue);
-                if (data && data.type === "popup-close") {
-                    this.handlePopupClose(data);
+    function toObjectFromForm($form) {
+        const arr = $form.serializeArray();
+        const obj = {};
+        arr.forEach(function (item) {
+            const name = item.name;
+            const value = item.value;
+            if (obj[name] === undefined) {
+                obj[name] = value;
+            } else if (Array.isArray(obj[name])) {
+                obj[name].push(value);
+            } else {
+                obj[name] = [obj[name], value];
+            }
+        });
+        return obj;
+    }
+
+    function readJsonAttribute($el, attr) {
+        const raw = $el.attr(attr);
+        if (!raw) return undefined;
+        try {
+            return JSON.parse(raw);
+        } catch (e) {
+            console.warn("Invalid JSON in", attr, e);
+            return undefined;
+        }
+    }
+
+    function setStorage(key, value) {
+        localStorage.setItem(key, JSON.stringify(value));
+    }
+    function getStorage(key) {
+        const raw = localStorage.getItem(key);
+        if (!raw) return undefined;
+        try {
+            return JSON.parse(raw);
+        } catch (e) {
+            return undefined;
+        }
+    }
+    function delStorage(key) {
+        localStorage.removeItem(key);
+    }
+
+    const PopupManager = {
+        currentPopupId: null,
+        parentPopupId: null, // retained for backward compat; no longer populated
+        isPopupWindow: false,
+
+        init: function () {
+            const params = new URLSearchParams(window.location.search);
+            this.currentPopupId = params.get("popupId");
+            // parentId is no longer required; not parsed
+            this.isPopupWindow = !!this.currentPopupId;
+
+            // Note: Do not delete on beforeunload so reloads keep data intact.
+
+            // Listen for reply messages from any child popups
+            window.addEventListener("message", function (event) {
+                const msg = event.data;
+                if (!msg || msg.type !== MESSAGE_TYPE_REPLY) return;
+                // Invoke local hook and optionally bubble upstream if requested
+                let handlerResult;
+                if (typeof window.PopupManager_onReply === "function") {
+                    try {
+                        handlerResult = window.PopupManager_onReply(
+                            msg.payload
+                        );
+                    } catch (e) {}
                 }
-            } catch (error) {
-                console.error("Error handling popup message:", error);
-            }
-        },
-
-        /**
-         * Clean up popup data
-         */
-        cleanup: function () {
-            this.activePopups.clear();
-            this.cleanupStorage();
-        },
-
-        /**
-         * Clean up localStorage
-         */
-        cleanupStorage: function () {
-            try {
-                localStorage.removeItem(this.storageKey);
-            } catch (error) {
-                console.error("Error cleaning up storage:", error);
-            }
-        },
-
-        /**
-         * Show error message
-         * @param {string} message - Error message
-         */
-        showError: function (message) {
-            console.error("Popup Manager Error:", message);
-
-            // You can customize this to show user-friendly error messages
-            if (typeof alert !== "undefined") {
-                alert("Popup Error: " + message);
-            }
-        },
-
-        /**
-         * Get active popup count
-         * @returns {number} Number of active popups
-         */
-        getActivePopupCount: function () {
-            return this.activePopups.size;
-        },
-
-        /**
-         * Close specific popup
-         * @param {string} target - Popup target name
-         * @returns {boolean} True if closed successfully
-         */
-        closePopup: function (target) {
-            const popupInfo = this.activePopups.get(target);
-            if (popupInfo && popupInfo.window) {
-                popupInfo.window.close();
-                return true;
-            }
-            return false;
-        },
-
-        /**
-         * Close all popups
-         */
-        closeAllPopups: function () {
-            this.activePopups.forEach((popupInfo, target) => {
-                if (popupInfo.window) {
-                    popupInfo.window.close();
+                if (handlerResult && handlerResult.bubble) {
+                    const nextPayload =
+                        handlerResult.payload !== undefined
+                            ? handlerResult.payload
+                            : msg.payload;
+                    const forward = {
+                        type: MESSAGE_TYPE_REPLY,
+                        payload: nextPayload,
+                    };
+                    try {
+                        if (window.opener && !window.opener.closed) {
+                            window.opener.postMessage(forward, "*");
+                        }
+                    } catch (_) {}
                 }
             });
-            this.cleanup();
+
+            // Attribute handlers
+            this._bindAttributeHandlers();
         },
 
+        openFromElement: function (el) {
+            const $el = $(el);
+            const url = $el.attr("data-popup-open");
+            if (!url) return;
+
+            // Construct payload (JSON string, or global var path, or form serialization)
+            let payload = getDataPayloadFromAttributes($el);
+            if (payload === undefined) payload = {};
+
+            // Contextual info
+            // parentId no longer used in URL; opener relationship is implicit
+            const requestedName = ($el.attr("data-popup-name") || "").trim();
+            const popupId = requestedName !== "" ? requestedName : generateId();
+            let features = buildFeatures($el.attr("data-popup-features"));
+
+            // Optional centering (default: true)
+            if (shouldCenterFromAttr($el)) {
+                const fObj = parseFeatures(features);
+                const w = parseInt(fObj.width, 10) || 520;
+                const h = parseInt(fObj.height, 10) || 520;
+                const left = Math.max(0, (window.screenX || window.screenLeft || 0) + Math.max(0, Math.floor(((window.outerWidth || window.innerWidth) - w) / 2)));
+                const top = Math.max(0, (window.screenY || window.screenTop || 0) + Math.max(0, Math.floor(((window.outerHeight || window.innerHeight) - h) / 2)));
+                fObj.left = left;
+                fObj.top = top;
+                // Also include non-standard aliases for broader support
+                fObj.screenX = left;
+                fObj.screenY = top;
+                features = stringifyFeatures(fObj);
+            }
+
+            // Persist payload scoped to popupId
+            setStorage(STORAGE_PREFIX + popupId + ":data", payload);
+
+            // Open the popup with ids in query
+            const sep = url.indexOf("?") === -1 ? "?" : "&";
+            const finalUrl = url + sep + "popupId=" + encodeURIComponent(popupId);
+            const win = window.open(finalUrl, popupId, features);
+
+            // Watch for popup close and cleanup storage only then
+            try {
+                const storageKey = STORAGE_PREFIX + popupId + ":data";
+                const closeWatcher = setInterval(function () {
+                    if (!win || win.closed) {
+                        clearInterval(closeWatcher);
+                        delStorage(storageKey);
+                    }
+                }, 700);
+            } catch (_) {}
+
+            return win;
+        },
+
+        getData: function () {
+            if (!this.currentPopupId) return undefined;
+            return getStorage(STORAGE_PREFIX + this.currentPopupId + ":data");
+        },
+
+        reply: function (payload) {
+            const message = { type: MESSAGE_TYPE_REPLY, payload: payload };
+            try {
+                if (window.opener && !window.opener.closed) {
+                    window.opener.postMessage(message, "*");
+                }
+            } catch (_) {}
+        },
+
+        _bindAttributeHandlers: function () {
+            const self = this;
+            // Openers
+            $(document).on("click", "[data-popup-open]", function (evt) {
+                evt.preventDefault();
+                self.openFromElement(this);
+            });
+
+            // Reply buttons
+            $(document).on(
+                "click",
+                "[data-popup-reply], [data-popup-reply-from]",
+                function (evt) {
+                    evt.preventDefault();
+                    const $el = $(this);
+                    let payload = readJsonAttribute($el, "data-popup-reply");
+                    const fromSelector = $el.attr("data-popup-reply-from");
+                    if (!payload && fromSelector) {
+                        const $form = $(fromSelector);
+                        if ($form.length) {
+                            payload = toObjectFromForm($form);
+                        }
+                    }
+                    if (!payload) payload = {};
+                    self.reply(payload);
+                }
+            );
+        },
     };
 
-    // Initialize when document is ready
-    $(document).ready(function () {
+    // Expose globally
+    window.PopupManager = PopupManager;
+
+    // Auto-init on DOM ready
+    $(function () {
         PopupManager.init();
     });
-
-    // Expose to global scope for external access
-    window.CustomPopupManager = PopupManager;
 })(jQuery);
