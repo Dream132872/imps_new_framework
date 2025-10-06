@@ -24,6 +24,7 @@ class TestWidgetsForm(Form):
         }
 
     form_title = "Custom Widgets Test Form"
+    form_id = "test_form"
 
     checkbox_input = BooleanField()
 

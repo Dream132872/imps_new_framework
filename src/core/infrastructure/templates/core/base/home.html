@@ -16,7 +16,7 @@
 
   <div class="row">
     <div class="col-lg-12">
-      <button data-popup-open="{% url 'core:base:test' %}" data-popup-name="user_profile_popup" data-popup-data="{{ popupData|to_json }}">open test page</button>
+      <button data-popup-open="{% url 'core:base:test' %}" data-popup-name="user_profile_popup">open test page</button>
       <hr />
       {% render_form form %}
     </div>
@@ -25,7 +25,4 @@
 
 {% block footer_ref %}
   {{ form.media.js }}
-  <script>
-    window.testData = { key: 'value' }
-  </script>
 {% endblock %}

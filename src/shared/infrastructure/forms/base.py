@@ -30,6 +30,8 @@ class Form(forms.Form):
     form_title = ""
     # form action url
     form_action_url = ""
+    # form id
+    form_id = ""
 
     def __init__(self, *args, **kwargs) -> None:  # type: ignore
         # Extract custom parameters
@@ -70,12 +72,15 @@ class Form(forms.Form):
 
                 field.widget.add_css_classes(f"input__{css_field_name}")
 
-    def generate_flattened_attrs(self):
+    def generate_flattened_attrs(self) -> SafeText:
         """Generated flatten attributes for form.
 
         Returns:
             str: flatten attributes.
         """
+
+        if not "id" in self.form_attrs:
+            self.form_attrs["id"] = self.get_form_id()
 
         return flatatt(attrs={key: value for key, value in self.form_attrs.items()})
 
@@ -177,6 +182,9 @@ class Form(forms.Form):
     @property
     def flattened_attrs(self) -> str:
         return self.generate_flattened_attrs()
+
+    def get_form_id(self) -> str:
+        return self.form_id
 
 
 class ModelForm(forms.ModelForm):

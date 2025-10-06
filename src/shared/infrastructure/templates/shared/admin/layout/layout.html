@@ -1,6 +1,8 @@
 {% load i18n layout %}
 <!DOCTYPE html>
-<html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}" data-bs-theme="dark">
+<html lang="{{ LANGUAGE_CODE }}"
+  dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}"
+  data-bs-theme="dark">
   <!-- begin::Head -->
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -10,6 +12,7 @@
     <!-- end::Primary Meta Tags -->
     {% include 'shared/admin/layout/_head_references.html' %}
     {% block head_ref %}
+
     {% endblock %}
   </head>
   <!-- end::Head -->
@@ -24,31 +27,34 @@
 
       <!-- begin::App Main -->
       <main class="app-main">
-        <!-- begin::App Content Header -->
-        <div class="app-content-header">
-          <!-- begin::Container -->
-          <div class="container-fluid">
-            <!-- begin::Row -->
-            <div class="row title-and-breadcrumb">
-              <div class="col-sm-6">
-                <h3 class="mb-0">{{ title|default:'Admin' }}</h3>
+        {% if not is_popup %}
+          <!-- begin::App Content Header -->
+          <div class="app-content-header">
+            <!-- begin::Container -->
+            <div class="container-fluid">
+              <!-- begin::Row -->
+              <div class="row title-and-breadcrumb">
+                <div class="col-sm-6">
+                  <h3 class="mb-0">{{ title|default:'Admin' }}</h3>
+                </div>
+                <div class="col-sm-6">
+                  <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item">
+                      <a href="{% url 'core:base:home' %}">{% trans 'Home' %}</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ title|default:'Admin' }}</li>
+                  </ol>
+                </div>
               </div>
-              <div class="col-sm-6">
-                <ol class="breadcrumb float-sm-end">
-                  <li class="breadcrumb-item">
-                    <a href="{% url 'core:base:home' %}">{% trans 'Home' %}</a>
-                  </li>
-                  <li class="breadcrumb-item active" aria-current="page">{{ title|default:'Admin' }}</li>
-                </ol>
-              </div>
+              <!-- end::Row -->
             </div>
-            <!-- end::Row -->
+            <!-- end::Container -->
           </div>
-          <!-- end::Container -->
-        </div>
-        <!-- end::App Content Header -->
+          <!-- end::App Content Header -->
+        {% endif %}
+
         <!-- begin::App Content -->
-        <div class="app-content">
+        <div class="app-content {% if is_popup %}pt-3 pb-3{% endif %}">
           <!-- begin::Container -->
           <div class="container-fluid">
             {% block content %}
@@ -64,17 +70,17 @@
       {% if not is_popup %}
         <!-- begin::Footer -->
         <footer class="app-footer">
-            {% block fixed_footer %}
+          {% block fixed_footer %}
             {% admin_fixed_footer %}
-            {% endblock %}
+          {% endblock %}
         </footer>
-      <!-- end::Footer -->
+        <!-- end::Footer -->
       {% endif %}
-
     </div>
     <!-- end::App Wrapper -->
     {% include 'shared/admin/layout/_footer_references.html' %}
     {% block footer_ref %}
+
     {% endblock %}
   </body>
   <!-- end::Body -->
