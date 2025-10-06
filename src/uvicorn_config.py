@@ -24,8 +24,8 @@ UVICORN_CONFIG = {
     # For 2000 concurrent users, recommend 12-16 workers on 4-8 core systems
     "workers": config("UVICORN_WORKERS", default=12, cast=int),
     "log_level": config("UVICORN_LOG_LEVEL", default="warning"),
-    "access_log": config("UVICORN_ACCESS_LOG", default=True, cast=bool),
-    "reload": config("UVICORN_RELOAD", default="false"),
+    "access_log": config("UVICORN_ACCESS_LOG", default="1", cast=bool),
+    "reload": config("UVICORN_RELOAD", default="0", cast=bool),
     "reload_dirs": (
         [str(BASE_DIR)]
         if config("UVICORN_RELOAD", default="false").lower() == "true"

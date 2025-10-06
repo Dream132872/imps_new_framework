@@ -26,6 +26,7 @@ from shared.domain.repositories import UnitOfWork
 from shared.infrastructure.ioc import inject_dependencies
 from shared.infrastructure import views
 from shared.infrastructure.views.mixins import PopupDetectionMixin
+from django.core.cache import cache
 
 logger = logging.getLogger(__name__)
 
@@ -89,7 +90,14 @@ class SampleApiView(APIView):
             return [u.to_dict() for u in users.items]
 
     async def get(self, request: AsyncRequest):
-        res: PaginatedResultDTO = await dispatch_query_async(
-            SearchUsersQuery(page=1, page_size=10, paginated=True)
-        )
-        return Response([asdict(u) for u in res.items], status=status.HTTP_200_OK)
+        cached_data = await cache.aget("simple_users")
+
+        if not cached_data:
+            res: PaginatedResultDTO = await dispatch_query_async(
+                SearchUsersQuery(page=1, page_size=10, paginated=True)
+            )
+            users = [asdict(u) for u in res.items]
+            await cache.aset("simple_users", res.items)
+            cached_data = users
+
+        return Response(cached_data, status=status.HTTP_200_OK)
