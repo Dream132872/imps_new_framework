@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 User = get_user_model()
 
 
-class HomeView(PopupDetectionMixin, views.AdminGenericMixin, views.TemplateView):
+class HomeView(views.AdminGenericMixin, views.TemplateView):
     permission_required = []
     page_title = _("Dashboard")
     template_name = "core/base/home.html"
@@ -45,7 +45,7 @@ class HomeView(PopupDetectionMixin, views.AdminGenericMixin, views.TemplateView)
         return context
 
 
-class TestView(PopupDetectionMixin, views.AdminGenericMixin, views.TemplateView):
+class TestView(views.AdminGenericMixin, views.TemplateView):
     template_name = "core/base/test.html"
     permission_required = []
 

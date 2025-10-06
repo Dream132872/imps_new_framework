@@ -85,7 +85,9 @@ class PopupDetectionMixin(ContextMixin):
         return context
 
 
-class AdminGenericMixin(ViewTitleMixin, LoginRequiredMixin, PermissionRequiredMixin):
+class AdminGenericMixin(
+    ViewTitleMixin, PopupDetectionMixin, LoginRequiredMixin, PermissionRequiredMixin
+):
     """
     This class contains basic mixins that every admin view should have like:
     PermissionRequiredMixin, ViewTitleMixin and LoginRequiredMixin.
