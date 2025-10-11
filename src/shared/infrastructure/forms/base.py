@@ -197,11 +197,20 @@ class ModelForm(forms.ModelForm):
     # Form styling
     css_class = "custom-form"
     # Form attributes
-    form_attrs = {}
+    form_attrs = {
+        # handle form parsley validation
+        "data-parsley-validate": True,
+        "data-parsley-ui-enabled": "true",
+        "data-parsley-focus": "first",
+    }
     # Method
     method = "post"
     # Form title
     form_title = ""
+    # form action url
+    form_action_url = ""
+    # form id
+    form_id = ""
 
     def __init__(self, *args, **kwargs) -> None:  # type: ignore
         # Extract custom parameters
@@ -210,6 +219,9 @@ class ModelForm(forms.ModelForm):
         self.form_attrs = kwargs.pop("form_attrs", self.form_attrs)
 
         super().__init__(*args, **kwargs)
+
+        if self.get_form_action_url():
+            self.form_attrs["action"] = self.get_form_action_url()
 
         # Apply custom styling to all fields
         self._apply_custom_styling()
@@ -277,14 +289,26 @@ class ModelForm(forms.ModelForm):
             # Add field name as CSS class for styling
             if hasattr(field.widget, "attrs"):
                 css_field_name = field_name.strip()
+
+                # set the parsley treigger event for this widget
+                if not field.widget.attrs.get("data-parsley-trigger"):
+                    field.widget.attrs["data-parsley-trigger"] = "input focusout"
+
+                # set the parsley validation threshold
+                if not field.widget.attrs.get("data-parsley-validation-threshold"):
+                    field.widget.attrs["data-parsley-validation-threshold"] = "0"
+
                 field.widget.add_css_classes(f"input__{css_field_name}")
 
-    def generate_flattened_attrs(self):
+    def generate_flattened_attrs(self) -> SafeText:
         """Generated flatten attributes for form.
 
         Returns:
             str: flatten attributes.
         """
+
+        if not "id" in self.form_attrs:
+            self.form_attrs["id"] = self.get_form_id()
 
         return flatatt(attrs={key: value for key, value in self.form_attrs.items()})
 
@@ -341,20 +365,54 @@ class ModelForm(forms.ModelForm):
             self.fields[field_name].validators.append(wrapper)  # type: ignore
 
     def get_form_data(self) -> dict[str, Any]:
-        """Get cleaned form data as dictionary"""
+        """Get cleaned form data as dictionary."""
         if self.is_valid():
             return self.cleaned_data
         return {}
 
+    def get_form_action_url(self) -> str:
+        return self.form_action_url
+
     def has_field_error(self, field_name: str) -> bool:
-        """Check if a specific field has errors"""
+        """Check if a specific field has errors."""
         return field_name in self.errors
 
     def get_field_error(self, field_name: str) -> str | None:
-        """Get the first error for a specific field"""
+        """Get the first error for a specific field."""
         if field_name in self.errors:
             return self.errors[field_name][0]  # type: ignore
         return None
+
+    def get_form_title(self) -> str:
+        return self.form_title
+
+    def get_media(self) -> forms.Media:
+        """Get all media files from form and all its widgets."""
+        # Start with form's own media
+        media = forms.Media()
+
+        # Add form's own media
+        if hasattr(self.__class__, "Media"):
+            media += forms.Media(self.__class__.Media)
+
+        # Add media from all widgets
+        for field in self.fields.values():
+            if hasattr(field.widget, "Media"):
+                media += forms.Media(field.widget.__class__.Media)
+
+        return media
+
+    @property
+    def media(self) -> forms.Media:
+        """Return the media files for this form and all its widgets."""
+        return self.get_media()
+
+    @property
+    def flattened_attrs(self) -> str:
+        return self.generate_flattened_attrs()
+
+    def get_form_id(self) -> str:
+        return self.form_id
 
     def save_with_commit(self, commit: bool = True, **kwargs) -> Any:  # type: ignore
         """Save the model instance with custom commit handling"""
@@ -369,6 +427,3 @@ class ModelForm(forms.ModelForm):
             instance.save()
 
         return instance
-
-    def get_form_title(self) -> str:
-        return self.form_title
