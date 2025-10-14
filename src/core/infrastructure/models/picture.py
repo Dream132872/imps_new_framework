@@ -10,7 +10,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from core.infrastructure.model_managers import PictureManager
+from core.infrastructure.models.managers.picture_manager import PictureManager
 from shared.infrastructure.models import BaseModel
 
 __all__ = ("Picture",)
@@ -41,7 +41,7 @@ class Picture(BaseModel):
 
     # main image in db
     image = models.ImageField(
-        upload_to=image_upload_path, null=True, blank=True, verbose_name=_("Image")  # type: ignore
+        max_length=200, upload_to=image_upload_path, null=True, blank=True, verbose_name=_("Image")  # type: ignore
     )
     # alternative text
     alternative = models.CharField(
@@ -76,6 +76,7 @@ class Picture(BaseModel):
     # Order for gallery images
     display_order = models.IntegerField(default=0, verbose_name=_("Display order"))
 
+    # default manager of Picture model
     objects = PictureManager()
 
     class Meta:

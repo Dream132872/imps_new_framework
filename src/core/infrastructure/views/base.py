@@ -6,6 +6,7 @@ from adrf.mixins import sync_to_async
 from adrf.requests import AsyncRequest
 from adrf.views import APIView
 from django.contrib.auth import get_user_model
+from django.core.cache import cache
 from django.forms import BaseModelForm
 from django.forms.forms import BaseForm
 from django.http import HttpRequest
@@ -23,10 +24,9 @@ from core.infrastructure.forms import TestWidgetsForm
 from shared.application.cqrs import dispatch_query_async
 from shared.application.dtos import PaginatedResultDTO
 from shared.domain.repositories import UnitOfWork
-from shared.infrastructure.ioc import inject_dependencies
 from shared.infrastructure import views
+from shared.infrastructure.ioc import inject_dependencies
 from shared.infrastructure.views.mixins import PopupDetectionMixin
-from django.core.cache import cache
 
 logger = logging.getLogger(__name__)
 

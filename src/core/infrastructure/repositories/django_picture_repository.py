@@ -28,7 +28,7 @@ class DjangoPictureRepository(DjangoRepository[Picture], PictureRepository):
             title=model.title,
             alternative=model.alternative,
             picture_type=model.picture_type,
-            content_type=model.content_type_id,  # type: ignore
+            content_type=model.content_type_id,
             object_id=model.object_id,
         )
 

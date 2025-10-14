@@ -5,7 +5,7 @@ Implementation of Custom User model.
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 
-from core.infrastructure.model_managers import UserManager
+from core.infrastructure.models.managers.user_manager import UserManager
 from shared.infrastructure.models import BaseModel
 
 __all__ = ("User",)
