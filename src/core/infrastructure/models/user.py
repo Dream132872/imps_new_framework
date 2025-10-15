@@ -3,6 +3,7 @@ Implementation of Custom User model.
 """
 
 from django.contrib.auth.models import AbstractUser
+from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.translation import gettext_lazy as _
 
 from core.infrastructure.models.managers.user_manager import UserManager
@@ -13,6 +14,9 @@ __all__ = ("User",)
 
 class User(AbstractUser, BaseModel):
     """Model definition for User."""
+
+    # user avatar
+    avatar = GenericRelation("core_infrastructure.Picture")
 
     manager = UserManager()
 

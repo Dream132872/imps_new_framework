@@ -99,5 +99,5 @@ class SearchUsersQueryHandler(
 
         except Exception as e:
             raise ValidationError(
-                _("Failed to get search users: {message}").format(message=str(e))
+                _("Failed to search users: {message}").format(message=str(e))
             )

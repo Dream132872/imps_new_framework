@@ -17,14 +17,14 @@ __all__ = ("Picture",)
 
 
 def image_upload_path(instance: "Picture", filepath: str) -> str:
-    """this method generate new random image name for picture
+    """this method generate new unique random image name for picture
 
     Args:
         instance (Picture): instance of an object of Picture model.
         filepath (str): path of file in memory.
 
     Returns:
-        str: the address of image with random name.
+        str: the address of image with unique random name.
     """
     name, ext = os.path.splitext(os.path.basename(filepath))
     return f"images/{uuid.uuid4()}{ext}"
@@ -45,7 +45,7 @@ class Picture(BaseModel):
     )
     # alternative text
     alternative = models.CharField(
-        max_length=300, blank=True, verbose_name=_("Alternative")
+        max_length=300, blank=True, verbose_name=_("Alternative text")
     )
     # title of the image
     title = models.CharField(max_length=300, blank=True, verbose_name=_("Title"))

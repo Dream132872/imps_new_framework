@@ -30,8 +30,8 @@ msgstr "دریافت کاربر با آی دی {user_id} ناموفق بود : {
 
 #: .\src\core\application\query_handlers\user_query_handlers.py:102
 #, python-brace-format
-msgid "Failed to get search users: {message}"
-msgstr "دریافت کاربر با آی دی {user_id} ناموفق بود : {message}"
+msgid "Failed to search users: {message}"
+msgstr "جستجوی کاربران ناموفق بود: {message}"
 
 #: .\src\core\infrastructure\apps.py:12
 msgid "Core"
@@ -78,8 +78,8 @@ msgid "Image"
 msgstr "عکس"
 
 #: .\src\core\infrastructure\models\picture.py:48
-msgid "Alternative"
-msgstr "جایگزین"
+msgid "Alternative text"
+msgstr "متن جایگزین"
 
 #: .\src\core\infrastructure\models\picture.py:51
 msgid "Title"
