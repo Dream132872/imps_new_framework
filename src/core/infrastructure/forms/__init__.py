@@ -7,6 +7,8 @@ from shared.infrastructure.forms import *
 from parsley.decorators import parsleyfy
 from django.utils.translation import gettext_lazy as _
 
+from shared.infrastructure.forms.fields import PictureField
+
 
 @parsleyfy
 class TestWidgetsForm(Form):
@@ -26,36 +28,38 @@ class TestWidgetsForm(Form):
     form_title = "Custom Widgets Test Form"
     form_id = "test_form"
 
-    checkbox_input = BooleanField()
+    picture = PictureField()
 
-    # Basic Input Widgets
-    text_input = CharField(
-        label="Text Input",
-        help_text="Basic text input field",
-        placeholder="Enter some text",
-        required=True,
-    )
+    # checkbox_input = BooleanField()
 
-    email_input = EmailField(
-        label="Email Input",
-        help_text="Email input with validation",
-        placeholder="Enter your email",
-        required=True,
-    )
+    # # Basic Input Widgets
+    # text_input = CharField(
+    #     label="Text Input",
+    #     help_text="Basic text input field",
+    #     placeholder="Enter some text",
+    #     required=True,
+    # )
 
-    url_input = URLField(
-        label="URL Input",
-        help_text="URL input with validation",
-        placeholder="Enter a URL",
-        required=False,
-    )
+    # email_input = EmailField(
+    #     label="Email Input",
+    #     help_text="Email input with validation",
+    #     placeholder="Enter your email",
+    #     required=True,
+    # )
 
-    number_input = IntegerField(
-        label="Number Input",
-        help_text="Numeric input field",
-        placeholder="Enter a number",
-        required=False,
-    )
+    # url_input = URLField(
+    #     label="URL Input",
+    #     help_text="URL input with validation",
+    #     placeholder="Enter a URL",
+    #     required=False,
+    # )
+
+    # number_input = IntegerField(
+    #     label="Number Input",
+    #     help_text="Numeric input field",
+    #     placeholder="Enter a number",
+    #     required=False,
+    # )
 
     # decimal_input = DecimalField(
     #     label="Decimal Input",

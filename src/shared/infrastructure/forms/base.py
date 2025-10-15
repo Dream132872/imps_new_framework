@@ -246,6 +246,7 @@ class ModelForm(forms.ModelForm):
             Textarea,
             FileInput,
             ClearableFileInput,
+            SelectPicture,
         )
 
         # Widget mapping for automatic widget replacement
@@ -267,6 +268,7 @@ class ModelForm(forms.ModelForm):
             "Textarea": Textarea,
             "FileInput": FileInput,
             "ClearableFileInput": ClearableFileInput,
+            "PictureField": SelectPicture,
         }
 
         for field_name, field in self.fields.items():

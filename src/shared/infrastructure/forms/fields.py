@@ -2,6 +2,8 @@
 Custom implementation for form fields.
 """
 
+from typing import Any
+
 from django import forms as django_forms
 
 from .widgets import *
@@ -187,4 +189,15 @@ class ModelMultipleChoiceField(Field, django_forms.ModelMultipleChoiceField):
 
     def __init__(self, *args, **kwargs) -> None:  # type: ignore
         kwargs.setdefault("widget", SelectMultiple)
+        super().__init__(*args, **kwargs)
+
+
+class PictureField(Field):
+    """
+    This is a new filed to manage single picture.
+    """
+
+    def __init__(self, *args, **kwargs) -> None:  # type: ignore
+        kwargs.setdefault("widget", SelectPicture)
+        kwargs.setdefault("required", False)
         super().__init__(*args, **kwargs)

@@ -26,23 +26,22 @@ from shared.application.dtos import PaginatedResultDTO
 from shared.domain.repositories import UnitOfWork
 from shared.infrastructure import views
 from shared.infrastructure.ioc import inject_dependencies
-from shared.infrastructure.views.mixins import PopupDetectionMixin
 
 logger = logging.getLogger(__name__)
 
 User = get_user_model()
 
 
-class HomeView(views.AdminGenericMixin, views.TemplateView):
+class HomeView(views.AdminGenericMixin, views.FormView):
     permission_required = []
+    form_class = TestWidgetsForm
     page_title = _("Dashboard")
     template_name = "core/base/home.html"
+    success_url = reverse_lazy("core:base:home")
 
-    def get_context_data(self, **kwargs: Dict[str, Any]) -> Dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        context["form"] = TestWidgetsForm()
-        context["popupData"] = {"key": "value"}
-        return context
+    def form_valid(self, form: TestWidgetsForm):
+        print(form.get_form_data())
+        return super().form_valid(form)
 
 
 class TestView(views.AdminGenericMixin, views.TemplateView):
