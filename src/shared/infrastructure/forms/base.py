@@ -50,6 +50,10 @@ class Form(forms.Form):
     def _apply_custom_styling(self) -> None:
         """Apply custom styling to all form fields."""
         for field_name, field in self.fields.items():
+            # set form instance for each field
+            if hasattr(field, "form"):
+                field.form = self
+
             # Set field-specific attributes
             if hasattr(field.widget, "required"):
                 field.widget.required = field.required

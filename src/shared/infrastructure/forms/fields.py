@@ -26,6 +26,7 @@ __all__ = (
     "MultipleChoiceField",
     "ModelChoiceField",
     "ModelMultipleChoiceField",
+    "PictureField",
 )
 
 
@@ -42,6 +43,7 @@ class Field(django_forms.Field):
         self.required = kwargs.get("required", False)
         self.disabled = kwargs.get("disabled", False)
         self.readonly = kwargs.pop("readonly", False)
+        self.form = None
 
         super().__init__(*args, **kwargs)
 

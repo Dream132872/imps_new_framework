@@ -32,13 +32,13 @@ class TestWidgetsForm(Form):
 
     # checkbox_input = BooleanField()
 
-    # # Basic Input Widgets
-    # text_input = CharField(
-    #     label="Text Input",
-    #     help_text="Basic text input field",
-    #     placeholder="Enter some text",
-    #     required=True,
-    # )
+    # Basic Input Widgets
+    text_input = CharField(
+        label="Text Input",
+        help_text="Basic text input field",
+        placeholder="Enter some text",
+        required=True,
+    )
 
     # email_input = EmailField(
     #     label="Email Input",
