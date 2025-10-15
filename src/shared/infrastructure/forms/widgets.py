@@ -324,3 +324,7 @@ class SplitHiddenDateTimeWidget(BaseCustomWidget, forms.SplitHiddenDateTimeWidge
 
 class SelectDateWidget(BaseCustomWidget, forms.SelectDateWidget):
     template_name = "shared/forms/widgets/select_date_widget.html"
+
+
+class SelectPictureWidget(BaseCustomWidget):
+    template_name = 'shared/forms/widgets/select_picture.html'
