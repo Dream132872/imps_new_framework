@@ -60,7 +60,7 @@ class Picture(BaseModel):
     )
 
     # object id for generic relation
-    object_id = models.UUIDField(null=True, blank=True, verbose_name=_("Object id"))
+    object_id = models.CharField(blank=True, verbose_name=_("Object id"))
 
     # content object
     content_object = GenericForeignKey("content_type", "object_id")

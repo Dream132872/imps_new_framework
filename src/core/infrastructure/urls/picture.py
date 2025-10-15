@@ -1,5 +1,5 @@
 """
-core picture urls.
+Core picture urls.
 """
 
 from django.urls import path, include

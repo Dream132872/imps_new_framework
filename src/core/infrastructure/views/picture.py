@@ -1,9 +1,8 @@
 """
-manage picture views.
+Manage picture views.
 """
 
 import logging
-from typing import Any
 
 from django.http import HttpRequest, HttpResponse
 from django.urls import reverse_lazy
@@ -20,20 +19,9 @@ class CreatePictureView(views.AdminGenericMixin, views.FormView):
     permission_required = []
     success_url = reverse_lazy("core:picture:create_picture")
 
-    def get(self, request: HttpRequest, content_type: str, object_id: str, *args: str, **kwargs: Any) -> HttpResponse:  # type: ignore
-        self._content_type = content_type
-        self._object_id = object_id
-        return super().get(request, *args, **kwargs)
-
-    def get_initial(self) -> dict[str, Any]:
-        print(self._content_type, self._object_id)
-
-        initial = super().get_initial()
-        return initial
-
     def form_valid(self, form: UpsertPictureForm) -> HttpResponse:
         return super().form_valid(form)
 
-    def form_invalid(self, form: UpsertPictureForm):
+    def form_invalid(self, form: UpsertPictureForm) -> HttpResponse:
         response = super().form_invalid(form)
         return response
