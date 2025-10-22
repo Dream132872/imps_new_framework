@@ -5,12 +5,14 @@
   {% if widget_obj.field.many %}
     <div class="d-flex justify-content-start align-items-center">
       {% for pic in widget_obj.field.pictures %}
-        <div class="me-3 cursor-pointer">
-          <img src="{{ pic.image.url }}" data-popup-open="{{ pic.image.url }}" data-popup-name="picture_preview_popup" data-popup-features="width={{ pic.image.width }},height={{ pic.image.height }}" width="150" height="150" alt="" />
+        <div class="me-3">
+          <img class="cursor-pointer" src="{{ pic.image.url }}" data-popup-open="{{ pic.image.url }}" data-popup-name="picture_preview_popup" data-popup-features="width={{ pic.image.width }},height={{ pic.image.height }}" width="150" height="150" alt="" />
         </div>
       {% endfor %}
     </div>
   {% else %}
-
+    <div class="me-3">
+      <img class="cursor-pointer" src="{{ widget_obj.field.picture.image.url }}" data-popup-open="{{ widget_obj.field.picture.image.url }}" data-popup-name="picture_preview_popup" data-popup-features="width={{ widget_obj.field.picture.image.width }},height={{ widget_obj.field.picture.image.height }}" width="150" height="150" alt="" />
+    </div>
   {% endif %}
 {% endblock %}

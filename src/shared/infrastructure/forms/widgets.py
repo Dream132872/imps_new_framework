@@ -332,3 +332,6 @@ class SelectDateWidget(BaseCustomWidget, forms.SelectDateWidget):
 
 class SelectPicture(BaseCustomWidget):
     template_name = "shared/forms/widgets/select_picture.html"
+
+    class Media:
+        css = {"all": ["/admin/account/login.css"]}
