@@ -51,6 +51,7 @@ class BaseCustomWidget(forms.Widget):
     default_css_class = ""
     help_text = ""
     field: Any = None
+    bound_field: Any = None
 
     def __init__(
         self,
@@ -101,6 +102,7 @@ class BaseCustomWidget(forms.Widget):
                 "widget_obj": self,
                 "flat_attrs": self.generate_flatten_attrs(context["widget"]["attrs"]),
                 "field": self.field,
+                "bound_field": self.bound_field,
             }
         )
 
@@ -330,48 +332,3 @@ class SelectDateWidget(BaseCustomWidget, forms.SelectDateWidget):
 
 class SelectPicture(BaseCustomWidget):
     template_name = "shared/forms/widgets/select_picture.html"
-
-    def __init__(
-        self,
-        attrs: dict | None = None,
-        help_text: str = "",
-        placeholder: str = "",
-        css_class: str = "",
-        required: bool = False,
-        disabled: bool = False,
-        readonly: bool = False,
-        multi: bool = False,
-        content_type: str = "",
-        object_id: str = "",
-    ) -> None:
-        self._multi = multi
-        self._content_type = content_type
-        self._object_id = object_id
-        super().__init__(
-            attrs, help_text, placeholder, css_class, required, disabled, readonly
-        )
-
-
-    @property
-    def multi(self) -> bool:
-        return self._multi
-
-    @multi.setter
-    def multi(self, value: bool) -> None:
-        self._multi = value
-
-    @property
-    def content_type(self) -> str:
-        return self._content_type
-
-    @content_type.setter
-    def content_type(self, value: str) -> None:
-        self._content_type = value
-
-    @property
-    def object_id(self) -> str:
-        return self._object_id
-
-    @object_id.setter
-    def object_id(self, value: str) -> None:
-        self._object_id = value

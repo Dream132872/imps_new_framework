@@ -39,6 +39,11 @@ class HomeView(views.AdminGenericMixin, views.FormView):
     template_name = "core/base/home.html"
     success_url = reverse_lazy("core:base:home")
 
+    def get_initial(self) -> Dict[str, Any]:
+        initial = super().get_initial()
+        initial["id"] = "2b8b8212-ef3f-4eb5-9893-c29675297087"
+        return initial
+
     def form_valid(self, form: TestWidgetsForm):
         print(form.get_form_data())
         return super().form_valid(form)

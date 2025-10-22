@@ -1,6 +1,8 @@
 from typing import Any, Callable
+from venv import logger
 
 from django import forms
+from django.forms import boundfield
 from django.forms.utils import flatatt
 from django.template.loader import render_to_string
 from django.utils.safestring import SafeText, mark_safe
@@ -49,7 +51,11 @@ class Form(forms.Form):
 
     def _apply_custom_styling(self) -> None:
         """Apply custom styling to all form fields."""
+
         for field_name, field in self.fields.items():
+            # bound field
+            bound_field = self[field_name]
+
             # set form instance for each field
             if hasattr(field, "form"):
                 field.form = self
@@ -60,7 +66,8 @@ class Form(forms.Form):
 
             # Set bound field object to widget
             if hasattr(field.widget, "field"):
-                field.widget.field = self[field_name]
+                field.widget.field = field
+                field.widget.bound_field = bound_field
 
             # Add field name as CSS class for styling
             if hasattr(field.widget, "attrs"):
@@ -234,23 +241,23 @@ class ModelForm(forms.ModelForm):
         """Apply custom styling to all form fields and replace widgets with custom ones."""
         # Import widgets here to avoid circular imports
         from .widgets import (
-            TextInput,
-            EmailInput,
-            URLInput,
-            NumberInput,
-            PasswordInput,
+            CheckboxInput,
+            CheckboxSelectMultiple,
+            ClearableFileInput,
             DateInput,
             DateTimeInput,
-            TimeInput,
-            CheckboxInput,
+            EmailInput,
+            FileInput,
+            NumberInput,
+            PasswordInput,
+            RadioSelect,
             Select,
             SelectMultiple,
-            RadioSelect,
-            CheckboxSelectMultiple,
-            Textarea,
-            FileInput,
-            ClearableFileInput,
             SelectPicture,
+            Textarea,
+            TextInput,
+            TimeInput,
+            URLInput,
         )
 
         # Widget mapping for automatic widget replacement

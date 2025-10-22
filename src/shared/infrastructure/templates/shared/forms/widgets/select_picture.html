@@ -2,7 +2,11 @@
 {% load i18n %}
 
 {% block content %}
-  <div>
-    <p>hello</p>
-  </div>
+  {% if widget_obj.field.many %}
+    <div>
+      <p>picture: {{ widget_obj.field.picture }}</p>
+    </div>
+  {% else %}
+
+  {% endif %}
 {% endblock %}

@@ -3,6 +3,7 @@ Comprehensive test form for all custom widgets.
 This form demonstrates all available widget types in the shared domain.
 """
 
+import uuid
 from shared.infrastructure.forms import *
 from parsley.decorators import parsleyfy
 from django.utils.translation import gettext_lazy as _
@@ -28,17 +29,36 @@ class TestWidgetsForm(Form):
     form_title = "Custom Widgets Test Form"
     form_id = "test_form"
 
-    picture = PictureField()
+    id = CharField(initial=uuid.uuid4)
 
-    # checkbox_input = BooleanField()
+    avatar = PictureField(
+        object_id_field="id",
+        app_label="core_infrastructure",
+        model_name="user",
+        picture_type="avatar",
+        help_text="avatar image",
+        label="User avatar",
+    )
+
+    banners = PictureField(
+        object_id_field="id",
+        app_label="core_infrastructure",
+        model_name="user",
+        picture_type="banner",
+        help_text="banner image",
+        label="User banner",
+        many=True,
+    )
 
     # Basic Input Widgets
     text_input = CharField(
-        label="Text Input",
+        label="Text input",
         help_text="Basic text input field",
         placeholder="Enter some text",
         required=True,
     )
+
+    # checkbox_input = BooleanField()
 
     # email_input = EmailField(
     #     label="Email Input",

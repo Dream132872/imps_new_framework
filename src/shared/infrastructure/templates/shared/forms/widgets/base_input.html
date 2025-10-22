@@ -1,11 +1,11 @@
-<div class="form-group mb-4 field-wrapper{% if field.errors %} has-error{% endif %}{% if field.is_hidden %} d-none{% endif %}">
+<div class="form-group mb-4 field-wrapper{% if bound_field.errors %} has-error{% endif %}{% if field.is_hidden %} d-none{% endif %}">
   <div class="row">
     <div class="col-lg-2">
       <label for="{{ field.id_for_label }}" class="form-label">
-        {% if field.label %}
-          {{ field.label }}
+        {% if bound_field.label %}
+          {{ bound_field.label }}
         {% else %}
-          {{ field.name }}
+          {{ bound_field.name }}
         {% endif %}
         {% if field.required %}
           <span class="text-danger">*</span>
@@ -21,9 +21,9 @@
 
       {% endblock %}
       <div class="d-flex justify-content-between align-items-center flex-wrap">
-        {% if field.errors %}
+        {% if bound_field.errors %}
           <div class="invalid-feedback">
-            {% for error in field.errors %}
+            {% for error in bound_field.errors %}
               <span>{{ error }}</span>
               {% if not forloop.last %}
                 <span class="ms-1 me-1">|</span>

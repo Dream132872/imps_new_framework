@@ -2,9 +2,12 @@
 Custom implementation for form fields.
 """
 
-from typing import Any
+from __future__ import annotations
 
 from django import forms as django_forms
+from django.contrib.contenttypes.models import ContentType
+
+from core.infrastructure.models.picture import Picture
 
 from .widgets import *
 
@@ -196,10 +199,73 @@ class ModelMultipleChoiceField(Field, django_forms.ModelMultipleChoiceField):
 
 class PictureField(Field):
     """
-    This is a new filed to manage single picture.
+    This is a new filed to manage pictures.
     """
 
-    def __init__(self, *args, **kwargs) -> None:  # type: ignore
+    def __init__(
+        self,
+        object_id_field: str,
+        app_label: str | None = None,
+        model_name: str | None = None,
+        picture_type: str = "main",
+        many: bool = False,
+        *args,  # type: ignore
+        **kwargs,  # type: ignore
+    ) -> None:
         kwargs.setdefault("widget", SelectPicture)
-        kwargs.setdefault("required", False)
+        kwargs["required"] = False
+        self.object_id = None
+        # should manage multiple image or not
+        self.many = many
+        # type of the picture (contains all picture types in picture model)
+        self.picture_type = picture_type
+        # app_label and model_name to get right ContentType instance
+        self.app_label = app_label
+        self.model_name = model_name
+
+        # current picture (if it's not many)
+        self.current_picture = None
+        # current pictures (if it's many)
+        self.current_pictures = []
+
+        # object_id field
+        self.object_id_field = object_id_field
+
         super().__init__(*args, **kwargs)
+
+    def get_bound_field(
+        self, form: django_forms.BaseForm, field_name: str
+    ) -> django_forms.BoundField:
+        bound_field = super().get_bound_field(form, field_name)
+        bound_field.content_type = self.content_type
+        bound_field.picture = self.picture
+        bound_field.pictures = self.pictures
+        bound_field.many = self.many
+        bound_field.picture_type = self.picture_type
+        self.object_id = form[getattr(self, "object_id_field")].initial
+
+        return bound_field
+
+    def content_type(self) -> ContentType | None:
+        if self.app_label and self.model_name:
+            return ContentType.objects.get_by_natural_key(
+                app_label=self.app_label, model=self.model_name
+            )
+
+        return None
+
+    def picture(self) -> Picture | None:
+        return Picture.objects.filter(
+            content_type=self.content_type(),
+            object_id=self.object_id,
+            picture_type=self.picture_type,
+        ).first()
+
+    def pictures(self) -> list[Picture]:
+        return list(
+            Picture.objects.filter(
+                content_type=self.content_type(),
+                object_id=self.object_id,
+                picture_type=self.picture_type,
+            )
+        )
