@@ -123,6 +123,11 @@
 .font-50 {
     font-size: 50px;
 }
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
 /* end base classes */
 
 /* start form related classes */

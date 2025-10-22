@@ -13,11 +13,6 @@ from shared.infrastructure.forms.fields import PictureField
 
 @parsleyfy
 class TestWidgetsForm(Form):
-    """
-    Comprehensive test form showcasing all available custom widgets.
-    This form can be used to test the rendering and functionality of all widgets.
-    """
-
     class Meta:
         parsley_extras = {
             "email_input": {
@@ -45,18 +40,18 @@ class TestWidgetsForm(Form):
         app_label="core_infrastructure",
         model_name="user",
         picture_type="banner",
+        many=True,
         help_text="banner image",
         label="User banner",
-        many=True,
     )
 
-    # Basic Input Widgets
-    text_input = CharField(
-        label="Text input",
-        help_text="Basic text input field",
-        placeholder="Enter some text",
-        required=True,
-    )
+    # # Basic Input Widgets
+    # text_input = CharField(
+    #     label="Text input",
+    #     help_text="Basic text input field",
+    #     placeholder="Enter some text",
+    #     required=True,
+    # )
 
     # checkbox_input = BooleanField()
 

@@ -85,7 +85,6 @@ class Picture(BaseModel):
         db_table = "pictures"
         verbose_name = _("Picture")
         verbose_name_plural = _("Pictures")
-        unique_together = [["content_type", "object_id", "picture_type"]]
         ordering = ["display_order", "-created_at"]
         indexes = [
             models.Index(fields=["content_type", "object_id", "picture_type"]),
