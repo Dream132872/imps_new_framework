@@ -30,7 +30,20 @@
       {% endfor %}
       <div class="me-3 mb-3">
         <div class="image-box add-image rounded-3 cursor-pointer">
-          <img src="{% static 'shared/images/common/plus.png' %}" width="150" height="150" alt="Add new image" data-popup-open="{% url 'core:picture:create' content_type=widget_obj.field.content_type.id object_id=widget_obj.field.object_id %}" data-popup-name="user_profile_popup" />
+          <img src="{% static 'shared/images/defaults/dummy_150x150.jpg' %}" width="150" height="150" alt="Add new image" />
+          <div class="overlay d-flex flex-column justify-content-end align-items-center w-100 h-100" data-popup-open="{% url 'core:picture:create' content_type=widget_obj.field.content_type.id object_id=widget_obj.field.object_id %}" data-popup-name="user_profile_popup">
+            <div class="actions w-100 mb-3">
+              <div class="container-fluid">
+                <div class="row">
+                  <div class="col-4 text-center"></div>
+                  <div class="col-4 text-center">
+                    <a class="action-button cursor-pointer"><i class="bi bi-plus-lg"></i></a>
+                  </div>
+                  <div class="col-4 text-center"></div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
