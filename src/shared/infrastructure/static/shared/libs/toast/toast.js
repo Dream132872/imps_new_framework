@@ -1,7 +1,7 @@
 function showToast(
+    title,
     message,
     type = "info",
-    title = "Notification",
     duration = 5000
 ) {
     // Validate dependencies
@@ -31,8 +31,8 @@ function showToast(
         $(`<div id="${toastId}" class="toast ${toastClass}" role="alert" aria-live="assertive" aria-atomic="true">
           <div class="toast-header">
             <i class="bi ${iconClass} me-2"></i>
-            <strong class="me-auto">${title}</strong>
-            <small class="text-muted">${new Date().toLocaleTimeString()}</small>
+            <strong class="me-auto text-white">${title}</strong>
+            <small class="text-white">${new Date().toLocaleTimeString()}</small>
             <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
           </div>
           <div class="toast-body">${message}</div>
@@ -54,10 +54,10 @@ function showToast(
 
 function getIconClass(type) {
     const icons = {
-        success: "bi-check-circle-fill text-success",
-        error: "bi-exclamation-triangle-fill text-danger",
-        warning: "bi-exclamation-triangle-fill text-warning",
-        info: "bi-info-circle-fill text-info",
+        success: "bi-check-circle-fill text-white",
+        error: "bi-exclamation-triangle-fill text-white",
+        warning: "bi-exclamation-triangle-fill text-white",
+        info: "bi-info-circle-fill text-white",
     };
     return icons[type] || icons["info"];
 }
@@ -70,4 +70,11 @@ function getToastClass(type) {
         info: "toast-info",
     };
     return toastClass[type] || toastClass["info"];
+}
+
+function testToast(){
+    showToast('موفقیت', 'عملیات با موفقیت انجام شد', 'success', 100000);
+    showToast('اعلان', 'پردازش مورد نظر در حال اجرا می باشد', 'info', 100000);
+    showToast('اخطار', 'اطلاعات مورد نظر کامل نیست', 'warning', 100000);
+    showToast('موفقیت', 'عملیات با خطا مواجه شد', 'error', 100000);
 }
