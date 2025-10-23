@@ -1,0 +1,84 @@
+@keyframes ShowPickImageActionButtonsAnimation {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes HidePickImageActionButtonsAnimation {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+}
+
+@keyframes ShowActionButtonAnimation {
+    0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.8);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes HideActionButtonAnimation {
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.8);
+    }
+}
+
+.pick-image .image-box {
+    position: relative;
+    overflow: hidden;
+}
+
+.pick-image .image-box .overlay {
+    position: absolute;
+    top: 0;
+    inset-inline-start: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0));
+    opacity: 0;
+    transition: all ease 0.3s;
+}
+
+.pick-image .image-box .overlay:hover {
+    /* animation: ShowPickImageActionButtonsAnimation forwards .3s; */
+}
+
+.pick-image .image-box .overlay .actions .col-4 {
+    opacity: 0;
+    transform: translateY(20px) scale(0.8);
+}
+
+.pick-image .image-box .overlay .actions .action-button {
+    color: white;
+    display: inline-block;
+    outline: none;
+    border: none;
+    background-color: transparent;
+    font-size: 1.3rem;
+    transition: all ease 0.3s;
+}
+
+.pick-image .image-box .overlay .actions .action-button:hover {
+    transform: scale(1.1) translateY(-3px);
+}

@@ -124,7 +124,8 @@ class Form(forms.Form):
         bound_field = self[field_name]
 
         context = {
-            "field": bound_field,
+            "field": field,
+            "bound_field": bound_field,
             "field_name": field_name,
             "field_errors": bound_field.errors,
             "field_value": bound_field.value(),
@@ -354,7 +355,8 @@ class ModelForm(forms.ModelForm):
         bound_field = self[field_name]
 
         context = {
-            "field": bound_field,
+            "field": field,
+            "bound_field": bound_field,
             "field_name": field_name,
             "field_errors": bound_field.errors,
             "field_value": bound_field.value(),

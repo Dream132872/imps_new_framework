@@ -334,4 +334,5 @@ class SelectPicture(BaseCustomWidget):
     template_name = "shared/forms/widgets/select_picture.html"
 
     class Media:
-        css = {"all": ["/admin/account/login.css"]}
+        css = {"all": ["shared/libs/select-picture/main.css"]}
+        js = ["shared/libs/select-picture/main.js"]

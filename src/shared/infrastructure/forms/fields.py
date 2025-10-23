@@ -50,8 +50,7 @@ class Field(django_forms.Field):
         self.form = None
 
         if self.hidden:
-            print("hello")
-            kwargs.setdefault("widget", HiddenInput)
+            kwargs["widget"] = HiddenInput
 
         super().__init__(*args, **kwargs)
 

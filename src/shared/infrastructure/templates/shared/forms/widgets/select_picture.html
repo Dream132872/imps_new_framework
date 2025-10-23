@@ -3,16 +3,35 @@
 
 {% block content %}
   {% if widget_obj.field.many %}
-    <div class="d-flex justify-content-start align-items-center">
+    <div class="d-flex justify-content-start align-items-center pick-image">
       {% for pic in widget_obj.field.pictures %}
         <div class="me-3">
-          <img class="cursor-pointer" src="{{ pic.image.url }}" data-popup-open="{{ pic.image.url }}" data-popup-name="picture_preview_popup" data-popup-features="width={{ pic.image.width }},height={{ pic.image.height }}" width="150" height="150" alt="" />
+          <div class="image-box">
+            <img src="{{ pic.image.url }}" data-popup-open="{{ pic.image.url }}" data-popup-name="picture_preview_popup" data-popup-features="width={{ pic.image.width }},height={{ pic.image.height }}" width="180" height="180" alt="" />
+            <div class="overlay d-flex flex-column justify-content-end align-items-center w-100 h-100">
+              <div class="actions w-100 mb-3">
+                <div class="container-fluid">
+                  <div class="row">
+                    <div class="col-4 text-center">
+                      <a class="action-button cursor-pointer" data-popup-open="{{ widget_obj.field.picture.image.url }}" data-popup-name="picture_preview_popup" data-popup-features="width={{ widget_obj.field.picture.image.width }},height={{ widget_obj.field.picture.image.height }}"><i class="bi bi-eye"></i></a>
+                    </div>
+                    <div class="col-4 text-center">
+                      <a class="action-button cursor-pointer"><i class="bi bi-pen"></i></a>
+                    </div>
+                    <div class="col-4 text-center">
+                      <a class="action-button cursor-pointer"><i class="bi bi-trash"></i></a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       {% endfor %}
     </div>
   {% else %}
     <div class="me-3">
-      <img class="cursor-pointer" src="{{ widget_obj.field.picture.image.url }}" data-popup-open="{{ widget_obj.field.picture.image.url }}" data-popup-name="picture_preview_popup" data-popup-features="width={{ widget_obj.field.picture.image.width }},height={{ widget_obj.field.picture.image.height }}" width="150" height="150" alt="" />
+      <img class="cursor-pointer" src="{{ widget_obj.field.picture.image.url }}" data-popup-open="{{ widget_obj.field.picture.image.url }}" data-popup-name="picture_preview_popup" data-popup-features="width={{ widget_obj.field.picture.image.width }},height={{ widget_obj.field.picture.image.height }}" width="180" height="180" alt="" />
     </div>
   {% endif %}
 {% endblock %}

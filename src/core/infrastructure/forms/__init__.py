@@ -24,7 +24,7 @@ class TestWidgetsForm(Form):
     form_title = "Custom Widgets Test Form"
     form_id = "test_form"
 
-    id = CharField(initial=uuid.uuid4, hidden=True)
+    id = CharField(initial=uuid.uuid4)
 
     avatar = PictureField(
         object_id_field="id",
