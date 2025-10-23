@@ -27,7 +27,7 @@ $(".image-box").on("mouseleave", function (e) {
 
     // Animate each button with different delays (reverse order)
     actionButtons.each(function(index) {
-        const delay = (actionButtons.length - 1 - index) * 0.5; // Reverse order delay
+        const delay = (actionButtons.length - 1 - index) * 0.05; // Reverse order delay
         $(this).css("animation", `HideActionButtonAnimation forwards .3s ${delay}s`);
     });
 });

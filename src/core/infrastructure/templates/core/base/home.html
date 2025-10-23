@@ -6,23 +6,8 @@
 {% endblock %}
 
 {% block content %}
-  {% comment %} <ul>
-    {% for user in page_obj.items %}
-      <li>{{ user.username }}</li>
-    {% endfor %}
-  </ul>
-  <p dir="ltr">{{ page_obj.pagination_info.as_dict }}</p>
-  <hr /> {% endcomment %}
-
   <div class="row">
     <div class="col-lg-12">
-      {% with content_type='user' %}
-        {% with object_id='sldkhjfsldkflksjdf' %}
-          <button data-popup-open="{% url 'core:picture:create' content_type=content_type object_id=object_id %}" data-popup-name="user_profile_popup">open test page</button>
-        {% endwith %}
-      {% endwith %}
-
-      <hr />
       {% render_form form %}
     </div>
   </div>
