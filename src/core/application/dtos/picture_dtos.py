@@ -13,6 +13,8 @@ __all__ = ("PictureDTO",)
 
 @dataclass
 class PictureDTO:
+    """Data Transfer Object for picture."""
+
     id: uuid.UUID
     image: FileFieldDTO
     picture_type: str

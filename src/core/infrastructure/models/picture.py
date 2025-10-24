@@ -55,12 +55,10 @@ class Picture(BaseModel):
         ContentType,
         on_delete=models.CASCADE,
         verbose_name=_("Content type"),
-        null=True,
-        blank=True,
     )
 
     # object id for generic relation
-    object_id = models.CharField(blank=True, verbose_name=_("Object id"))
+    object_id = models.CharField(verbose_name=_("Object id"))
 
     # content object
     content_object = GenericForeignKey("content_type", "object_id")

@@ -279,7 +279,7 @@ class PictureField(Field):
         content_type = self.content_type()
 
         return dispatch_query(
-            SearchPictureQuery(
+            SearchPicturesQuery(
                 picture_type=self.picture_type,
                 content_type_id=content_type.id if content_type else None,
                 object_id=self.object_id,

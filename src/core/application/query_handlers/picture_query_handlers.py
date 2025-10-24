@@ -10,8 +10,6 @@ from injector import inject
 
 from core.application.dtos import PictureDTO
 from core.application.queries.picture_queries import *
-from core.application.queries.picture_queries import SearchPictureQuery
-from core.application.queries.picture_queries import SearchFirstPictureQuery
 from core.domain.entities import Picture
 from core.domain.exceptions import *
 from core.domain.repositories import PictureRepository
@@ -54,10 +52,12 @@ class BasePictureQueryHandler:
         )
 
 
-class SearchPictureQueryHandler(
-    QueryHandler[SearchPictureQuery, list[PictureDTO]], BasePictureQueryHandler
+class SearchPicturesQueryHandler(
+    QueryHandler[SearchPicturesQuery, list[PictureDTO]], BasePictureQueryHandler
 ):
-    def handle(self, query: SearchPictureQuery) -> list[PictureDTO]:
+    """Searches between all pictures based on query inputs."""
+
+    def handle(self, query: SearchPicturesQuery) -> list[PictureDTO]:
         with self.uow:
             pictures = self.uow[PictureRepository].search_pictures(
                 content_type=query.content_type_id,
@@ -71,6 +71,8 @@ class SearchPictureQueryHandler(
 class SearchFirstPictureQueryHandler(
     QueryHandler[SearchFirstPictureQuery, PictureDTO | None], BasePictureQueryHandler
 ):
+    """Finds the first picture based on query inputs."""
+
     def handle(self, query: SearchFirstPictureQuery) -> PictureDTO | None:
         with self.uow:
             picture = self.uow[PictureRepository].search_first_picture(

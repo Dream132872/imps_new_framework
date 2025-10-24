@@ -4,6 +4,7 @@ Picture related domain implementations.
 
 from datetime import datetime
 from typing import Any
+import uuid
 
 from shared.domain.entities import AggregateRoot, FileField
 from shared.domain.events import Any
@@ -17,10 +18,10 @@ class Picture(AggregateRoot):
         image: FileField,
         picture_type: str,
         content_type: int,
+        object_id: int | uuid.UUID,
         id: str | None = None,
         title: str | None = None,
         alternative: str | None = None,
-        object_id: str | None = None,
         created_at: datetime | None = None,
         updated_at: datetime | None = None,
     ) -> None:
@@ -30,7 +31,7 @@ class Picture(AggregateRoot):
         self._alternative = alternative or ""
         self._title = title or ""
         self._content_type = content_type
-        self._object_id = object_id or ""
+        self._object_id = object_id
 
     @property
     def image(self) -> FileField:
@@ -53,7 +54,7 @@ class Picture(AggregateRoot):
         return self._content_type
 
     @property
-    def object_id(self) -> str:
+    def object_id(self) -> int | uuid.UUID:
         return self._object_id
 
     def update_image(self, new_image: FileField) -> None:

@@ -38,6 +38,14 @@ class BaseUserQueryHandler:
         self.uow = uow
 
     def _to_dto(self, user: User) -> UserDTO:
+        """Map the UserEntity to UserDTO
+
+        Args:
+            user (User): an instance of User entity.
+
+        Returns:
+            UserDTO: an instance of UserDTO
+        """
         return UserDTO(
             id=user.id,  # type: ignore
             username=user.username,
@@ -55,6 +63,8 @@ class BaseUserQueryHandler:
 class GetUserByIdQueryHandler(
     QueryHandler[GetUserByIdQuery, UserDTO], BaseUserQueryHandler
 ):
+    """Handle GetUserById query."""
+
     def handle(self, query: GetUserByIdQuery) -> UserDTO:
         try:
             with self.uow:
@@ -76,6 +86,8 @@ class GetUserByIdQueryHandler(
 class SearchUsersQueryHandler(
     QueryHandler[SearchUsersQuery, PaginatedResultDTO], BaseUserQueryHandler
 ):
+    """Handle SearchUsers query"""
+
     def handle(self, query: SearchUsersQuery) -> PaginatedResultDTO:
         try:
             with self.uow:

@@ -8,13 +8,13 @@ from dataclasses import dataclass
 from shared.application.cqrs import Query
 
 __all__ = (
-    "SearchPictureQuery",
+    "SearchPicturesQuery",
     "SearchFirstPictureQuery",
 )
 
 
 @dataclass
-class SearchPictureQuery(Query):
+class SearchPicturesQuery(Query):
     # django content type foreign key
     content_type_id: int | None = None
     # object id of related model
@@ -24,5 +24,5 @@ class SearchPictureQuery(Query):
 
 
 @dataclass
-class SearchFirstPictureQuery(SearchPictureQuery):
+class SearchFirstPictureQuery(SearchPicturesQuery):
     pass
