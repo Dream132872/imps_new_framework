@@ -3,6 +3,7 @@ Custom implementation for form fields.
 """
 
 from __future__ import annotations
+from functools import lru_cache
 
 from django import forms as django_forms
 from django.contrib.contenttypes.models import ContentType
@@ -252,6 +253,7 @@ class PictureField(Field):
 
         return bound_field
 
+    @lru_cache
     def content_type(self) -> ContentType | None:
         if self.app_label and self.model_name:
             return ContentType.objects.get_by_natural_key(
@@ -260,6 +262,7 @@ class PictureField(Field):
 
         return None
 
+    @lru_cache
     def picture(self) -> PictureDTO | None:
         content_type = self.content_type()
 
@@ -271,6 +274,7 @@ class PictureField(Field):
             )
         )
 
+    @lru_cache
     def pictures(self) -> list[PictureDTO]:
         content_type = self.content_type()
 
