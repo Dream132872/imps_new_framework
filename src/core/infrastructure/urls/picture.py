@@ -18,6 +18,11 @@ urlpatterns = [
                         picture.CreatePictureView.as_view(),
                         name="create",
                     ),
+                    path(
+                        "create/<str:picture_id>/",
+                        picture.UpdatePictureView.as_view(),
+                        name="create",
+                    ),
                 ],
                 "picture",
             ),

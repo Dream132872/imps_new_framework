@@ -1,6 +1,5 @@
 """
-CQRS Service for Core.
-register all command and query handlers with the buses.
+CQRS Service for User.
 """
 
 from core.application.command_handlers import *

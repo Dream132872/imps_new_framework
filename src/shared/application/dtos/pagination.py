@@ -1,9 +1,11 @@
 """
-Shared implementation of DTOs.
+Implementation of pagination dto.
 """
 
 from dataclasses import dataclass
 from typing import Any
+
+__all__ = ("PaginationInfoDTO", "PaginatedResultDTO")
 
 
 @dataclass

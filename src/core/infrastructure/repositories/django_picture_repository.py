@@ -3,9 +3,11 @@ Django repository implementation for picture.
 """
 
 import uuid
+
 from core.domain.entities import Picture
 from core.domain.repositories import PictureRepository
 from core.infrastructure.models import Picture as PictureModel
+from shared.domain.factories import FileFieldFactory
 from shared.infrastructure.repositories import DjangoRepository
 
 __all__ = ("DjangoPictureRepository",)
@@ -20,11 +22,12 @@ class DjangoPictureRepository(DjangoRepository[Picture], PictureRepository):
         super().__init__(PictureModel, Picture)
 
     def _model_to_entity(self, model: PictureModel) -> Picture:
+        image = FileFieldFactory.from_image_field(model.image)
         return Picture(
-            id=model.id,
+            id=model.id,  # type: ignore
             created_at=model.created_at,
             updated_at=model.updated_at,
-            image=str(model.image),
+            image=image,
             title=model.title,
             alternative=model.alternative,
             picture_type=model.picture_type,
@@ -55,3 +58,42 @@ class DjangoPictureRepository(DjangoRepository[Picture], PictureRepository):
             model.object_id = uuid.UUID(entity.object_id) if entity.object_id else None
 
         return model
+
+    def search_pictures(
+        self,
+        content_type: int | None = None,
+        object_id: int | uuid.UUID | None = None,
+        picture_type: str = "",
+    ) -> list[Picture]:
+        pictures = self.model_class.objects.all()
+
+        if content_type and content_type is not None:
+            pictures = pictures.filter(content_type_id=content_type)
+
+        if object_id and object_id is not None:
+            pictures = pictures.filter(object_id=object_id)
+
+        if picture_type and picture_type is not None:
+            pictures = pictures.filter(picture_type__iexact=picture_type)
+
+        return [self._model_to_entity(p) for p in list(pictures)]
+
+    def search_first_picture(
+        self,
+        content_type: int | None = None,
+        object_id: int | uuid.UUID | None = None,
+        picture_type: str = "",
+    ) -> Picture | None:
+        pictures = self.model_class.objects.all()
+
+        if content_type and content_type is not None:
+            pictures = pictures.filter(content_type_id=content_type)
+
+        if object_id and object_id is not None:
+            pictures = pictures.filter(object_id=object_id)
+
+        if picture_type and picture_type is not None:
+            pictures = pictures.filter(picture_type__iexact=picture_type)
+
+        first_picture = pictures.first()
+        return self._model_to_entity(first_picture) if first_picture else None

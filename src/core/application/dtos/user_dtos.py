@@ -7,6 +7,9 @@ from dataclasses import dataclass
 from datetime import datetime
 
 
+__all__ = ("UserDTO",)
+
+
 @dataclass
 class UserDTO:
     id: uuid.UUID

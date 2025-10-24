@@ -5,7 +5,7 @@ Picture related domain implementations.
 from datetime import datetime
 from typing import Any
 
-from shared.domain.entities import AggregateRoot
+from shared.domain.entities import AggregateRoot, FileField
 from shared.domain.events import Any
 
 __all__ = ("Picture",)
@@ -14,26 +14,26 @@ __all__ = ("Picture",)
 class Picture(AggregateRoot):
     def __init__(
         self,
-        image: str,
+        image: FileField,
         picture_type: str,
-        content_type: str | None = None,
-        object_id: str | None = None,
+        content_type: int,
         id: str | None = None,
-        created_at: datetime | None = None,
-        updated_at: datetime | None = None,
         title: str | None = None,
         alternative: str | None = None,
+        object_id: str | None = None,
+        created_at: datetime | None = None,
+        updated_at: datetime | None = None,
     ) -> None:
         super().__init__(id, created_at, updated_at)
         self._image = image
         self._picture_type = picture_type
         self._alternative = alternative or ""
         self._title = title or ""
-        self._content_type = content_type or ""
+        self._content_type = content_type
         self._object_id = object_id or ""
 
     @property
-    def image(self) -> str:
+    def image(self) -> FileField:
         return self._image
 
     @property
@@ -49,21 +49,21 @@ class Picture(AggregateRoot):
         return self._picture_type
 
     @property
-    def content_type(self) -> str:
+    def content_type(self) -> int:
         return self._content_type
 
     @property
     def object_id(self) -> str:
         return self._object_id
 
-    def update_image(self, new_image_path: str) -> None:
+    def update_image(self, new_image: FileField) -> None:
         """Update the image itself.
 
         Args:
-            new_image_path (str): new address of the image.
+            new_image (str): new address of the image.
         """
         old_image = self.image
-        self._image = new_image_path
+        self._image = new_image
         self.update_timestamp()
 
     def update_information(
@@ -84,14 +84,18 @@ class Picture(AggregateRoot):
         self.update_timestamp()
 
     def __str__(self) -> str:
-        return f"{self.image}"
+        return f"{self.image.name}"
 
     def __repr__(self) -> str:
-        return f"<PictureEntity id={self.id} image={self.image} />"
+        return f"<PictureEntity id={self.id} image={self.image.name} />"
 
     def to_dict(self) -> dict[str, Any]:
         base_dict = super().to_dict()
         base_dict.update(
-            {"image": self.image, "title": self.title, "alternative": self.alternative}
+            {
+                "image": self.image.to_dict(),
+                "title": self.title,
+                "alternative": self.alternative,
+            }
         )
         return base_dict

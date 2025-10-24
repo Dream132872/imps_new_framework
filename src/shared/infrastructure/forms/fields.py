@@ -7,7 +7,9 @@ from __future__ import annotations
 from django import forms as django_forms
 from django.contrib.contenttypes.models import ContentType
 
-from core.infrastructure.models.picture import Picture
+from core.application.dtos import PictureDTO
+from core.application.queries.picture_queries import *
+from shared.application.cqrs import dispatch_query
 
 from .widgets import *
 
@@ -258,18 +260,24 @@ class PictureField(Field):
 
         return None
 
-    def picture(self) -> Picture | None:
-        return Picture.objects.filter(
-            content_type=self.content_type(),
-            object_id=self.object_id,
-            picture_type=self.picture_type,
-        ).first()
+    def picture(self) -> PictureDTO | None:
+        content_type = self.content_type()
 
-    def pictures(self) -> list[Picture]:
-        return list(
-            Picture.objects.filter(
-                content_type=self.content_type(),
-                object_id=self.object_id,
+        return dispatch_query(
+            SearchFirstPictureQuery(
                 picture_type=self.picture_type,
+                content_type_id=content_type.id if content_type else None,
+                object_id=self.object_id,
+            )
+        )
+
+    def pictures(self) -> list[PictureDTO]:
+        content_type = self.content_type()
+
+        return dispatch_query(
+            SearchPictureQuery(
+                picture_type=self.picture_type,
+                content_type_id=content_type.id if content_type else None,
+                object_id=self.object_id,
             )
         )
