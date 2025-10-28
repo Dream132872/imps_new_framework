@@ -7,8 +7,8 @@ from typing import Any
 
 from django.utils.translation import gettext_lazy as _
 
-from shared.application.dtos import *
-from shared.domain.pagination import *
+from shared.application.dtos import PaginatedResultDTO, PaginationInfoDTO
+from shared.domain.pagination import DomainPaginator
 
 __all__ = ("convert_to_paginated_result_dto",)
 

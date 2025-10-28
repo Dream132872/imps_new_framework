@@ -8,7 +8,7 @@ from typing import Any
 from django.contrib.auth.hashers import make_password
 
 from shared.domain.entities import AggregateRoot, ValueObject
-from shared.domain.exceptions import ValidationError
+from shared.domain.exceptions import DomainValidationError
 
 __all__ = ("User", "Email")
 
@@ -20,7 +20,7 @@ class Email(ValueObject):
 
     def __init__(self, value: str) -> None:
         if not self._is_valid_email(value):
-            raise ValidationError("Invalid email format")
+            raise DomainValidationError("Invalid email format")
         self._value = value
 
     @property
@@ -42,14 +42,13 @@ class Email(ValueObject):
 
 
 class User(AggregateRoot):
-
     def __init__(
         self,
         username: str,
         password: str,
         last_name: str | None = "",
         first_name: str | None = "",
-        email: str | None = "",
+        email: str | None = None,
         is_staff: bool = False,
         is_superuser: bool = False,
         is_active: bool = True,
@@ -118,7 +117,7 @@ class User(AggregateRoot):
         self.update_timestamp()
 
     def demote_from_staff(self) -> None:
-        """Remove staff previllages from user."""
+        """Remove staff privileges from user."""
         self._is_staff = False
         self.update_timestamp()
 
@@ -129,8 +128,8 @@ class User(AggregateRoot):
         self.update_timestamp()
 
     def demote_from_superuser(self) -> None:
-        """Remove superuser previllages from user."""
-        self._is_superuser = True
+        """Remove superuser privileges from user."""
+        self._is_superuser = False
         self.update_timestamp()
 
     def activate(self) -> None:

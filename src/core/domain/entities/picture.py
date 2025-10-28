@@ -7,7 +7,6 @@ from typing import Any
 import uuid
 
 from shared.domain.entities import AggregateRoot, FileField
-from shared.domain.events import Any
 
 __all__ = ("Picture",)
 
@@ -63,7 +62,7 @@ class Picture(AggregateRoot):
         Args:
             new_image (str): new address of the image.
         """
-        old_image = self.image
+        # old_image = self.image
         self._image = new_image
         self.update_timestamp()
 
@@ -85,7 +84,7 @@ class Picture(AggregateRoot):
         self.update_timestamp()
 
     def __str__(self) -> str:
-        return f"{self.image.name}"
+        return self.image.name
 
     def __repr__(self) -> str:
         return f"<PictureEntity id={self.id} image={self.image.name} />"

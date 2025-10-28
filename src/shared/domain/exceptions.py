@@ -7,7 +7,7 @@ __all__ = (
     "InvalidEntityError",
     "BusinessRuleViolationError",
     "ConcurrencyError",
-    "ValidationError",
+    "DomainValidationError",
 )
 
 
@@ -31,5 +31,5 @@ class ConcurrencyError(DomainException):
     """Raised when there's a concurrency conflict."""
 
 
-class ValidationError(DomainException):
+class DomainValidationError(DomainException):
     """Raised when validation fails."""

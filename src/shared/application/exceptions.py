@@ -16,5 +16,13 @@ class ApplicationError(Exception):
         super().__init__(self.message)
 
 
+class ValidationError(ApplicationError):
+    """Exception raised when there's a validation error."""
+
+
+class NotFoundError(ApplicationError):
+    """Exception raised when expected item is not found."""
+
+
 class ConfigurationError(ApplicationError):
     """Exception raised when there's a configuration error."""

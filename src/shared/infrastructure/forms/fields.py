@@ -3,13 +3,17 @@ Custom implementation for form fields.
 """
 
 from __future__ import annotations
+
 from functools import lru_cache
 
 from django import forms as django_forms
 from django.contrib.contenttypes.models import ContentType
 
-from core.application.dtos import PictureDTO
-from core.application.queries.picture_queries import *
+from core.application.dtos.picture_dtos import PictureDTO
+from core.application.queries.picture_queries import (
+    SearchFirstPictureQuery,
+    SearchPicturesQuery,
+)
 from shared.application.cqrs import dispatch_query
 
 from .widgets import *

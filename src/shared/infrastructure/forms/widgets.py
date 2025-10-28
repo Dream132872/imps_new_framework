@@ -8,7 +8,6 @@ from django import forms
 from django.forms.utils import flatatt
 from django.template.loader import render_to_string
 from django.utils.safestring import SafeText, mark_safe
-from rosetta.templatetags.rosetta import mult
 
 __all__ = (
     "TextInput",

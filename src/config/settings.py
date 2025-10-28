@@ -366,7 +366,7 @@ LOGGING = {
 os.makedirs("logs", exist_ok=True)
 
 # debug toolbar configuration
-if DEBUG and not TESTING:
+if not TESTING:
     INSTALLED_APPS.append(
         "debug_toolbar",
     )

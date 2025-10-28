@@ -23,9 +23,9 @@ class FileField(ValueObject):
     def __init__(
         self,
         file_type: FileType,
+        name: str,
         path: str,
         url: str | None = None,
-        name: str | None = None,
         size: int | None = None,
         width: int | None = None,
         height: int | None = None,
@@ -53,7 +53,7 @@ class FileField(ValueObject):
         return self._url
 
     @property
-    def name(self) -> str | None:
+    def name(self) -> str:
         return self._name
 
     @property

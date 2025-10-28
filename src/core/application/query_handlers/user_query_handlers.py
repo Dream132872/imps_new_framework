@@ -6,19 +6,20 @@ from __future__ import annotations
 
 import logging
 
-from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from injector import inject
 
 from core.application.dtos.user_dtos import UserDTO
-from core.application.queries.user_queries import *
+from core.application.queries.user_queries import GetUserByIdQuery, SearchUsersQuery
 from core.domain.entities import User
-from core.domain.exceptions import *
+from core.domain.exceptions import UserNotFoundError
 from core.domain.repositories import UserRepository
-from shared.application.cqrs import *
-from shared.application.dtos import *
-from shared.application.pagination import *
-from shared.domain.pagination import *
+from shared.application.cqrs import QueryHandler
+from shared.application.exceptions import ValidationError
+from shared.application.pagination import (
+    PaginatedResultDTO,
+    convert_to_paginated_result_dto,
+)
 from shared.domain.repositories import UnitOfWork
 
 __all__ = (

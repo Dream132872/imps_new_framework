@@ -2,7 +2,7 @@
 Domain exceptions for user entity.
 """
 
-from shared.domain.exceptions import *
+from shared.domain.exceptions import EntityNotFoundError
 
 __all__ = ("UserNotFoundError",)
 

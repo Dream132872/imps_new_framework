@@ -100,5 +100,7 @@ class SharedInfrastructureConfig(AppConfig):
                 load_module(
                     f"{django_app_dot_location.split(".")[0]}.application.cqrs_service"
                 )
-            except:
-                logger.warning(f"There is no cqrs_service.py file in {config.label}")
+            except Exception as e:
+                logger.warning(
+                    f"There is no cqrs_service module/file file in {config.label}. error msg: {e}"
+                )

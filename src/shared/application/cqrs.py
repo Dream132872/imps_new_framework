@@ -43,7 +43,9 @@ class CommandBus:
     def __init__(self) -> None:
         self.injector = get_injector()
 
-    def registr_handler(self, command_type: type[Command], handler: CommandHandler):
+    def register_handler(
+        self, command_type: type[Command], handler: type[CommandHandler]
+    ):
         """Register a command handler."""
         self.injector.binder.bind(command_type, handler)
 
@@ -53,7 +55,7 @@ class CommandBus:
             handler = self.injector.get(command_type)
         except Exception as e:
             err_msg = (
-                f"An exception occured when trying to get {command_type}, error: {e}"
+                f"An exception occurred when trying to get {command_type}, error: {e}"
             )
             raise ConfigurationError(err_msg)
 
@@ -135,10 +137,10 @@ query_bus = QueryBus()
 
 
 def register_command_handler(
-    command_type: type[Command], handler: CommandHandler
+    command_type: type[Command], handler: type[CommandHandler]
 ) -> None:
     """Register a command handler with the global command bus"""
-    command_bus.registr_handler(command_type, handler)
+    command_bus.register_handler(command_type, handler)
 
 
 def register_query_handler(

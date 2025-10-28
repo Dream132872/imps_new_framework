@@ -111,7 +111,7 @@ class ValueObject(ABC):
     """
 
     def __eq__(self, other_value: object) -> bool:
-        """Check's the equality of this object with other object.
+        """Check the equality of this object with other object.
 
         Args:
             other_value (object): Other value to check
