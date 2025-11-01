@@ -13,6 +13,7 @@ from core.application.dtos.user_dtos import UserDTO
 from core.application.queries.user_queries import GetUserByIdQuery, SearchUsersQuery
 from core.domain.entities import User
 from core.domain.exceptions import UserNotFoundError
+from core.domain.exceptions.user import UserInvalidError
 from core.domain.repositories import UserRepository
 from shared.application.cqrs import QueryHandler
 from shared.application.exception_mapper import map_domain_exception_to_application
@@ -105,8 +106,6 @@ class SearchUsersQueryHandler(
                     paginated_object=paginated_users,
                     items=[self._to_dto(u) for u in paginated_users.items],
                 )
-        except UserNotFoundError as e:
-            raise map_domain_exception_to_application(e) from e
         except Exception as e:
             raise ApplicationError(
                 _("Failed to search users: {message}").format(message=str(e))
