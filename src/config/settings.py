@@ -264,6 +264,11 @@ CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE = TIME_ZONE
 
+# Django REST Framework configuration
+REST_FRAMEWORK = {
+    "EXCEPTION_HANDLER": "shared.infrastructure.views.exceptions.drf_custom_exception_handler",
+}
+
 # Cache configuration for high performance
 CACHES = {
     "default": {

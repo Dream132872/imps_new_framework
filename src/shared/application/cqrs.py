@@ -11,7 +11,7 @@ from typing import Any, Generic, TypeVar
 
 from adrf.mixins import sync_to_async
 
-from shared.application.exceptions import ConfigurationError
+from shared.application.exceptions import ApplicationConfigurationError
 from shared.infrastructure.ioc import get_injector
 
 # Type variables for generic commands and queries
@@ -57,7 +57,7 @@ class CommandBus:
             err_msg = (
                 f"An exception occurred when trying to get {command_type}, error: {e}"
             )
-            raise ConfigurationError(err_msg)
+            raise ApplicationConfigurationError(err_msg)
 
         return handler  # type: ignore
 
@@ -117,7 +117,7 @@ class QueryBus:
             err_msg = (
                 f"An exception occured when trying to get {query_type}, error: {e}"
             )
-            raise ConfigurationError(err_msg)
+            raise ApplicationConfigurationError(err_msg)
 
         return handler  # type: ignore
 

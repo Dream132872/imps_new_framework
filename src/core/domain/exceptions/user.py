@@ -2,10 +2,10 @@
 Domain exceptions for user entity.
 """
 
-from shared.domain.exceptions import EntityNotFoundError
+from shared.domain.exceptions import DomainEntityNotFoundError
 
 __all__ = ("UserNotFoundError",)
 
 
-class UserNotFoundError(EntityNotFoundError):
+class UserNotFoundError(DomainEntityNotFoundError):
     """Raised when user not found in the repository."""

@@ -4,14 +4,13 @@ Authentication and authorization views.
 
 from typing import Any
 
-from django.contrib.auth import authenticate, login, alogout
+from django.contrib.auth import alogout, authenticate, login
 from django.core.exceptions import PermissionDenied
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, HttpResponsePermanentRedirect
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext_lazy as _
-from rest_framework.permissions import IsAuthenticated
 
 from core.infrastructure.forms.auth import LoginForm
 from shared.infrastructure import views
@@ -48,21 +47,23 @@ class LoginView(views.ViewTitleMixin, views.FormView):
                             return redirect(next_url)
                         return redirect(reverse("core:base:home"))
                     else:
-                        form.add_error(None, "You dont have enough permissions")
+                        form.add_error(None, _("You dont have enough permissions"))
                 else:
                     form.add_error(None, _("You'r account is not activated"))
             else:
                 form.add_error(None, _("There is no user with these credentials"))
         except PermissionDenied as e:
             form.add_error(None, str(e))
+        except Exception as e:
+            raise
 
         return self.form_invalid(form)
 
 
 class LogoutView(views.View):
-    async def get(self, request: HttpRequest):
+    async def get(self, request: HttpRequest) -> HttpResponsePermanentRedirect:
         user = await request.auser()
         if user.is_authenticated:
             await alogout(request)
 
-        return redirect(reverse("core:auth:login"))
+        return redirect(reverse("core:auth:login"), permanent=True)

@@ -7,8 +7,9 @@ from __future__ import annotations
 from typing import Any, Generic, TypeVar
 
 from django.db import models, transaction
+from django.utils.translation import gettext_lazy as _
 
-from shared.application.exceptions import ConfigurationError
+from shared.application.exceptions import ApplicationConfigurationError
 from shared.domain.entities import Entity
 from shared.domain.exceptions import *
 from shared.domain.repositories import Repository, UnitOfWork
@@ -44,7 +45,9 @@ class DjangoRepository(Repository[T], Generic[T]):
             model_instance = self.model_class.objects.get(pk=entity.id)
             model_instance.delete(keep_parents=True)
         except self.model_class.DoesNotExist:
-            raise EntityNotFoundError(f"Entity with id {entity.id} not found")
+            raise DomainEntityNotFoundError(
+                _("Entity with id {entity_id} not found").format(entity_id=entity.id)
+            )
 
     def exists_by_id(self, id: str) -> bool:
         return self.model_class.objects.filter(pk=id).exists()
@@ -77,7 +80,7 @@ class DjangoUnitOfWork(UnitOfWork):
             self._transaction.__exit__(exc_type, exc_val, exc_tb)
 
     def commit(self) -> None:
-        # django's transactions are automatically commited when the context exits
+        # django's transactions are automatically commited when the context exits.
         pass
 
     def rollback(self) -> None:
@@ -92,7 +95,9 @@ class DjangoUnitOfWork(UnitOfWork):
             try:
                 self._repositories[repo] = injector.get(repo)
             except:
-                raise ConfigurationError(message=f"No repository registered for {repo}")
+                raise ApplicationConfigurationError(
+                    message=f"No repository registered for {repo}"
+                )
 
         return self._repositories[repo]
 

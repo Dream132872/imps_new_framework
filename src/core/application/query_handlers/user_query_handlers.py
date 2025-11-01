@@ -15,7 +15,8 @@ from core.domain.entities import User
 from core.domain.exceptions import UserNotFoundError
 from core.domain.repositories import UserRepository
 from shared.application.cqrs import QueryHandler
-from shared.application.exceptions import ValidationError
+from shared.application.exception_mapper import map_domain_exception_to_application
+from shared.application.exceptions import ApplicationError, ApplicationValidationError
 from shared.application.pagination import (
     PaginatedResultDTO,
     convert_to_paginated_result_dto,
@@ -77,7 +78,7 @@ class GetUserByIdQueryHandler(
                     _("User with ID {user_id} not found").format(user_id=query.user_id)
                 )
         except Exception as e:
-            raise ValidationError(
+            raise ApplicationValidationError(
                 _("Failed to get user with ID '{user_id}': {message}").format(
                     user_id=query.user_id, message=str(e)
                 )
@@ -104,8 +105,9 @@ class SearchUsersQueryHandler(
                     paginated_object=paginated_users,
                     items=[self._to_dto(u) for u in paginated_users.items],
                 )
-
+        except UserNotFoundError as e:
+            raise map_domain_exception_to_application(e) from e
         except Exception as e:
-            raise ValidationError(
+            raise ApplicationError(
                 _("Failed to search users: {message}").format(message=str(e))
             )

@@ -14,7 +14,7 @@ from shared.infrastructure import views
 logger = logging.getLogger(__file__)
 
 
-class CreatePictureView(views.AdminGenericMixin, views.FormView):
+class CreatePictureView(views.FormView):
     form_class = UpsertPictureForm
     template_name = "core/picture/picture_upsert.html"
     permission_required = []
@@ -28,7 +28,7 @@ class CreatePictureView(views.AdminGenericMixin, views.FormView):
         return response
 
 
-class UpdatePictureView(views.AdminGenericMixin, views.FormView):
+class UpdatePictureView(views.FormView):
     form_class = UpsertPictureForm
     template_name = "core/picture/picture_upsert.html"
     permission_required = []

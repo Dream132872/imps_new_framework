@@ -4,6 +4,7 @@ each generic view has its own implementation, therefore, you should use them ins
 """
 
 from django.views import generic as django_generics
+from shared.infrastructure.views.exceptions import ApplicationExceptionHandlerMixin
 
 __all__ = (
     "View",
@@ -14,31 +15,31 @@ __all__ = (
 )
 
 
-class View(django_generics.View):
+class View(ApplicationExceptionHandlerMixin, django_generics.View):
     """
     Custom implementation of View.
     """
 
 
-class TemplateView(django_generics.TemplateView):
+class TemplateView(ApplicationExceptionHandlerMixin, django_generics.TemplateView):
     """
     Custom implementation of TemplateView.
     """
 
 
-class FormView(django_generics.FormView):
+class FormView(ApplicationExceptionHandlerMixin, django_generics.FormView):
     """
     Custom implementation of FormView.
     """
 
 
-class UpdateView(django_generics.UpdateView):
+class UpdateView(ApplicationExceptionHandlerMixin, django_generics.UpdateView):
     """
     Custom implementation of UpdateView.
     """
 
 
-class RedirectView(django_generics.RedirectView):
+class RedirectView(ApplicationExceptionHandlerMixin, django_generics.RedirectView):
     """
     Custom implementation of RedirectView
     """

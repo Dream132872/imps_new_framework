@@ -2,10 +2,10 @@
 Domain exceptions for picture entity.
 """
 
-from shared.domain.exceptions import EntityNotFoundError
+from shared.domain.exceptions import DomainEntityNotFoundError
 
 __all__ = ("PictureNotFoundError",)
 
 
-class PictureNotFoundError(EntityNotFoundError):
+class PictureNotFoundError(DomainEntityNotFoundError):
     """Raised when picure not found in the repository."""

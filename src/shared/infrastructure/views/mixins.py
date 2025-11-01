@@ -10,6 +10,7 @@ from django.views.generic.base import ContextMixin
 
 from shared.application.cqrs import dispatch_query
 from shared.application.dtos import PaginatedResultDTO
+from shared.infrastructure.views.exceptions import ApplicationExceptionHandlerMixin
 
 __all__ = (
     "ViewTitleMixin",
@@ -31,7 +32,7 @@ class ViewTitleMixin(ContextMixin):
 
     def get_context_data(self, **kwargs: Dict[str, Any]) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        context["title"] = self.get_title() or self.page_title
+        context["page_title"] = self.get_title() or self.page_title
         return context
 
 
@@ -86,7 +87,10 @@ class PopupDetectionMixin(ContextMixin):
 
 
 class AdminGenericMixin(
-    ViewTitleMixin, PopupDetectionMixin, LoginRequiredMixin, PermissionRequiredMixin
+    ViewTitleMixin,
+    PopupDetectionMixin,
+    LoginRequiredMixin,
+    PermissionRequiredMixin,
 ):
     """
     This class contains basic mixins that every admin view should have like:
@@ -99,3 +103,5 @@ class AdminGenericMixin(
     class TestView(AdminGenericMixin, TemplateView):
         pass
     """
+
+    permission_required = []

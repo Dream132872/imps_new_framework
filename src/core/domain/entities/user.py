@@ -6,6 +6,7 @@ from datetime import datetime
 from typing import Any
 
 from django.contrib.auth.hashers import make_password
+from django.utils.translation import gettext_lazy as _
 
 from shared.domain.entities import AggregateRoot, ValueObject
 from shared.domain.exceptions import DomainValidationError
@@ -20,7 +21,8 @@ class Email(ValueObject):
 
     def __init__(self, value: str) -> None:
         if not self._is_valid_email(value):
-            raise DomainValidationError("Invalid email format")
+            raise DomainValidationError(_("Email format is not valid"))
+
         self._value = value
 
     @property

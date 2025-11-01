@@ -5,6 +5,7 @@ Django repository implementation for picture.
 import uuid
 
 from core.domain.entities import Picture
+from core.domain.exceptions.picture import PictureNotFoundError
 from core.domain.repositories import PictureRepository
 from core.infrastructure.models import Picture as PictureModel
 from shared.domain.factories import FileFieldFactory

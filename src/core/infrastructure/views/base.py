@@ -6,10 +6,9 @@ import logging
 from dataclasses import asdict
 from typing import Any, Dict
 
-from adrf.mixins import sync_to_async
 from adrf.requests import AsyncRequest
 from adrf.views import APIView
-from django.contrib.auth import get_user_model
+from asgiref.sync import sync_to_async
 from django.core.cache import cache
 from django.http import HttpRequest
 from django.http.response import HttpResponse as HttpResponse
@@ -21,17 +20,13 @@ from rest_framework.response import Response
 
 from core.application.queries import *
 from core.application.queries.user_queries import SearchUsersQuery
-from core.domain.repositories import UserRepository
 from core.infrastructure.forms import TestWidgetsForm
-from shared.application.cqrs import dispatch_query_async
+from shared.application.cqrs import dispatch_query, dispatch_query_async
 from shared.application.dtos import PaginatedResultDTO
-from shared.domain.repositories import UnitOfWork
+from shared.application.exceptions import ApplicationValidationError
 from shared.infrastructure import views
-from shared.infrastructure.ioc import inject_dependencies
 
 logger = logging.getLogger(__name__)
-
-User = get_user_model()
 
 
 class HomeView(views.AdminGenericMixin, views.FormView):
@@ -40,20 +35,41 @@ class HomeView(views.AdminGenericMixin, views.FormView):
     page_title = _("Dashboard")
     template_name = "core/base/home.html"
     success_url = reverse_lazy("core:base:home")
+    # error_redirect_url = "/"
 
     def get_initial(self) -> Dict[str, Any]:
         initial = super().get_initial()
-        initial["id"] = "2b8b8212-ef3f-4eb5-9893-c29675297087"
+        initial["id"] = self.request.user.id
         return initial
 
-    def form_valid(self, form: TestWidgetsForm):
+    def form_valid(self, form: TestWidgetsForm) -> HttpResponse:
         print(form.get_form_data())
+        res: PaginatedResultDTO = dispatch_query(
+            SearchUsersQuery(page=1, page_size=10, paginated=True)
+        )
         return super().form_valid(form)
 
 
 class TestView(views.AdminGenericMixin, views.TemplateView):
     template_name = "core/base/test.html"
     permission_required = []
+
+
+class SampleApiView(APIView):
+    async def get(self, request: AsyncRequest) -> Response:
+        # await cache.adelete("simple_users")
+        # cached_data = await cache.aget("simple_users")
+        cached_data = None
+
+        if not cached_data:
+            res: PaginatedResultDTO = await dispatch_query_async(
+                SearchUsersQuery(page=1, page_size=10, paginated=True)
+            )
+            users = [asdict(u) for u in res.items]
+            await cache.aset("simple_users", users)
+            cached_data = users
+
+        return Response(cached_data, status=status.HTTP_200_OK)
 
 
 # class HomeView(CQRSPaginatedViewMixin, AdminGenericMixin, TemplateView):
@@ -81,29 +97,3 @@ class TestView(views.AdminGenericMixin, views.TemplateView):
 
 #         base_context.update(form=form)
 #         return base_context
-
-
-class SampleApiView(APIView):
-    @inject_dependencies()
-    def __init__(self, uow: UnitOfWork, **kwargs: Any) -> None:
-        self.uow = uow
-        super().__init__(**kwargs)
-
-    @sync_to_async()
-    def get_users(self):
-        with self.uow:
-            users = self.uow[UserRepository].search_users(page_size=10, page=1)
-            return [u.to_dict() for u in users.items]
-
-    async def get(self, request: AsyncRequest):
-        cached_data = await cache.aget("simple_users")
-
-        if not cached_data:
-            res: PaginatedResultDTO = await dispatch_query_async(
-                SearchUsersQuery(page=1, page_size=10, paginated=True)
-            )
-            users = [asdict(u) for u in res.items]
-            await cache.aset("simple_users", res.items)
-            cached_data = users
-
-        return Response(cached_data, status=status.HTTP_200_OK)

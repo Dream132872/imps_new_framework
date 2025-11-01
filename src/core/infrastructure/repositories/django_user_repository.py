@@ -9,6 +9,7 @@ from django.db.models import F, Q, Value
 from django.db.models.functions import Concat
 
 from core.domain.entities import User
+from core.domain.exceptions import UserNotFoundError
 from core.domain.repositories import UserRepository
 from shared.domain.pagination import DomainPaginator
 from shared.infrastructure.repositories import DjangoRepository
@@ -100,4 +101,3 @@ class DjangoUserRepository(DjangoRepository[User], UserRepository):
             page_size=page_size,
             entity_converter=self._model_to_entity,
         )
-

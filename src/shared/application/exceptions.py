@@ -4,7 +4,15 @@ Shared application exceptions.
 
 from typing import Any
 
-__all__ = ("ConfigurationError",)
+__all__ = (
+    "ApplicationError",
+    "ApplicationValidationError",
+    "ApplicationNotFoundError",
+    "ApplicationConfigurationError",
+    "ApplicationConcurrencyError",
+    "ApplicationInvalidEntityError",
+    "ApplicationBusinessRuleViolationError",
+)
 
 
 class ApplicationError(Exception):
@@ -16,13 +24,25 @@ class ApplicationError(Exception):
         super().__init__(self.message)
 
 
-class ValidationError(ApplicationError):
+class ApplicationValidationError(ApplicationError):
     """Exception raised when there's a validation error."""
 
 
-class NotFoundError(ApplicationError):
+class ApplicationNotFoundError(ApplicationError):
     """Exception raised when expected item is not found."""
 
 
-class ConfigurationError(ApplicationError):
+class ApplicationConfigurationError(ApplicationError):
     """Exception raised when there's a configuration error."""
+
+
+class ApplicationConcurrencyError(ApplicationError):
+    """Exception raised when there's a concurrency conflict (e.g., optimistic locking)."""
+
+
+class ApplicationInvalidEntityError(ApplicationError):
+    """Exception raised when an entity is in an invalid state."""
+
+
+class ApplicationBusinessRuleViolationError(ApplicationError):
+    """Exception raised when a business rule is violated."""
