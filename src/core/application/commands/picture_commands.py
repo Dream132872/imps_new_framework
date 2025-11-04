@@ -11,4 +11,4 @@ from shared.application.cqrs import Command
 
 @dataclass
 class DeletePictureCommand(Command):
-    picture_id: uuid.UUID
+    pk: uuid.UUID

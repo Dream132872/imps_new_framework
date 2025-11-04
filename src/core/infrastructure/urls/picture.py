@@ -19,9 +19,14 @@ urlpatterns = [
                         name="create",
                     ),
                     path(
-                        "create/<str:picture_id>/",
+                        "update/<str:picture_id>/",
                         picture.UpdatePictureView.as_view(),
-                        name="create",
+                        name="update",
+                    ),
+                    path(
+                        "delete/<str:picture_id>/",
+                        picture.DeletePictureView.as_view(),
+                        name="delete",
                     ),
                 ],
                 "picture",

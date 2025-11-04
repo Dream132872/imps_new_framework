@@ -12,11 +12,7 @@ from core.domain.repositories import PictureRepository
 from core.domain.services import FileStorageService
 from shared.application.cqrs import CommandHandler
 from shared.application.exception_mapper import map_domain_exception_to_application
-from shared.application.exceptions import (
-    ApplicationError,
-    ApplicationNotFoundError,
-    ApplicationValidationError,
-)
+from shared.application.exceptions import ApplicationError
 from shared.domain.repositories import UnitOfWork
 
 
@@ -35,16 +31,17 @@ class DeletePictureCommandHandler(
 ):
     def handle(self, command: picture_commands.DeletePictureCommand) -> str:
         try:
-            picture = self.uow[PictureRepository].get_by_id(str(command.picture_id))
+            picture = self.uow[PictureRepository].get_by_id(str(command.pk))
             if not picture:
                 raise PictureNotFoundError(
                     _("Picture with ID {picture_id} not found").format(
-                        picture_id=command.picture_id
+                        picture_id=command.pk
                     )
                 )
 
+            # picture.add_domain_event()
             self.uow[PictureRepository].delete(picture)
-            return str(command.picture_id)
+            return str(command.pk)
         except PictureNotFoundError as e:
             # Use the exception mapper for automatic transformation
             raise map_domain_exception_to_application(e) from e
@@ -52,7 +49,7 @@ class DeletePictureCommandHandler(
             # Handle unexpected exceptions
             raise ApplicationError(
                 _("Failed to delete picture with ID '{picture_id}': {message}").format(
-                    picture_id=command.picture_id, message=str(e)
+                    picture_id=command.pk, message=str(e)
                 ),
-                details={"picture_id": command.picture_id},
+                details={"picture_id": command.pk},
             ) from e

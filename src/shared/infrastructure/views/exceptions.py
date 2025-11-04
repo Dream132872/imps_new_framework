@@ -10,7 +10,7 @@ import logging
 from typing import Any
 
 from django.contrib import messages
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import redirect
 from django.views.generic.base import TemplateResponseMixin
 from rest_framework import status
@@ -139,8 +139,13 @@ class ApplicationExceptionHandlerMixin:
     should be transformed to Application exceptions in the Application layer.
 
     Usage:
+        # For template-based views (default behavior):
         class MyView(ApplicationExceptionHandlerMixin, FormView):
             pass
+
+        # For JSON API views:
+        class MyAPIView(ApplicationExceptionHandlerMixin, View):
+            return_json_response = True
     """
 
     # Override these attributes in your view to customize behavior
@@ -149,6 +154,9 @@ class ApplicationExceptionHandlerMixin:
     )
     show_error_messages: bool = (
         True  # Whether to show error messages via Django messages
+    )
+    return_exc_response_as_json: bool = (
+        False  # Whether to return JSON responses instead of templates (default: False)
     )
 
     def dispatch(self, request: HttpRequest, *args: Any, **kwargs: Any) -> Any:
@@ -165,9 +173,9 @@ class ApplicationExceptionHandlerMixin:
         except ApplicationValidationError as e:
             return self._handle_validation_error(request, e)
         except ApplicationInvalidEntityError as e:
-            return self._handle_validation_error(request, e)  # Similar handling
+            return self._handle_validation_error(request, e)
         except ApplicationBusinessRuleViolationError as e:
-            return self._handle_validation_error(request, e)  # Similar handling
+            return self._handle_validation_error(request, e)
         except ApplicationConcurrencyError as e:
             return self._handle_concurrency_error(request, e)
         except ApplicationError as e:
@@ -184,6 +192,13 @@ class ApplicationExceptionHandlerMixin:
             exc.details,
             exc_info=True,
         )
+
+        # Return JSON response if requested
+        if self.return_exc_response_as_json:
+            return JsonResponse(
+                {"error": exc.message, "details": exc.details},
+                status=404,
+            )
 
         if self.show_error_messages:
             messages.error(request, exc.message)
@@ -210,7 +225,13 @@ class ApplicationExceptionHandlerMixin:
         return HttpResponse("An error occurred. Please try again.")
 
     def _handle_validation_error(
-        self, request: HttpRequest, exc: ApplicationValidationError
+        self,
+        request: HttpRequest,
+        exc: (
+            ApplicationValidationError
+            | ApplicationInvalidEntityError
+            | ApplicationBusinessRuleViolationError
+        ),
     ) -> Any:
         """Handle ApplicationValidationError."""
         logger.warning(
@@ -220,6 +241,13 @@ class ApplicationExceptionHandlerMixin:
             exc.details,
             exc_info=True,
         )
+
+        # Return JSON response if requested
+        if self.return_exc_response_as_json:
+            return JsonResponse(
+                {"error": exc.message, "details": exc.details},
+                status=400,
+            )
 
         if self.show_error_messages:
             messages.error(request, exc.message)
@@ -267,6 +295,13 @@ class ApplicationExceptionHandlerMixin:
             exc_info=True,
         )
 
+        # Return JSON response if requested
+        if self.return_exc_response_as_json:
+            return JsonResponse(
+                {"error": exc.message, "details": exc.details},
+                status=409,
+            )
+
         if self.show_error_messages:
             messages.warning(
                 request,
@@ -312,6 +347,13 @@ class ApplicationExceptionHandlerMixin:
             exc.details,
             exc_info=True,
         )
+
+        # Return JSON response if requested
+        if self.return_exc_response_as_json:
+            return JsonResponse(
+                {"error": exc.message, "details": exc.details},
+                status=500,
+            )
 
         if self.show_error_messages:
             messages.error(
