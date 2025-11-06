@@ -27,3 +27,7 @@ register_command_handler(
     picture_commands.DeletePictureCommand,
     picture_command_handlers.DeletePictureCommandHandler,
 )
+register_command_handler(
+    picture_commands.CreatePictureCommand,
+    picture_command_handlers.CreatePictureCommandHandler,
+)

@@ -12,7 +12,7 @@ class FileStorageService(ABC):
     """Domain service interface for file storage system."""
 
     @abstractmethod
-    def save_image(self, file_content: BinaryIO, image_name: str) -> str:
+    def save_image(self, file_content: BinaryIO, image_name: str | None = None) -> str:
         """save image and return the image path/url
 
         Args:

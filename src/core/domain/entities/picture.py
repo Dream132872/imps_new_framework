@@ -16,7 +16,7 @@ class Picture(AggregateRoot):
         self,
         image: FileField,
         picture_type: str,
-        content_type: int,
+        content_type_id: int,
         object_id: int | uuid.UUID,
         id: str | None = None,
         title: str | None = None,
@@ -29,7 +29,7 @@ class Picture(AggregateRoot):
         self._picture_type = picture_type
         self._alternative = alternative or ""
         self._title = title or ""
-        self._content_type = content_type
+        self._content_type_id = content_type_id
         self._object_id = object_id
 
     @property
@@ -50,7 +50,7 @@ class Picture(AggregateRoot):
 
     @property
     def content_type(self) -> int:
-        return self._content_type
+        return self._content_type_id
 
     @property
     def object_id(self) -> int | uuid.UUID:

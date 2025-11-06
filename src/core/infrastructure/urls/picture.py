@@ -14,7 +14,7 @@ urlpatterns = [
             (
                 [
                     path(
-                        "create/<str:content_type>/<str:object_id>/",
+                        "create/<str:picture_type>/<str:content_type>/<str:object_id>/",
                         picture.CreatePictureView.as_view(),
                         name="create",
                     ),

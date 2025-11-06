@@ -11,6 +11,8 @@ from django.utils.translation import gettext_lazy as _
 
 from core.application.commands import picture_commands
 from core.infrastructure.forms.picture import UpsertPictureForm
+from shared.application.cqrs import dispatch_command
+from shared.application.exceptions import ApplicationNotFoundError
 from shared.infrastructure import views
 
 logger = logging.getLogger(__file__)
@@ -20,18 +22,35 @@ class CreatePictureView(views.AdminGenericMixin, views.FormView):
     form_class = UpsertPictureForm
     template_name = "core/picture/picture_upsert.html"
     permission_required = ["core_infrastructure.add_picture"]
+    return_exc_response_as_json = True
 
     def get_initial(self) -> dict[str, Any]:
         init = super().get_initial()
         init["content_type"] = self.kwargs["content_type"]
         init["object_id"] = self.kwargs["object_id"]
+        init["picture_type"] = self.kwargs["picture_type"]
         return init
 
     def form_valid(self, form: UpsertPictureForm) -> JsonResponse:
-        return JsonResponse({"status": "success"})
-
-    def form_invalid(self, form: UpsertPictureForm) -> JsonResponse:
-        return JsonResponse({"status": "success"})
+        # get form data
+        data = form.get_form_data()
+        # get form files
+        files = form.files
+        # dispatch the requested command for creating picture entity
+        picture_id = dispatch_command(
+            picture_commands.CreatePictureCommand(
+                content_type_id=data["content_type"],
+                object_id=data["object_id"],
+                picture_type=data["picture_type"],
+                image=files["image"],  # type: ignore
+                title=data["title"],
+                alternative=data["alternative"],
+            )
+        )
+        # picture_id = ""
+        return JsonResponse(
+            {"status": "success", "details": {"picture_id": picture_id}}
+        )
 
 
 class UpdatePictureView(views.FormView):

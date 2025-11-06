@@ -11,9 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- end::Primary Meta Tags -->
     {% include 'shared/admin/layout/_head_references.html' %}
-    {% block head_ref %}
-
-    {% endblock %}
+    {% block head_ref %}{% endblock %}
   </head>
   <!-- end::Head -->
   <!-- begin::Body -->
@@ -57,9 +55,7 @@
         <div class="app-content {% if is_popup %}pt-3 pb-3{% endif %}">
           <!-- begin::Container -->
           <div class="container-fluid">
-            {% block content %}
-
-            {% endblock %}
+            {% block content %}{% endblock %}
           </div>
           <!-- end::Container -->
         </div>
@@ -79,9 +75,7 @@
     </div>
     <!-- end::App Wrapper -->
     {% include 'shared/admin/layout/_footer_references.html' %}
-    {% block footer_ref %}
-
-    {% endblock %}
+    {% block footer_ref %}{% endblock %}
   </body>
   <!-- end::Body -->
 </html>

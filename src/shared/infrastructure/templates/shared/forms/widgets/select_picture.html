@@ -21,7 +21,7 @@
       <div class="me-3 mb-3">
         <div class="image-box add-image rounded-3 cursor-pointer">
           <img src="{% static 'shared/images/defaults/dummy_150x150.jpg' %}" width="150" height="150" alt="Add new image" />
-          <div class="overlay d-flex flex-column justify-content-end align-items-center w-100 h-100" data-popup-open="{% url 'core:picture:create' content_type=widget_obj.field.content_type.id object_id=widget_obj.field.object_id %}" data-popup-name="user_profile_popup">
+          <div class="overlay d-flex flex-column justify-content-end align-items-center w-100 h-100" data-popup-open="{% url 'core:picture:create' picture_type=widget_obj.field.picture_type content_type=widget_obj.field.content_type.id object_id=widget_obj.field.object_id %}" data-popup-name="user_profile_popup">
             <div class="actions d-flex justify-content-evenly align-items-center w-100 mb-3">
               <a class="action-button cursor-pointer d-flex justify-content-center align-items-center"><i class="bi bi-plus-lg"></i></a>
             </div>

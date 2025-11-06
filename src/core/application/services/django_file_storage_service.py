@@ -14,8 +14,12 @@ __all__ = ("DjangoFileStorageService",)
 
 
 class DjangoFileStorageService(FileStorageService):
-    def save_image(self, file_content: BinaryIO, image_name: str) -> str:
-        name, ext = os.path.splitext(image_name)
+
+    def save_image(self, file_content: BinaryIO, image_name: str | None = None) -> str:
+        if not image_name:
+            image_name = str(uuid.uuid4())
+
+        name, ext = os.path.splitext(file_content.name)
         image_path = f"images/{uuid.uuid4()}{ext}"
         return default_storage.save(image_path, file_content)
 

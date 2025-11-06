@@ -5,6 +5,8 @@ from django.forms.utils import flatatt
 from django.template.loader import render_to_string
 from django.utils.safestring import SafeText, mark_safe
 
+from shared.application.exceptions import ApplicationError
+
 __all__ = ("Form", "ModelForm")
 
 
@@ -34,6 +36,10 @@ class Form(forms.Form):
     form_id = ""
     # is ajax form
     is_ajax_form = False
+    # ajax success js callback method name
+    ajax_success_callbacK_method_name = None
+    # ajax error js callback method name
+    ajax_error_callback_method_name = None
 
     def __init__(self, *args, **kwargs) -> None:  # type: ignore
         # Extract custom parameters
@@ -92,6 +98,22 @@ class Form(forms.Form):
 
         if not "id" in self.form_attrs:
             self.form_attrs["id"] = self.get_form_id()
+
+        if self.is_ajax_form:
+            self.form_attrs["data-ajax"] = "true"
+
+            if not self.ajax_success_callbacK_method_name:
+                raise ApplicationError(
+                    "You should set ajax_success_callback_method_name"
+                )
+
+            if not self.ajax_error_callback_method_name:
+                raise ApplicationError("You should set ajax_error_callback_method_name")
+
+            self.form_attrs["data-ajax-success"] = (
+                self.ajax_success_callbacK_method_name
+            )
+            self.form_attrs["data-ajax-error"] = self.ajax_error_callback_method_name
 
         return flatatt(attrs={key: value for key, value in self.form_attrs.items()})
 

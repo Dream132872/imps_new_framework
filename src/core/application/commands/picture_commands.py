@@ -5,6 +5,7 @@ Commands handle write operations that change the state of the system.
 
 import uuid
 from dataclasses import dataclass
+from typing import Any, BinaryIO
 
 from shared.application.cqrs import Command
 
@@ -12,3 +13,13 @@ from shared.application.cqrs import Command
 @dataclass
 class DeletePictureCommand(Command):
     pk: uuid.UUID
+
+
+@dataclass
+class CreatePictureCommand(Command):
+    content_type_id: int
+    object_id: uuid.UUID
+    picture_type: str
+    image: BinaryIO
+    title: str
+    alternative: str
