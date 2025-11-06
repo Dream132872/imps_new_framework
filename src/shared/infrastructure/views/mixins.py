@@ -94,11 +94,10 @@ class AdminGenericMixin(
 ):
     """
     This class contains basic mixins that every admin view should have like:
-    PermissionRequiredMixin, ViewTitleMixin and LoginRequiredMixin.
+    PopupDetectionMixin, PermissionRequiredMixin, ViewTitleMixin and LoginRequiredMixin.
 
     You should inherit from this class then django's generic views.
     for example:
-
 
     class TestView(AdminGenericMixin, TemplateView):
         pass

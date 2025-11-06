@@ -65,22 +65,30 @@
     transition: all ease 0.3s;
 }
 
-
-.pick-image .image-box .overlay .actions .col-4 {
-    opacity: 0;
-    transform: translateY(20px) scale(0.8);
+.pick-image .image-box .overlay .actions {
+    width: 100%;
 }
 
 .pick-image .image-box .overlay .actions .action-button {
     color: white;
-    display: inline-block;
     outline: none;
     border: none;
+    width: 33px;
+    height: 33px;
     background-color: transparent;
     font-size: 1.1rem;
     transition: all ease 0.3s;
+    border-radius: 50%;
+    background-color: rgba(222, 222, 222, 0.4);
+    opacity: 0;
+    transform: translateY(20px) scale(0.8);
 }
 
 .pick-image .image-box .overlay .actions .action-button:hover {
     transform: scale(1.1) translateY(-3px);
+}
+
+.pick-image .image-box .overlay .actions .action-button i {
+    position: relative;
+    top: 4px;
 }

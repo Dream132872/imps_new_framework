@@ -1,6 +1,6 @@
 $(".image-box").on("mouseenter", function (e) {
     const overlay = $(this).children(".overlay");
-    const actionButtons = overlay.find(".col-4");
+    const actionButtons = overlay.find(".action-button");
 
     // Animate the overlay
     overlay.css("animation", "ShowPickImageActionButtonsAnimation forwards .3s");
@@ -17,7 +17,7 @@ $(".image-box").on("mouseenter", function (e) {
 
 $(".image-box").on("mouseleave", function (e) {
     const overlay = $(this).children(".overlay");
-    const actionButtons = overlay.find(".col-4");
+    const actionButtons = overlay.find(".action-button");
 
     // Animate the overlay
     overlay.css("animation", "HidePickImageActionButtonsAnimation forwards .3s");

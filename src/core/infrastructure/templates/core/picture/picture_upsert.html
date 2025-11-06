@@ -1,6 +1,14 @@
 {% extends 'shared/admin/layout/layout.html' %}
 {% load forms utils %}
 
+{% block head_ref %}
+  {{ form.media.css }}
+{% endblock %}
+
 {% block content %}
   {% render_form form %}
+{% endblock %}
+
+{% block footer_ref %}
+  {{ form.media.js }}
 {% endblock %}

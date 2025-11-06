@@ -32,6 +32,8 @@ class Form(forms.Form):
     form_action_url = ""
     # form id
     form_id = ""
+    # is ajax form
+    is_ajax_form = False
 
     def __init__(self, *args, **kwargs) -> None:  # type: ignore
         # Extract custom parameters
@@ -176,6 +178,12 @@ class Form(forms.Form):
         # Add form's own media
         if hasattr(self.__class__, "Media"):
             media += forms.Media(self.__class__.Media)
+
+        # add jquery-unobtrusive if the form is ajax form
+        if self.is_ajax_form:
+            media += forms.Media(
+                js=["shared/libs/jquery-unobtrusive/jquery.unobtrusive-ajax.js"]
+            )
 
         # Add media from all widgets
         for field in self.fields.values():

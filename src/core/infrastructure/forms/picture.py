@@ -8,17 +8,18 @@ from shared.infrastructure import forms
 
 
 class UpsertPictureForm(forms.Form):
+    is_ajax_form = True
+
     # content type
-    content_type = forms.CharField(
+    content_type = forms.IntegerField(
         required=True,
-        max_length=1,
-        widget=forms.HiddenInput(),
+        # widget=forms.HiddenInput(),
     )
 
     # object id (this id is generated at the first place)
     object_id = forms.CharField(
         required=True,
-        widget=forms.HiddenInput(),
+        # widget=forms.HiddenInput(),
     )
 
     # picture
