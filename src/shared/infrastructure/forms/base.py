@@ -40,6 +40,10 @@ class Form(forms.Form):
     ajax_success_callbacK_method_name = None
     # ajax error js callback method name
     ajax_error_callback_method_name = None
+    # ajax begin method name
+    ajax_begin_method_name = "defaultAjaxFormBegin"
+    # ajax completed method name
+    ajax_complete_method_name = "defaultAjaxFormCompleted"
 
     def __init__(self, *args, **kwargs) -> None:  # type: ignore
         # Extract custom parameters
@@ -113,7 +117,9 @@ class Form(forms.Form):
             self.form_attrs["data-ajax-success"] = (
                 self.ajax_success_callbacK_method_name
             )
-            self.form_attrs["data-ajax-error"] = self.ajax_error_callback_method_name
+            self.form_attrs["data-ajax-failure"] = self.ajax_error_callback_method_name
+            self.form_attrs["data-ajax-begin"] = self.ajax_begin_method_name
+            self.form_attrs["data-ajax-complete"] = self.ajax_complete_method_name
 
         return flatatt(attrs={key: value for key, value in self.form_attrs.items()})
 

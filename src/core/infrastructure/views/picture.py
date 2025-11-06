@@ -2,6 +2,7 @@
 Manage picture views.
 """
 
+from dataclasses import asdict
 import logging
 from typing import Any
 
@@ -10,6 +11,7 @@ from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 
 from core.application.commands import picture_commands
+from core.application.dtos.picture_dtos import PictureDTO
 from core.infrastructure.forms.picture import UpsertPictureForm
 from shared.application.cqrs import dispatch_command
 from shared.application.exceptions import ApplicationNotFoundError
@@ -37,7 +39,7 @@ class CreatePictureView(views.AdminGenericMixin, views.FormView):
         # get form files
         files = form.files
         # dispatch the requested command for creating picture entity
-        picture_id = dispatch_command(
+        picture: PictureDTO = dispatch_command(
             picture_commands.CreatePictureCommand(
                 content_type_id=data["content_type"],
                 object_id=data["object_id"],
@@ -47,9 +49,12 @@ class CreatePictureView(views.AdminGenericMixin, views.FormView):
                 alternative=data["alternative"],
             )
         )
-        # picture_id = ""
         return JsonResponse(
-            {"status": "success", "details": {"picture_id": picture_id}}
+            {
+                "status": "success",
+                "message": _("Picture has been created successfully"),
+                "details": {"picture": asdict(picture)},
+            }
         )
 
 

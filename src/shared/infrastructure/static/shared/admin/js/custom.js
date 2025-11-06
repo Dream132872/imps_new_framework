@@ -84,3 +84,28 @@
 //         }
 //     });
 // })();
+
+// ========== begin::common waitme functions ==========
+function open_waiting(selector = "body") {
+    $(selector).waitMe({
+        effect: "win8",
+        text: "لطفا صبر کنید ...",
+        bg: "rgba(255,255,255,0.7)",
+        color: "#000",
+    });
+}
+
+function close_waiting(selector = "body") {
+    $(selector).waitMe("hide");
+}
+// ========== end::common waitme functions ==========
+
+// ========== begin::ajax form default functions ==========
+function defaultAjaxFormBegin() {
+    open_waiting();
+}
+
+function defaultAjaxFormCompleted() {
+    close_waiting();
+}
+// ========== end::ajax form default functions ==========

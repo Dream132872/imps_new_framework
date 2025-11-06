@@ -13,7 +13,16 @@
   {{ form.media.js }}
   <script>
     function pictureHasBeenManaged(res) {
-      console.log(res)
+      showToast('اعلان', res.message, 'success')
+
+      setTimeout(() => {
+        window.PopupManager.reply(res.details)
+        window.close()
+      }, 1000)
+    }
+
+    function pictureManagerHasError(res) {
+      showToast('خطا', res.responseJSON.error, 'error')
     }
   </script>
 {% endblock %}

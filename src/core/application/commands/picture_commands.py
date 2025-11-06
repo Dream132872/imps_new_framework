@@ -5,7 +5,7 @@ Commands handle write operations that change the state of the system.
 
 import uuid
 from dataclasses import dataclass
-from typing import Any, BinaryIO
+from typing import BinaryIO
 
 from shared.application.cqrs import Command
 

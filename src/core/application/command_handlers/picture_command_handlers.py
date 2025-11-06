@@ -7,11 +7,13 @@ from django.utils.translation import gettext_lazy as _
 from injector import inject
 
 from core.application.commands import picture_commands
+from core.application.dtos.picture_dtos import PictureDTO
 from core.domain.entities.picture import Picture
 from core.domain.exceptions.picture import PictureNotFoundError, PictureValidationError
 from core.domain.repositories import PictureRepository
 from core.domain.services import FileStorageService
 from shared.application.cqrs import CommandHandler
+from shared.application.dtos import FileFieldDTO
 from shared.application.exception_mapper import map_domain_exception_to_application
 from shared.application.exceptions import ApplicationError, ApplicationValidationError
 from shared.domain.factories import FileFieldFactory
@@ -26,14 +28,37 @@ class BasePictureCommandHandler:
         self.uow = uow
         self.file_storage_service = file_storage_service
 
+    def _to_dto(self, picture: Picture) -> PictureDTO:
+        image = FileFieldDTO(
+            file_type="image",
+            url=picture.image.url,
+            name=picture.image.name,
+            size=picture.image.size,
+            width=picture.image.width,
+            height=picture.image.height,
+            content_type=picture.image.content_type,
+        )
+        return PictureDTO(
+            id=picture.id,
+            image=image,
+            picture_type=picture.picture_type,
+            title=picture.title,
+            alternative=picture.alternative,
+            content_type=picture.content_type,
+            object_id=picture.object_id,
+            created_at=picture.created_at,
+            updated_at=picture.updated_at,
+        )
+
 
 class CreatePictureCommandHandler(
-    CommandHandler[picture_commands.CreatePictureCommand, str],
+    CommandHandler[picture_commands.CreatePictureCommand, PictureDTO],
     BasePictureCommandHandler,
 ):
-    def handle(self, command: picture_commands.CreatePictureCommand) -> str:
+    def handle(self, command: picture_commands.CreatePictureCommand) -> PictureDTO:
         image_path = ""
         try:
+            # raise PictureValidationError("Test error")
             # check the file is not empty
             if not command.image:
                 raise PictureValidationError(_("You should pass the image file"))
@@ -62,7 +87,7 @@ class CreatePictureCommandHandler(
 
                 # save picture in db
                 picture = self.uow[PictureRepository].save(picture)
-                return picture.id
+                return self._to_dto(picture)
         except PictureValidationError as e:
             self.file_storage_service.delete_image(image_path)
             raise map_domain_exception_to_application(e) from e
