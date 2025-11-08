@@ -89,7 +89,7 @@
 function open_waiting(selector = "body") {
     $(selector).waitMe({
         effect: "win8",
-        text: "لطفا صبر کنید ...",
+        text: gettext("Please wait") + " ...",
         bg: "rgba(255,255,255,0.7)",
         color: "#000",
     });

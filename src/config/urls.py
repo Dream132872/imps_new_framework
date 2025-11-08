@@ -24,7 +24,11 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.http import HttpRequest, JsonResponse
 from django.urls import include, path
-from django.views.decorators.http import require_http_methods
+from django.utils import timezone
+from django.views.decorators.http import last_modified, require_http_methods
+from django.views.i18n import JavaScriptCatalog
+
+last_modified_date = timezone.now()
 
 
 @require_http_methods(["GET"])
@@ -54,6 +58,13 @@ if settings.DEBUG:
 urlpatterns += i18n_patterns(
     path("admin-django/doc/", include("django.contrib.admindocs.urls")),
     path("admin-django/", admin.site.urls),
+    path(
+        "jsi18n/",
+        last_modified(lambda req, **kw: last_modified_date)(
+            JavaScriptCatalog.as_view()
+        ),
+        name="javascript-catalog",
+    ),
     path("", include("shared.infrastructure.urls")),
     path("", include("core.infrastructure.urls")),
     prefix_default_language=settings.MULTILANGUAGE_URL_PREFIX,

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-04 02:12+0330\n"
+"POT-Creation-Date: 2025-11-08 17:23+0330\n"
 "PO-Revision-Date: 2025-09-30 16:19+0000\n"
 "Last-Translator:   <>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -41,7 +41,12 @@ msgstr "تاریخ ایجاد"
 msgid "Updated at"
 msgstr "تاریخ ویرایش"
 
-#: .\src\shared\infrastructure\templates\shared\admin\layout\layout.html:35
+#: .\src\shared\infrastructure\repositories.py:49
+#, python-brace-format
+msgid "Entity with id {entity_id} not found"
+msgstr ""
+
+#: .\src\shared\infrastructure\templates\shared\admin\layout\layout.html:41
 #: .\src\shared\infrastructure\templates\shared\templatetags\layout\admin_site_header.html:13
 msgid "Home"
 msgstr "خانه"
@@ -57,3 +62,7 @@ msgstr "خیر"
 #: .\src\shared\infrastructure\templates\shared\templatetags\layout\admin_fixed_footer.html:4
 msgid "All rights reserved"
 msgstr "تمامی حقوق محفوظ است"
+
+#: .\src\shared\infrastructure\views\generics.py:69
+msgid "The requested information was successfully deleted"
+msgstr ""

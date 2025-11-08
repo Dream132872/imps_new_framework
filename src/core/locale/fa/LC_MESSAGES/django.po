@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-04 02:12+0330\n"
+"POT-Creation-Date: 2025-11-08 17:23+0330\n"
 "PO-Revision-Date: 2025-10-04 02:14+0000\n"
 "Last-Translator:   <admin@admin.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,37 +18,76 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Translated-Using: django-rosetta 0.10.2\n"
 
-#: .\src\core\application\query_handlers\user_query_handlers.py:71
+#: .\src\core\application\command_handlers\picture_command_handlers.py:64
+msgid "You should pass the image file"
+msgstr ""
+
+#: .\src\core\application\command_handlers\picture_command_handlers.py:71
+msgid "Picture type is not valid"
+msgstr ""
+
+#: .\src\core\application\command_handlers\picture_command_handlers.py:97
+#, fuzzy, python-brace-format
+#| msgid "Failed to search users: {message}"
+msgid "Failed to create picture: {message}"
+msgstr "جستجوی کاربران ناموفق بود: {message}"
+
+#: .\src\core\application\command_handlers\picture_command_handlers.py:110
+#, fuzzy, python-brace-format
+#| msgid "User with ID {user_id} not found"
+msgid "Picture with ID {picture_id} not found"
+msgstr "کاربری با آی دی {user_id} یافت نشد"
+
+#: .\src\core\application\command_handlers\picture_command_handlers.py:124
+#, fuzzy, python-brace-format
+#| msgid "Failed to get user with ID '{user_id}': {message}"
+msgid "Failed to delete picture with ID '{picture_id}': {message}"
+msgstr "دریافت کاربر با آی دی {user_id} ناموفق بود : {message}"
+
+#: .\src\core\application\query_handlers\user_query_handlers.py:79
 #, python-brace-format
 msgid "User with ID {user_id} not found"
 msgstr "کاربری با آی دی {user_id} یافت نشد"
 
-#: .\src\core\application\query_handlers\user_query_handlers.py:75
+#: .\src\core\application\query_handlers\user_query_handlers.py:83
 #, python-brace-format
 msgid "Failed to get user with ID '{user_id}': {message}"
 msgstr "دریافت کاربر با آی دی {user_id} ناموفق بود : {message}"
 
-#: .\src\core\application\query_handlers\user_query_handlers.py:102
+#: .\src\core\application\query_handlers\user_query_handlers.py:111
 #, python-brace-format
 msgid "Failed to search users: {message}"
 msgstr "جستجوی کاربران ناموفق بود: {message}"
+
+#: .\src\core\domain\entities\user.py:24
+msgid "Email format is not valid"
+msgstr ""
+
+#: .\src\core\infrastructure\admin.py:19
+#: .\src\core\infrastructure\models\picture.py:84
+msgid "Picture"
+msgstr "تصویر"
+
+#: .\src\core\infrastructure\admin.py:20
+#: .\src\core\infrastructure\models\picture.py:85
+msgid "Pictures"
+msgstr "تصاویر"
 
 #: .\src\core\infrastructure\apps.py:12
 msgid "Core"
 msgstr "هسته"
 
 #: .\src\core\infrastructure\apps.py:16
-#: .\src\core\infrastructure\views\base.py:36
+#: .\src\core\infrastructure\views\base.py:30
 msgid "Dashboard"
 msgstr "پیشخوان"
 
-#: .\src\core\infrastructure\forms\__init__.py:22
+#: .\src\core\infrastructure\forms\__init__.py:20
 msgid "This value should be equal to text_input"
 msgstr "این مقدار باید برابر با مقدار text_input باشد"
 
 #: .\src\core\infrastructure\forms\auth.py:19
 #: .\src\core\infrastructure\forms\auth.py:21
-#| msgid "User"
 msgid "Username"
 msgstr "نام کاربری"
 
@@ -56,6 +95,22 @@ msgstr "نام کاربری"
 #: .\src\core\infrastructure\forms\auth.py:32
 msgid "Password"
 msgstr "کلمه عبور"
+
+#: .\src\core\infrastructure\forms\picture.py:34
+#, fuzzy
+#| msgid "Image"
+msgid "Image file"
+msgstr "عکس"
+
+#: .\src\core\infrastructure\forms\picture.py:41
+msgid "Title of the image"
+msgstr ""
+
+#: .\src\core\infrastructure\forms\picture.py:48
+#, fuzzy
+#| msgid "Alternative text"
+msgid "Alternative text for image"
+msgstr "متن جایگزین"
 
 #: .\src\core\infrastructure\models\picture.py:37
 msgid "Main image"
@@ -89,31 +144,23 @@ msgstr "عنوان"
 msgid "Content type"
 msgstr "نوع محتوا"
 
-#: .\src\core\infrastructure\models\picture.py:63
+#: .\src\core\infrastructure\models\picture.py:61
 msgid "Object id"
 msgstr "آی دی موجودیت"
 
-#: .\src\core\infrastructure\models\picture.py:73
+#: .\src\core\infrastructure\models\picture.py:71
 msgid "Picture Type"
 msgstr "نوع تصویر"
 
-#: .\src\core\infrastructure\models\picture.py:77
+#: .\src\core\infrastructure\models\picture.py:75
 msgid "Display order"
 msgstr "اولویت نمایش"
 
-#: .\src\core\infrastructure\models\picture.py:85
-msgid "Picture"
-msgstr "تصویر"
-
-#: .\src\core\infrastructure\models\picture.py:86
-msgid "Pictures"
-msgstr "تصاویر"
-
-#: .\src\core\infrastructure\models\user.py:23
+#: .\src\core\infrastructure\models\user.py:27
 msgid "User"
 msgstr "کاربر"
 
-#: .\src\core\infrastructure\models\user.py:24
+#: .\src\core\infrastructure\models\user.py:28
 msgid "Users"
 msgstr "کاربران"
 
@@ -121,18 +168,26 @@ msgstr "کاربران"
 msgid "Management of the Iranian Social and Economic Observatory (RASA)"
 msgstr "مدیریت رصدخانه اجتماعی و اقتصادی ایران ( رصا )"
 
-#: .\src\core\infrastructure\templates\core\auth\login.html:56
-#: .\src\core\infrastructure\views\auth.py:21
+#: .\src\core\infrastructure\templates\core\auth\login.html:52
+#: .\src\core\infrastructure\views\auth.py:20
 msgid "Login"
 msgstr "ورود"
 
-#: .\src\core\infrastructure\views\auth.py:53
+#: .\src\core\infrastructure\views\auth.py:50
+msgid "You dont have enough permissions"
+msgstr ""
+
+#: .\src\core\infrastructure\views\auth.py:52
 msgid "You'r account is not activated"
 msgstr "حساب کاربری شما فعال نمی باشد"
 
-#: .\src\core\infrastructure\views\auth.py:55
+#: .\src\core\infrastructure\views\auth.py:54
 msgid "There is no user with these credentials"
 msgstr "کاربری با اطلاعات وارد شده یافت نشد"
+
+#: .\src\core\infrastructure\views\picture.py:55
+msgid "Picture has been created successfully"
+msgstr ""
 
 #~ msgid "Username or email"
 #~ msgstr "نام کاربری یا آدرس ایمیل"

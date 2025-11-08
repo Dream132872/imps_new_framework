@@ -15,4 +15,9 @@
 
 {% block footer_ref %}
   {{ form.media.js }}
+  <script>
+    $(document).ready(function () {
+      console.log(interpolate(ngettext('Item has been removed', 'Items have been removed', 1)))
+    })
+  </script>
 {% endblock %}
