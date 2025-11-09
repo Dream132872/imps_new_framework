@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-08 17:23+0330\n"
+"POT-Creation-Date: 2025-11-09 11:54+0330\n"
 "PO-Revision-Date: 2025-10-04 02:14+0000\n"
 "Last-Translator:   <admin@admin.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -173,9 +173,26 @@ msgstr "مدیریت رصدخانه اجتماعی و اقتصادی ایران 
 msgid "Login"
 msgstr "ورود"
 
+#: .\src\core\infrastructure\templates\core\base\home.html:12
+msgctxt "month name"
+msgid "May"
+msgstr "ماه"
+
+#: .\src\core\infrastructure\templates\core\base\home.html:15
+msgctxt "verb"
+msgid "May"
+msgstr "ممکنه"
+
+#: .\src\core\infrastructure\templates\core\base\home.html:18
+#, python-format
+msgid "There is still %(items_count)s item"
+msgid_plural "There are still %(items_count)s items"
+msgstr[0] "هنوز %(items_count)s مورد وجود دارد"
+msgstr[1] "هنوز %(items_count)s مورد وجود دارند"
+
 #: .\src\core\infrastructure\views\auth.py:50
 msgid "You dont have enough permissions"
-msgstr ""
+msgstr "شما دسترسی های لازم را ندارید"
 
 #: .\src\core\infrastructure\views\auth.py:52
 msgid "You'r account is not activated"
@@ -187,7 +204,7 @@ msgstr "کاربری با اطلاعات وارد شده یافت نشد"
 
 #: .\src\core\infrastructure\views\picture.py:55
 msgid "Picture has been created successfully"
-msgstr ""
+msgstr "تصویر با موفقیت ثبت شد"
 
 #~ msgid "Username or email"
 #~ msgstr "نام کاربری یا آدرس ایمیل"

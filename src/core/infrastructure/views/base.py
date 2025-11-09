@@ -31,6 +31,11 @@ class HomeView(views.AdminGenericMixin, views.FormView):
     template_name = "core/base/home.html"
     success_url = reverse_lazy("core:base:home")
 
+    def get_context_data(self, **kwargs: Dict[str, Any]) -> Dict[str, Any]:
+        ctx = super().get_context_data(**kwargs)
+        ctx["items_count"] = 2
+        return ctx
+
     def get_initial(self) -> Dict[str, Any]:
         initial = super().get_initial()
         initial["id"] = self.request.user.id

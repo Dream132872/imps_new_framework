@@ -1,11 +1,24 @@
 {% extends 'shared/admin/layout/layout.html' %}
-{% load forms utils %}
+{% load forms utils i18n %}
 
 {% block head_ref %}
   {{ form.media.css }}
 {% endblock %}
 
 {% block content %}
+  <div class="row">
+    <div class="col-lg-12">
+      <p>
+        May (month):{% translate 'May' context 'month name' %}
+      </p>
+      <p>
+        May (verb):{% translate 'May' context 'verb' %}
+      </p>
+      <p>
+        {% blocktranslate count items_count=items_count %}There is still {{ items_count }} item{% plural %}There are still {{ items_count }} items{% endblocktranslate %}
+      </p>
+    </div>
+  </div>
   <div class="row">
     <div class="col-lg-12">
       {% render_form form %}

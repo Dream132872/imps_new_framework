@@ -10,7 +10,7 @@
           <img src="{% static 'shared/images/logos/logo_white.png' %}" class="w-50" alt="" />
         </div>
         <p class="login-box-msg font-size-12">
-          {% trans 'Management of the Iranian Social and Economic Observatory (RASA)' %}
+          {% translate 'Management of the Iranian Social and Economic Observatory (RASA)' %}
         </p>
         <form method="post" {{ form.flattened_attrs }}>
           {% csrf_token %}
@@ -49,7 +49,7 @@
           <!-- begin::Row -->
           <div class="row justify-content-end">
             <div class="col-12 col-lg-4">
-              <button type="submit" class="btn btn-success w-100">{% trans 'Login' %}</button>
+              <button type="submit" class="btn btn-success w-100">{% translate 'Login' %}</button>
             </div>
           </div>
           <!-- end::Row -->
