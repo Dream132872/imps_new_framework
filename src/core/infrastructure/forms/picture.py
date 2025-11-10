@@ -3,6 +3,7 @@ core picture form.
 """
 
 from urllib import request
+
 from django.utils.translation import gettext_lazy as _
 
 from shared.infrastructure import forms

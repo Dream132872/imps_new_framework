@@ -11,11 +11,6 @@ from shared.application.cqrs import Command
 
 
 @dataclass
-class DeletePictureCommand(Command):
-    pk: uuid.UUID
-
-
-@dataclass
 class CreatePictureCommand(Command):
     content_type_id: int
     object_id: uuid.UUID
@@ -23,3 +18,8 @@ class CreatePictureCommand(Command):
     image: BinaryIO
     title: str
     alternative: str
+
+
+@dataclass
+class DeletePictureCommand(Command):
+    pk: uuid.UUID

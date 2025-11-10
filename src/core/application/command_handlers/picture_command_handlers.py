@@ -112,8 +112,9 @@ class DeletePictureCommandHandler(
                     )
                 )
 
-            # picture.add_domain_event()
             self.uow[PictureRepository].delete(picture)
+            # todo: change this to domain event system
+            self.file_storage_service.delete_image(picture.image.path)
             return str(command.pk)
         except PictureNotFoundError as e:
             # Use the exception mapper for automatic transformation

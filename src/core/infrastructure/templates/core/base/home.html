@@ -30,7 +30,7 @@
   {{ form.media.js }}
   <script>
     $(document).ready(function () {
-      console.log(interpolate(ngettext('Item has been removed', 'Items have been removed', 1)))
+      console.log(interpolate(ngettext('Item has been removed: %(name)s', 'Items have been removed: %(name)s', 1), { name: 'محمد اردوخانی' }, true))
     })
   </script>
 {% endblock %}

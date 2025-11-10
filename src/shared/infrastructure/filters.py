@@ -3,6 +3,7 @@ Base filters for infrastructure layer.
 """
 
 from typing import Any
+
 import django_filters
 
 

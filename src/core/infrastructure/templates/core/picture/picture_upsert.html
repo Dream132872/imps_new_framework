@@ -13,7 +13,7 @@
   {{ form.media.js }}
   <script>
     function pictureHasBeenManaged(res) {
-      showToast('اعلان', res.message, 'success')
+      showToast('{% translate "Notification" %}', res.message, 'success')
 
       setTimeout(() => {
         window.PopupManager.reply(res.details)
@@ -22,7 +22,7 @@
     }
 
     function pictureManagerHasError(res) {
-      showToast('خطا', res.responseJSON.error, 'error')
+      showToast('{% translate "Error" %}', res.responseJSON.error, 'error')
     }
   </script>
 {% endblock %}
