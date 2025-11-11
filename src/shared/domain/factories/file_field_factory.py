@@ -18,7 +18,7 @@ __all__ = ("FileFieldFactory",)
 class FileFieldFactory:
     @staticmethod
     def from_image_field(image_field: Any) -> FileField:
-        if not image_field:
+        if not image_field or not default_storage.exists(image_field.name):
             return FileField(
                 file_type=FileType.NONE,
                 path="",
@@ -91,7 +91,7 @@ class FileFieldFactory:
         media_root = os.path.normpath(settings.MEDIA_ROOT)
         relative_name = os.path.relpath(absolute_path, media_root)
         # Normalize path separators to forward slashes (like Django does)
-        relative_name = relative_name.replace(os.sep, '/')
+        relative_name = relative_name.replace(os.sep, "/")
 
         # Get file information from default storage
         file_size = default_storage.size(image_name)
@@ -101,7 +101,7 @@ class FileFieldFactory:
         content_type, _ = mimetypes.guess_type(image_name)
 
         # Check if it's an image based on extension
-        image_extensions = {'.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.svg'}
+        image_extensions = {".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".svg"}
         file_ext = os.path.splitext(image_name)[1].lower()
         is_image = file_ext in image_extensions
 
@@ -111,7 +111,7 @@ class FileFieldFactory:
 
         if is_image:
             try:
-                with default_storage.open(image_name, 'rb') as f:
+                with default_storage.open(image_name, "rb") as f:
                     with Image.open(f) as img:
                         width, height = img.size
             except Exception:

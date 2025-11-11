@@ -28,7 +28,7 @@ class UserAdmin(BaseModelAdmin, BaesUserAdmin):
 @admin.register(Picture)
 class PictureAdmin(BaseModelAdmin):
     list_display = (
-        "id",
+        "image_tag",
         "picture_type",
         "related_object",
         "content_type",

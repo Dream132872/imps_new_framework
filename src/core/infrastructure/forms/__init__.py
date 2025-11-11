@@ -45,6 +45,16 @@ class TestWidgetsForm(Form):
         label="User banner",
     )
 
+    galleries = PictureField(
+        object_id_field="id",
+        app_label="core_infrastructure",
+        model_name="user",
+        picture_type="gallery",
+        many=True,
+        help_text="gallery images",
+        label="User galleries",
+    )
+
     # # Basic Input Widgets
     # text_input = CharField(
     #     label="Text input",

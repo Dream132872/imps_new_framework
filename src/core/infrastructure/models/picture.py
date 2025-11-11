@@ -8,6 +8,7 @@ import uuid
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
 from core.infrastructure.models.managers.picture_manager import PictureManager
@@ -96,3 +97,6 @@ class Picture(BaseModel):
     def __repr__(self) -> str:
         """Debug representation of Picture."""
         return f"<Picture pk={self.id} name={self.image} type={self.picture_type}/>"
+
+    def image_tag(self) -> str:
+        return mark_safe(f'<img src="{self.image.url}" width="100" height="100" />')
