@@ -1,3 +1,5 @@
+import uuid
+from functools import lru_cache
 from typing import Any, Callable
 
 from django import forms
@@ -230,6 +232,9 @@ class Form(forms.Form):
         return self.generate_flattened_attrs()
 
     def get_form_id(self) -> str:
+        if not self.form_id:
+            self.form_id = str(uuid.uuid4())
+
         return self.form_id
 
 

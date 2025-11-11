@@ -1,11 +1,10 @@
-{% load static i18n %}
+{% load static i18n js_reverse %}
+
+<script src="{% url 'django_js_url_reverse' %}" type="text/javascript" charset="utf-8"></script>
 <!-- begin::Script -->
 <!-- begin::Javascript catalog -->
 <script src="{% url 'javascript-catalog' %}"></script>
 <!-- end::Javascript catalog -->
-<!-- begin::Jquery -->
-<script src="{% static 'shared/libs/jquery/jquery.min.js' %}"></script>
-<!-- end::Jquery -->
 <!-- begin::Custom toast -->
 <script src="{% static 'shared/libs/toast/toast.js' %}"></script>
 <!-- end::Custom toast -->
@@ -28,29 +27,10 @@
 <script src="{% static 'shared/libs/parsley/parsley.min.js' %}"></script>
 <script src="/static/shared/libs/parsley/i18n/{{ LANGUAGE_CODE }}.js"></script>
 <!-- end::Parsley -->
-<!-- begin::Custom js -->
+<!-- begin::Popup manager -->
 <script src="{% static 'shared/libs/popup/popup-manager.js' %}"></script>
+<!-- end::Popup manager -->
+<!-- begin::Custom js -->
 <script src="{% static 'shared/admin/js/custom.js' %}"></script>
 <!-- end::Custom js -->
-<script>
-  const SELECTOR_SIDEBAR_WRAPPER = '.sidebar-wrapper'
-  const Default = {
-    scrollbarTheme: 'os-theme-light',
-    scrollbarAutoHide: 'leave',
-    scrollbarClickScroll: true
-  }
-  document.addEventListener('DOMContentLoaded', function () {
-    const sidebarWrapper = document.querySelector(SELECTOR_SIDEBAR_WRAPPER)
-    if (sidebarWrapper && typeof OverlayScrollbarsGlobal?.OverlayScrollbars !== 'undefined') {
-      OverlayScrollbarsGlobal.OverlayScrollbars(sidebarWrapper, {
-        scrollbars: {
-          theme: Default.scrollbarTheme,
-          autoHide: Default.scrollbarAutoHide,
-          clickScroll: Default.scrollbarClickScroll
-        }
-      })
-    }
-  })
-</script>
-<!-- end::OverlayScrollbars Configure -->
 <!-- end::Script -->

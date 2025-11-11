@@ -1,5 +1,5 @@
 {% extends 'shared/admin/layout/layout.html' %}
-{% load forms utils %}
+{% load i18n forms utils %}
 
 {% block head_ref %}
   {{ form.media.css }}
@@ -12,11 +12,19 @@
 {% block footer_ref %}
   {{ form.media.js }}
   <script>
+    let popupData
+    $(document).ready(function () {
+      popupData = window.PopupManager.getData()
+    })
+
     function pictureHasBeenManaged(res) {
       showToast('{% translate "Notification" %}', res.message, 'success')
 
       setTimeout(() => {
-        window.PopupManager.reply(res.details)
+        window.PopupManager.reply({
+          res: res.details,
+          popupData: popupData
+        })
         window.close()
       }, 1000)
     }

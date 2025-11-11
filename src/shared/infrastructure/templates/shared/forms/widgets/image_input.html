@@ -1,0 +1,7 @@
+{% extends 'shared/forms/widgets/base_input.html' %}
+{% load static %}
+
+{% block content %}
+  <input type="file" name="{{ widget.name }}" {{ flat_attrs|safe }} ImageInput="{{ widget_obj.bound_field.form.get_form_id }}_{{ widget.name }}" />
+  <label class="cursor-pointer" for="{{ widget_obj.bound_field.id_for_label }}"><img class="image-input-preview" src="{% static 'shared/images/defaults/dummy_150x150.jpg' %}" alt="" ImagePreview="{{ widget_obj.bound_field.form.get_form_id }}_{{ widget.name }}" width="150" height="150" /></label>
+{% endblock %}

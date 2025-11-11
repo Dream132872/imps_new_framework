@@ -30,6 +30,7 @@ class HomeView(views.AdminGenericMixin, views.FormView):
     page_title = _("Dashboard")
     template_name = "core/base/home.html"
     success_url = reverse_lazy("core:base:home")
+    permission_required = ["core_infrastructure.view_admin_dashboard"]
 
     def get_context_data(self, **kwargs: Dict[str, Any]) -> Dict[str, Any]:
         ctx = super().get_context_data(**kwargs)

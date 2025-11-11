@@ -58,10 +58,10 @@
     }
 
     function getDataPayloadFromAttributes($el) {
-        const hasDataAttr = $el.is('[data-popup-data]');
+        const hasDataAttr = $el.is("[data-popup-data]");
         if (hasDataAttr) {
-            const raw = $el.attr('data-popup-data');
-            if (raw && raw.trim() !== '') {
+            const raw = $el.attr("data-popup-data");
+            if (raw && raw.trim() !== "") {
                 // Try JSON first
                 try {
                     return JSON.parse(raw);
@@ -75,7 +75,7 @@
                 }
             }
         }
-        const fromSelector = $el.attr('data-popup-data-from');
+        const fromSelector = $el.attr("data-popup-data-from");
         if (fromSelector) {
             const $form = $(fromSelector);
             if ($form.length) {
@@ -196,8 +196,29 @@
                 const fObj = parseFeatures(features);
                 const w = parseInt(fObj.width, 10) || 520;
                 const h = parseInt(fObj.height, 10) || 520;
-                const left = Math.max(0, (window.screenX || window.screenLeft || 0) + Math.max(0, Math.floor(((window.outerWidth || window.innerWidth) - w) / 2)));
-                const top = Math.max(0, (window.screenY || window.screenTop || 0) + Math.max(0, Math.floor(((window.outerHeight || window.innerHeight) - h) / 2)));
+                const left = Math.max(
+                    0,
+                    (window.screenX || window.screenLeft || 0) +
+                        Math.max(
+                            0,
+                            Math.floor(
+                                ((window.outerWidth || window.innerWidth) - w) /
+                                    2
+                            )
+                        )
+                );
+                const top = Math.max(
+                    0,
+                    (window.screenY || window.screenTop || 0) +
+                        Math.max(
+                            0,
+                            Math.floor(
+                                ((window.outerHeight || window.innerHeight) -
+                                    h) /
+                                    2
+                            )
+                        )
+                );
                 fObj.left = left;
                 fObj.top = top;
                 // Also include non-standard aliases for broader support
@@ -211,7 +232,8 @@
 
             // Open the popup with ids in query
             const sep = url.indexOf("?") === -1 ? "?" : "&";
-            const finalUrl = url + sep + "popupId=" + encodeURIComponent(popupId);
+            const finalUrl =
+                url + sep + "popupId=" + encodeURIComponent(popupId);
             const win = window.open(finalUrl, popupId, features);
 
             // Watch for popup close and cleanup storage only then

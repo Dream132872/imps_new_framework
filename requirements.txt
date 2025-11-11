@@ -15,6 +15,7 @@ redis==5.0.1
 django-redis
 docutils
 django-injector
+django-js-reverse
 adrf
 pillow
 django-debug-toolbar

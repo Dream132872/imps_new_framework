@@ -2,8 +2,8 @@
 Manage picture views.
 """
 
-from dataclasses import asdict
 import logging
+from dataclasses import asdict
 from typing import Any
 
 from django.http import HttpRequest, HttpResponse, JsonResponse

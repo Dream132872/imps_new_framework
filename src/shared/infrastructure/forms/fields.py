@@ -4,6 +4,7 @@ Custom implementation for form fields.
 
 from __future__ import annotations
 
+import uuid
 from functools import lru_cache
 
 from django import forms as django_forms
@@ -172,7 +173,7 @@ class ImageField(Field, django_forms.ImageField):
     """Custom ImageField with FileInput widget"""
 
     def __init__(self, *args, **kwargs) -> None:  # type: ignore
-        kwargs.setdefault("widget", FileInput)
+        kwargs.setdefault("widget", ImageInput)
         super().__init__(*args, **kwargs)
 
 
@@ -253,8 +254,15 @@ class PictureField(Field):
         bound_field.pictures = self.pictures
         bound_field.many = self.many
         bound_field.picture_type = self.picture_type
+        unique_identifier = str(uuid.uuid4())
+        bound_field.bound_field_uuid = unique_identifier
         self.object_id = form[getattr(self, "object_id_field")].initial
-
+        bound_field.popup_data = {
+            "pictures_box_id": unique_identifier,
+            "many": self.many,
+            "picture_type": self.picture_type,
+            "object_id": str(self.object_id),
+        }
         return bound_field
 
     @lru_cache

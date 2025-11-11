@@ -27,6 +27,7 @@ from django.urls import include, path
 from django.utils import timezone
 from django.views.decorators.http import last_modified, require_http_methods
 from django.views.i18n import JavaScriptCatalog
+from django_js_reverse.views import urls_js as django_js_url_reverse
 
 last_modified_date = timezone.now()
 
@@ -49,6 +50,7 @@ def health_check(request: HttpRequest) -> JsonResponse:
 urlpatterns = [
     path("health/", health_check, name="health_check"),
     path("admin-django/rosetta/", include("rosetta.urls")),
+    path("urls-js/", django_js_url_reverse, name="django_js_url_reverse"),
 ]
 
 if settings.DEBUG:

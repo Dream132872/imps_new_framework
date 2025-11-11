@@ -21,6 +21,7 @@ __all__ = (
     "HiddenInput",
     "MultipleHiddenInput",
     "FileInput",
+    "ImageInput",
     "ClearableFileInput",
     "Textarea",
     "DateInput",
@@ -257,6 +258,15 @@ class MultipleHiddenInput(BaseCustomWidget, forms.MultipleHiddenInput):
 class FileInput(BaseCustomWidget, forms.FileInput):
     template_name = "shared/forms/widgets/file_input.html"
     default_css_class = "form-control"
+
+
+class ImageInput(BaseCustomWidget, forms.FileInput):
+    template_name = "shared/forms/widgets/image_input.html"
+    default_css_class = "d-none"
+
+    class Media:
+        css = {"all": ["shared/libs/widgets/picture-input/picture-input.css"]}
+        js = ["shared/libs/widgets/picture-input/picture-input.js"]
 
 
 class ClearableFileInput(BaseCustomWidget, forms.ClearableFileInput):
