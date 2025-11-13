@@ -4,5 +4,5 @@ from . import models
 
 
 @register(models.Picture)
-class ObserverTranslation(TranslationOptions):
+class PictureTranslation(TranslationOptions):
     fields = ("title", "alternative")

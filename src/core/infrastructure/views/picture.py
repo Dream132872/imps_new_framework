@@ -4,16 +4,19 @@ Manage picture views.
 
 import logging
 from dataclasses import asdict
-from typing import Any
+from functools import lru_cache
+from typing import Any, Dict
 
-from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.forms.forms import BaseForm
+from django.http import Http404, HttpRequest, HttpResponse, JsonResponse
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 
 from core.application.commands import picture_commands
 from core.application.dtos.picture_dtos import PictureDTO
+from core.application.queries import picture_queries
 from core.infrastructure.forms.picture import UpsertPictureForm
-from shared.application.cqrs import dispatch_command
+from shared.application.cqrs import dispatch_command, dispatch_query
 from shared.application.exceptions import ApplicationNotFoundError
 from shared.infrastructure import views
 
@@ -53,26 +56,65 @@ class CreatePictureView(views.AdminGenericMixin, views.FormView):
             {
                 "status": "success",
                 "message": _("Picture has been created successfully"),
-                "details": {"picture": asdict(picture)},
+                "details": {"picture": asdict(picture), "is_update": False},
             }
         )
 
 
-class UpdatePictureView(views.FormView):
+class UpdatePictureView(views.AdminGenericMixin, views.FormView):
     form_class = UpsertPictureForm
     template_name = "core/picture/picture_upsert.html"
     permission_required = ["core_infrastructure.change_picture"]
+    return_exc_response_as_json = True
+
+    @lru_cache
+    def get_picture_data(self) -> PictureDTO:
+        return dispatch_query(
+            picture_queries.GetPictureByIdQuery(
+                picture_id=self.kwargs.get("picture_id")
+            )
+        )
 
     def get_initial(self) -> dict[str, Any]:
-        picture_id = self.kwargs.get("picture_id")
-        # picture =
-        return super().get_initial()
+        init = super().get_initial()
+        picture = self.get_picture_data()
+        init["picture_id"] = picture.id
+        init["content_type"] = picture.content_type
+        init["object_id"] = picture.object_id
+        init["picture_type"] = picture.picture_type
+        init["title"] = picture.title
+        init["alternative"] = picture.alternative
+        return init
+
+    def get_form(self, form_class: type | None = None) -> BaseForm:
+        form = super().get_form(form_class)
+        form.picture_data = self.get_picture_data()
+        return form
 
     def form_valid(self, form: UpsertPictureForm) -> JsonResponse:
-        return JsonResponse({"status": "success"})
-
-    def form_invalid(self, form: UpsertPictureForm) -> JsonResponse:
-        return JsonResponse({"status": "error"})
+        # get form data
+        data = form.get_form_data()
+        # get form files
+        files = form.files
+        # dispatch the requested command for updating picture entity
+        picture = dispatch_command(
+            picture_commands.UpdatePictureCommand(
+                picture_id=data["picture_id"],
+                content_type_id=data["content_type"],
+                alternative=data["alternative"],
+                title=data["title"],
+                image=files.get("image", None),  # type: ignore
+                object_id=data["object_id"],
+                picture_type=data["picture_type"],
+            )
+        )
+        return JsonResponse(
+            {
+                "status": "success",
+                "message": _("Picture has been updated successfully"),
+                "details": {"picture": asdict(picture), "is_update": True},
+            }
+        )
 
 
 class DeletePictureView(views.AdminGenericMixin, views.DeleteView):

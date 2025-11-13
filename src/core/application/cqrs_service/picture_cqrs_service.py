@@ -12,6 +12,10 @@ from shared.application.cqrs import register_command_handler, register_query_han
 # register queries
 # ============================
 register_query_handler(
+    picture_queries.GetPictureByIdQuery,
+    picture_query_handlers.GetPictureByIdQueryHandler,
+)
+register_query_handler(
     picture_queries.SearchPicturesQuery,
     picture_query_handlers.SearchPicturesQueryHandler,
 )
@@ -26,6 +30,10 @@ register_query_handler(
 register_command_handler(
     picture_commands.CreatePictureCommand,
     picture_command_handlers.CreatePictureCommandHandler,
+)
+register_command_handler(
+    picture_commands.UpdatePictureCommand,
+    picture_command_handlers.UpdatePictureCommandHandler,
 )
 register_command_handler(
     picture_commands.DeletePictureCommand,

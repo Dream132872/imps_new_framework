@@ -11,7 +11,7 @@ __all__ = (
 
 
 class PictureNotFoundError(DomainEntityNotFoundError):
-    """Raised when picure not found in the repository."""
+    """Raised when picture not found in the repository."""
 
 
 class PictureValidationError(DomainValidationError):

@@ -79,6 +79,30 @@ class Field(django_forms.Field):
         if self.required:
             self.widget.required = self.required
 
+    @property
+    def disabled(self) -> bool:
+        return self.widget.disabled
+
+    @disabled.setter
+    def disabled(self, value: bool) -> None:
+        self.widget.disabled = value
+
+    @property
+    def readonly(self) -> bool:
+        return self.widget.readonly
+
+    @readonly.setter
+    def readonly(self, value: bool) -> None:
+        self.widget.readonly = value
+
+    @property
+    def required(self) -> bool:
+        return self.widget.required
+
+    @required.setter
+    def required(self, value: bool) -> None:
+        self.widget.required = value
+
 
 class CharField(Field, django_forms.CharField):
     """Custom CharField with TextInput widget"""
@@ -258,7 +282,7 @@ class PictureField(Field):
         bound_field.bound_field_uuid = unique_identifier
         self.object_id = form[getattr(self, "object_id_field")].initial
         bound_field.popup_data = {
-            "pictures_box_id": unique_identifier,
+            "picture_box_id": unique_identifier,
             "many": self.many,
             "picture_type": self.picture_type,
             "object_id": str(self.object_id),

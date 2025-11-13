@@ -7,10 +7,11 @@ from dataclasses import dataclass
 
 from shared.application.cqrs import Query
 
-__all__ = (
-    "SearchPicturesQuery",
-    "SearchFirstPictureQuery",
-)
+
+@dataclass
+class GetPictureByIdQuery(Query):
+    # picture id
+    picture_id: uuid.UUID
 
 
 @dataclass

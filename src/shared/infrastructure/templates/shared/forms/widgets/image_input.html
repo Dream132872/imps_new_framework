@@ -3,5 +3,11 @@
 
 {% block content %}
   <input type="file" name="{{ widget.name }}" {{ flat_attrs|safe }} ImageInput="{{ widget_obj.bound_field.form.get_form_id }}_{{ widget.name }}" />
-  <label class="cursor-pointer" for="{{ widget_obj.bound_field.id_for_label }}"><img class="image-input-preview" src="{% static 'shared/images/defaults/dummy_150x150.jpg' %}" alt="" ImagePreview="{{ widget_obj.bound_field.form.get_form_id }}_{{ widget.name }}" width="150" height="150" /></label>
+  <label class="cursor-pointer" for="{{ widget_obj.bound_field.id_for_label }}">
+    {% if widget_obj.bound_field.form.picture_data %}
+      <img class="image-input-preview" src="{{ widget_obj.bound_field.form.picture_data.image.url }}" ImagePreview="{{ widget_obj.bound_field.form.get_form_id }}_{{ widget.name }}" width="150" height="150" />
+    {% else %}
+      <img class="image-input-preview" src="{% static 'shared/images/defaults/dummy_150x150.jpg' %}" ImagePreview="{{ widget_obj.bound_field.form.get_form_id }}_{{ widget.name }}" width="150" height="150" />
+    {% endif %}
+  </label>
 {% endblock %}

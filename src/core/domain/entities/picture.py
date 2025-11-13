@@ -2,9 +2,9 @@
 Picture related domain implementations.
 """
 
+import uuid
 from datetime import datetime
 from typing import Any
-import uuid
 
 from shared.domain.entities import AggregateRoot, FileField
 

@@ -78,7 +78,8 @@ class DjangoPictureRepository(DjangoRepository[Picture], PictureRepository):
             pictures = pictures.filter(picture_type__iexact=picture_type)
 
         return [
-            self._model_to_entity(p) for p in list(pictures.order_by("display_order"))
+            self._model_to_entity(p)
+            for p in list(pictures.order_by("display_order", "created_at"))
         ]
 
     def is_valid_picture_type(self, picture_type: str) -> bool:
@@ -101,5 +102,5 @@ class DjangoPictureRepository(DjangoRepository[Picture], PictureRepository):
         if picture_type and picture_type is not None:
             pictures = pictures.filter(picture_type__iexact=picture_type)
 
-        first_picture = pictures.order_by("display_order").first()
+        first_picture = pictures.order_by("display_order", "created_at").first()
         return self._model_to_entity(first_picture) if first_picture else None

@@ -6,18 +6,18 @@ from __future__ import annotations
 
 import logging
 
+from django.utils.translation import gettext_lazy as _
 from injector import inject
 
+from core.application.command_handlers import map_domain_exception_to_application
 from core.application.dtos.picture_dtos import PictureDTO
-from core.application.queries.picture_queries import (
-    SearchFirstPictureQuery,
-    SearchPicturesQuery,
-)
+from core.application.queries import picture_queries
 from core.domain.entities import Picture
 from core.domain.exceptions.picture import *
 from core.domain.repositories import PictureRepository
 from shared.application.cqrs import QueryHandler
 from shared.application.dtos import FileFieldDTO
+from shared.application.exceptions import ApplicationError
 from shared.domain.repositories import UnitOfWork
 
 logger = logging.getLogger(__file__)
@@ -54,11 +54,12 @@ class BasePictureQueryHandler:
 
 
 class SearchPicturesQueryHandler(
-    QueryHandler[SearchPicturesQuery, list[PictureDTO]], BasePictureQueryHandler
+    QueryHandler[picture_queries.SearchPicturesQuery, list[PictureDTO]],
+    BasePictureQueryHandler,
 ):
     """Searches between all pictures based on query inputs."""
 
-    def handle(self, query: SearchPicturesQuery) -> list[PictureDTO]:
+    def handle(self, query: picture_queries.SearchPicturesQuery) -> list[PictureDTO]:
         with self.uow:
             pictures = self.uow[PictureRepository].search_pictures(
                 content_type=query.content_type_id,
@@ -70,11 +71,14 @@ class SearchPicturesQueryHandler(
 
 
 class SearchFirstPictureQueryHandler(
-    QueryHandler[SearchFirstPictureQuery, PictureDTO | None], BasePictureQueryHandler
+    QueryHandler[picture_queries.SearchFirstPictureQuery, PictureDTO | None],
+    BasePictureQueryHandler,
 ):
     """Finds the first picture based on query inputs."""
 
-    def handle(self, query: SearchFirstPictureQuery) -> PictureDTO | None:
+    def handle(
+        self, query: picture_queries.SearchFirstPictureQuery
+    ) -> PictureDTO | None:
         with self.uow:
             picture = self.uow[PictureRepository].search_first_picture(
                 content_type=query.content_type_id,
@@ -83,3 +87,31 @@ class SearchFirstPictureQueryHandler(
             )
 
             return self._to_dto(picture) if picture else None
+
+
+class GetPictureByIdQueryHandler(
+    QueryHandler[picture_queries.GetPictureByIdQuery, PictureDTO],
+    BasePictureQueryHandler,
+):
+    def handle(self, query: picture_queries.GetPictureByIdQuery) -> PictureDTO:
+        try:
+            with self.uow:
+                picture = self.uow[PictureRepository].get_by_id(str(query.picture_id))
+                if not picture:
+                    raise PictureNotFoundError(
+                        _("There is no picture with ID: {picture_id}").format(
+                            picture_id=query.picture_id
+                        )
+                    )
+
+                return self._to_dto(picture)
+        except PictureNotFoundError as e:
+            raise map_domain_exception_to_application(
+                e, message=_("Picture not found: {msg}").format(msg=str(e))
+            ) from e
+        except Exception as e:
+            raise ApplicationError(
+                _("Could not get picture with ID: {picture_id}").format(
+                    picture_id=query.picture_id
+                )
+            ) from e

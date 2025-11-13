@@ -14,9 +14,10 @@ __all__ = (
     "View",
     "TemplateView",
     "FormView",
+    "CreateView",
     "UpdateView",
-    "RedirectView",
     "DeleteView",
+    "RedirectView",
 )
 
 
@@ -38,15 +39,15 @@ class FormView(ApplicationExceptionHandlerMixin, django_generics.FormView):
     """
 
 
+class CreateView(ApplicationExceptionHandlerMixin, django_generics.CreateView):
+    """
+    Custom implementation of CreateView.
+    """
+
+
 class UpdateView(ApplicationExceptionHandlerMixin, django_generics.UpdateView):
     """
     Custom implementation of UpdateView.
-    """
-
-
-class RedirectView(ApplicationExceptionHandlerMixin, django_generics.RedirectView):
-    """
-    Custom implementation of RedirectView.
     """
 
 
@@ -69,3 +70,9 @@ class DeleteView(ApplicationExceptionHandlerMixin, django_generics.View):
                 "message": _("The requested information was successfully deleted"),
             }
         )
+
+
+class RedirectView(ApplicationExceptionHandlerMixin, django_generics.RedirectView):
+    """
+    Custom implementation of RedirectView.
+    """

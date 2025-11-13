@@ -44,13 +44,16 @@ $(document).on("mouseleave", ".image-box", function (e) {
     });
 });
 
-// get picture box based on id
+// get pictures box based on id
 function getPicturesBox(pictureBoxId) {
     return $(`[pictures-box='${pictureBoxId}']`).first();
 }
 
 // get picture html element
-function getPictureElement(picture) {
+function getPictureElement(picture, popupData) {
+    let updatePictureUrl = DjangoUrls["core:picture:update"]({
+        picture_id: picture.id,
+    });
     return $(`
         <div class="me-3 mb-3" id="${picture.id}">
           <div class="image-box rounded-3">
@@ -64,7 +67,9 @@ function getPictureElement(picture) {
                 }" data-popup-name="picture_preview_popup" data-popup-features="width=${
         picture.image.width
     },height=${picture.image.height}"><i class="bi bi-eye"></i></a>
-                <a class="action-button cursor-pointer d-flex justify-content-center align-items-center"><i class="bi bi-pen"></i></a>
+                <a class="action-button cursor-pointer d-flex justify-content-center align-items-center" data-popup-open="${updatePictureUrl}" data-popup-name="select_picture_popup" data-popup-data="${JSON.stringify(
+        popupData
+    )}"><i class="bi bi-pen"></i></a>
                 <a class="action-button cursor-pointer d-flex justify-content-center align-items-center"><i class="bi bi-trash"></i></a>
               </div>
             </div>
@@ -75,7 +80,7 @@ function getPictureElement(picture) {
 
 // add managed picture to the desigred box
 function addPictureBox(res) {
-    const picturesBox = getPicturesBox(res.popupData.pictures_box_id);
+    const picturesBox = getPicturesBox(res.popupData.picture_box_id);
     const picture = res?.res?.picture;
 
     if (!picture) {
@@ -85,12 +90,12 @@ function addPictureBox(res) {
 
     if (!picturesBox.length) {
         console.warn(
-            `No pictures box found for id '${res.popupData.pictures_box_id}'.`
+            `No pictures box found for id '${res.popupData.picture_box_id}'.`
         );
         return;
     }
 
-    const pictureEl = getPictureElement(picture);
+    const pictureEl = getPictureElement(picture, res.popupData);
     const children = picturesBox.children();
     if (children.length) {
         children.last().before(pictureEl);
@@ -99,10 +104,32 @@ function addPictureBox(res) {
     }
 }
 
+// update single picture
+function updateSinglePicture(res) {
+    const picture = res?.res?.picture;
+    let pictureEl = getPictureElement(picture, res.popupData);
+    $(`[single-picture-box="${res.popupData.picture_box_id}"]`).html(pictureEl);
+}
+
+function replaceUpdatedPicture(res) {
+    const picture = res?.res?.picture;
+    let pictureEl = getPictureElement(picture, res.popupData);
+    $("#" + picture.id).replaceWith(pictureEl);
+}
+
 // manage response of the select picture popup
 window.PopupManager_onReply = function (res) {
     if (res.popupData.many) {
-        addPictureBox(res);
+        if (res.res.is_update) {
+            replaceUpdatedPicture(res);
+        } else {
+            addPictureBox(res);
+        }
     } else {
+        if (res.res.is_update) {
+            replaceUpdatedPicture(res);
+        } else {
+            updateSinglePicture(res);
+        }
     }
 };

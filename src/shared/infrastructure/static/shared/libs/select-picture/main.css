@@ -51,6 +51,12 @@
     overflow: hidden;
 }
 
+.pick-image .image-box img {
+    display: inline-block;
+    width: 150px !important;
+    height: 150px !important;
+}
+
 .pick-image .image-box.add-image {
     position: relative;
     overflow: hidden;

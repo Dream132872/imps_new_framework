@@ -12,6 +12,19 @@ class UpsertPictureForm(forms.Form):
     ajax_success_callbacK_method_name = "pictureHasBeenManaged"
     ajax_error_callback_method_name = "pictureManagerHasError"
 
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        picture_id = self.initial.get("picture_id") or self.data.get("picture_id")
+        if picture_id:
+            self.fields["image"].required = False
+
+    # picture id
+    picture_id = forms.CharField(
+        max_length=100,
+        required=False,
+        widget=forms.HiddenInput(),
+    )
+
     # content type
     content_type = forms.IntegerField(
         required=True,

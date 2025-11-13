@@ -15,7 +15,7 @@ from core.domain.services import FileStorageService
 from shared.application.cqrs import CommandHandler
 from shared.application.dtos import FileFieldDTO
 from shared.application.exception_mapper import map_domain_exception_to_application
-from shared.application.exceptions import ApplicationError, ApplicationValidationError
+from shared.application.exceptions import ApplicationError
 from shared.domain.factories import FileFieldFactory
 from shared.domain.repositories import UnitOfWork
 
@@ -95,6 +95,52 @@ class CreatePictureCommandHandler(
             self.file_storage_service.delete_image(image_path)
             raise ApplicationError(
                 _("Failed to create picture: {message}").format(message=str(e))
+            ) from e
+
+
+class UpdatePictureCommandHandler(
+    CommandHandler[picture_commands.UpdatePictureCommand, PictureDTO],
+    BasePictureCommandHandler,
+):
+    def handle(self, command: picture_commands.UpdatePictureCommand) -> PictureDTO:
+        try:
+            with self.uow:
+                # get picture by it's id
+                picture = self.uow[PictureRepository].get_by_id(str(command.picture_id))
+                # raise not found error if the picture does not exist
+                if not picture:
+                    raise PictureNotFoundError(
+                        _("There is no picture with ID: {picture_id}").format(
+                            picture_id=command.picture_id
+                        )
+                    )
+
+                # save new image for picture
+                if command.image:
+                    # save new image in storage
+                    new_image_name = self.file_storage_service.save_image(command.image)
+                    # remove previouse image file from storage
+                    self.file_storage_service.delete_image(picture.image.name)
+                    # add saved image name to the picture
+                    picture.update_image(
+                        FileFieldFactory.from_image_name(new_image_name)
+                    )
+
+                # update picture information
+                picture.update_information(
+                    title=command.title, alternative=command.alternative
+                )
+
+                # save the new
+                picture = self.uow[PictureRepository].save(picture)
+                return self._to_dto(picture)
+        except PictureNotFoundError as e:
+            raise map_domain_exception_to_application(
+                e, _("Picture not found: {msg}").format(msg=str(e))
+            ) from e
+        except Exception as e:
+            raise ApplicationError(
+                _("An error occurred during updating picture: {msg}").format(msg=str(e))
             ) from e
 
 
