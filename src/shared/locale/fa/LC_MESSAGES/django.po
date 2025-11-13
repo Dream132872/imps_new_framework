@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-08 17:23+0330\n"
-"PO-Revision-Date: 2025-09-30 16:19+0000\n"
-"Last-Translator:   <>\n"
+"POT-Creation-Date: 2025-11-13 09:16+0330\n"
+"PO-Revision-Date: 2025-11-13 09:22+0000\n"
+"Last-Translator: محمد اردوخانی <admin@admin.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: fa\n"
 "MIME-Version: 1.0\n"
@@ -44,12 +44,20 @@ msgstr "تاریخ ویرایش"
 #: .\src\shared\infrastructure\repositories.py:49
 #, python-brace-format
 msgid "Entity with id {entity_id} not found"
-msgstr ""
+msgstr "موجودیتی با آی دی {entity_id} یافت نشد"
 
 #: .\src\shared\infrastructure\templates\shared\admin\layout\layout.html:41
 #: .\src\shared\infrastructure\templates\shared\templatetags\layout\admin_site_header.html:13
 msgid "Home"
 msgstr "خانه"
+
+#: .\src\shared\infrastructure\templates\shared\forms\form.html:51
+msgid "Submit"
+msgstr "ثبت"
+
+#: .\src\shared\infrastructure\templates\shared\forms\form.html:52
+msgid "Reset"
+msgstr "بازنشانی"
 
 #: .\src\shared\infrastructure\templates\shared\forms\widgets\checkbox_input.html:7
 msgid "Yes"
@@ -63,6 +71,6 @@ msgstr "خیر"
 msgid "All rights reserved"
 msgstr "تمامی حقوق محفوظ است"
 
-#: .\src\shared\infrastructure\views\generics.py:69
+#: .\src\shared\infrastructure\views\generics.py:70
 msgid "The requested information was successfully deleted"
-msgstr ""
+msgstr "اطلاعات مورد نظر با موفقیت حذف شد"

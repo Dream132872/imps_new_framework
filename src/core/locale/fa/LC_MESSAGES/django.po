@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-09 11:54+0330\n"
-"PO-Revision-Date: 2025-10-04 02:14+0000\n"
-"Last-Translator:   <admin@admin.com>\n"
+"POT-Creation-Date: 2025-11-13 09:16+0330\n"
+"PO-Revision-Date: 2025-11-13 09:21+0000\n"
+"Last-Translator: محمد اردوخانی <admin@admin.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: fa\n"
 "MIME-Version: 1.0\n"
@@ -20,29 +20,53 @@ msgstr ""
 
 #: .\src\core\application\command_handlers\picture_command_handlers.py:64
 msgid "You should pass the image file"
-msgstr ""
+msgstr "شما باید فایل تصویر را ارسال کنید"
 
 #: .\src\core\application\command_handlers\picture_command_handlers.py:71
 msgid "Picture type is not valid"
-msgstr ""
+msgstr "نوع تصویر معتبر نمی باشد"
 
 #: .\src\core\application\command_handlers\picture_command_handlers.py:97
-#, fuzzy, python-brace-format
+#, python-brace-format
 #| msgid "Failed to search users: {message}"
 msgid "Failed to create picture: {message}"
-msgstr "جستجوی کاربران ناموفق بود: {message}"
+msgstr "ایجاد تصویر ناموفق بود: {message}"
 
-#: .\src\core\application\command_handlers\picture_command_handlers.py:110
-#, fuzzy, python-brace-format
+#: .\src\core\application\command_handlers\picture_command_handlers.py:113
+#: .\src\core\application\query_handlers\picture_query_handlers.py:102
+#, python-brace-format
+#| msgid "User with ID {user_id} not found"
+msgid "There is no picture with ID: {picture_id}"
+msgstr "تصویری با آی دی {picture_id} یافت نشد"
+
+#: .\src\core\application\command_handlers\picture_command_handlers.py:139
+#: .\src\core\application\query_handlers\picture_query_handlers.py:110
+#, python-brace-format
+msgid "Picture not found: {msg}"
+msgstr "تصویر یافت نشد: {msg}"
+
+#: .\src\core\application\command_handlers\picture_command_handlers.py:143
+#, python-brace-format
+msgid "An error occurred during updating picture: {msg}"
+msgstr "در هنگام ویرایش تصویر خطایی رخ داد : {msg}"
+
+#: .\src\core\application\command_handlers\picture_command_handlers.py:156
+#, python-brace-format
 #| msgid "User with ID {user_id} not found"
 msgid "Picture with ID {picture_id} not found"
-msgstr "کاربری با آی دی {user_id} یافت نشد"
+msgstr "تصویری با آی دی {picture_id} یافت نشد"
 
-#: .\src\core\application\command_handlers\picture_command_handlers.py:124
-#, fuzzy, python-brace-format
+#: .\src\core\application\command_handlers\picture_command_handlers.py:171
+#, python-brace-format
 #| msgid "Failed to get user with ID '{user_id}': {message}"
 msgid "Failed to delete picture with ID '{picture_id}': {message}"
-msgstr "دریافت کاربر با آی دی {user_id} ناموفق بود : {message}"
+msgstr "حذف تصویر با آی دی {picture_id} ناموفق بود: {message}"
+
+#: .\src\core\application\query_handlers\picture_query_handlers.py:114
+#, python-brace-format
+#| msgid "Failed to get user with ID '{user_id}': {message}"
+msgid "Could not get picture with ID: {picture_id}"
+msgstr "دریافت تصویر با آی دی {picture_id} ناموفق بود"
 
 #: .\src\core\application\query_handlers\user_query_handlers.py:79
 #, python-brace-format
@@ -61,15 +85,15 @@ msgstr "جستجوی کاربران ناموفق بود: {message}"
 
 #: .\src\core\domain\entities\user.py:24
 msgid "Email format is not valid"
-msgstr ""
+msgstr "فرمت ایمیل صحیح نمی باشد"
 
 #: .\src\core\infrastructure\admin.py:19
-#: .\src\core\infrastructure\models\picture.py:84
+#: .\src\core\infrastructure\models\picture.py:85
 msgid "Picture"
 msgstr "تصویر"
 
 #: .\src\core\infrastructure\admin.py:20
-#: .\src\core\infrastructure\models\picture.py:85
+#: .\src\core\infrastructure\models\picture.py:86
 msgid "Pictures"
 msgstr "تصاویر"
 
@@ -96,73 +120,82 @@ msgstr "نام کاربری"
 msgid "Password"
 msgstr "کلمه عبور"
 
-#: .\src\core\infrastructure\forms\picture.py:34
-#, fuzzy
+#: .\src\core\infrastructure\forms\picture.py:49
+#: .\src\core\infrastructure\forms\picture.py:50
 #| msgid "Image"
 msgid "Image file"
-msgstr "عکس"
+msgstr "فایل تصویر"
 
-#: .\src\core\infrastructure\forms\picture.py:41
-msgid "Title of the image"
-msgstr ""
-
-#: .\src\core\infrastructure\forms\picture.py:48
-#, fuzzy
-#| msgid "Alternative text"
-msgid "Alternative text for image"
-msgstr "متن جایگزین"
-
-#: .\src\core\infrastructure\models\picture.py:37
-msgid "Main image"
-msgstr "عکس اصلی"
-
-#: .\src\core\infrastructure\models\picture.py:38
-msgid "Gallery image"
-msgstr "عکس گالری"
-
-#: .\src\core\infrastructure\models\picture.py:39
-msgid "Avatar"
-msgstr "آواتار"
-
-#: .\src\core\infrastructure\models\picture.py:40
-msgid "Banner"
-msgstr "بنر"
-
-#: .\src\core\infrastructure\models\picture.py:44
-msgid "Image"
-msgstr "عکس"
-
-#: .\src\core\infrastructure\models\picture.py:48
-msgid "Alternative text"
-msgstr "متن جایگزین"
-
-#: .\src\core\infrastructure\models\picture.py:51
+#: .\src\core\infrastructure\forms\picture.py:57
+#: .\src\core\infrastructure\models\picture.py:52
 msgid "Title"
 msgstr "عنوان"
 
-#: .\src\core\infrastructure\models\picture.py:57
+#: .\src\core\infrastructure\forms\picture.py:58
+msgid "Title of the image"
+msgstr "عنوان تصویر"
+
+#: .\src\core\infrastructure\forms\picture.py:65
+#| msgid "Alternative text"
+msgid "Alternative"
+msgstr "جایگزین"
+
+#: .\src\core\infrastructure\forms\picture.py:66
+#| msgid "Alternative text"
+msgid "Alternative text for image"
+msgstr "متن جایگزین برای تصویر"
+
+#: .\src\core\infrastructure\models\picture.py:38
+msgid "Main image"
+msgstr "عکس اصلی"
+
+#: .\src\core\infrastructure\models\picture.py:39
+msgid "Gallery image"
+msgstr "عکس گالری"
+
+#: .\src\core\infrastructure\models\picture.py:40
+msgid "Avatar"
+msgstr "آواتار"
+
+#: .\src\core\infrastructure\models\picture.py:41
+msgid "Banner"
+msgstr "بنر"
+
+#: .\src\core\infrastructure\models\picture.py:45
+msgid "Image"
+msgstr "عکس"
+
+#: .\src\core\infrastructure\models\picture.py:49
+msgid "Alternative text"
+msgstr "متن جایگزین"
+
+#: .\src\core\infrastructure\models\picture.py:58
 msgid "Content type"
 msgstr "نوع محتوا"
 
-#: .\src\core\infrastructure\models\picture.py:61
+#: .\src\core\infrastructure\models\picture.py:62
 msgid "Object id"
 msgstr "آی دی موجودیت"
 
-#: .\src\core\infrastructure\models\picture.py:71
+#: .\src\core\infrastructure\models\picture.py:72
 msgid "Picture Type"
 msgstr "نوع تصویر"
 
-#: .\src\core\infrastructure\models\picture.py:75
+#: .\src\core\infrastructure\models\picture.py:76
 msgid "Display order"
 msgstr "اولویت نمایش"
 
-#: .\src\core\infrastructure\models\user.py:27
+#: .\src\core\infrastructure\models\user.py:28
 msgid "User"
 msgstr "کاربر"
 
-#: .\src\core\infrastructure\models\user.py:28
+#: .\src\core\infrastructure\models\user.py:29
 msgid "Users"
 msgstr "کاربران"
+
+#: .\src\core\infrastructure\models\user.py:31
+msgid "Can view admin dashboard"
+msgstr "نمایش صفحه اصلی ادمین"
 
 #: .\src\core\infrastructure\templates\core\auth\login.html:13
 msgid "Management of the Iranian Social and Economic Observatory (RASA)"
@@ -173,22 +206,13 @@ msgstr "مدیریت رصدخانه اجتماعی و اقتصادی ایران 
 msgid "Login"
 msgstr "ورود"
 
-#: .\src\core\infrastructure\templates\core\base\home.html:12
-msgctxt "month name"
-msgid "May"
-msgstr "ماه"
+#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:21
+msgid "Notification"
+msgstr "اعلان"
 
-#: .\src\core\infrastructure\templates\core\base\home.html:15
-msgctxt "verb"
-msgid "May"
-msgstr "ممکنه"
-
-#: .\src\core\infrastructure\templates\core\base\home.html:18
-#, python-format
-msgid "There is still %(items_count)s item"
-msgid_plural "There are still %(items_count)s items"
-msgstr[0] "هنوز %(items_count)s مورد وجود دارد"
-msgstr[1] "هنوز %(items_count)s مورد وجود دارند"
+#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:33
+msgid "Error"
+msgstr "خطا"
 
 #: .\src\core\infrastructure\views\auth.py:50
 msgid "You dont have enough permissions"
@@ -202,9 +226,28 @@ msgstr "حساب کاربری شما فعال نمی باشد"
 msgid "There is no user with these credentials"
 msgstr "کاربری با اطلاعات وارد شده یافت نشد"
 
-#: .\src\core\infrastructure\views\picture.py:55
+#: .\src\core\infrastructure\views\picture.py:58
 msgid "Picture has been created successfully"
 msgstr "تصویر با موفقیت ثبت شد"
+
+#: .\src\core\infrastructure\views\picture.py:114
+#| msgid "Picture has been created successfully"
+msgid "Picture has been updated successfully"
+msgstr "تصویر با موفقیت ویرایش شد"
+
+#~ msgctxt "month name"
+#~ msgid "May"
+#~ msgstr "ماه"
+
+#~ msgctxt "verb"
+#~ msgid "May"
+#~ msgstr "ممکنه"
+
+#, python-format
+#~ msgid "There is still %(items_count)s item"
+#~ msgid_plural "There are still %(items_count)s items"
+#~ msgstr[0] "هنوز %(items_count)s مورد وجود دارد"
+#~ msgstr[1] "هنوز %(items_count)s مورد وجود دارند"
 
 #~ msgid "Username or email"
 #~ msgstr "نام کاربری یا آدرس ایمیل"

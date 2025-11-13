@@ -5,7 +5,6 @@ Django repository implementation for picture.
 import uuid
 
 from core.domain.entities import Picture
-from core.domain.exceptions.picture import PictureNotFoundError
 from core.domain.repositories import PictureRepository
 from core.infrastructure.models import Picture as PictureModel
 from shared.domain.factories import FileFieldFactory
@@ -25,7 +24,7 @@ class DjangoPictureRepository(DjangoRepository[Picture], PictureRepository):
     def _model_to_entity(self, model: PictureModel) -> Picture:
         image = FileFieldFactory.from_image_field(model.image)
         return Picture(
-            id=model.id,  # type: ignore
+            id=str(model.id),
             created_at=model.created_at,
             updated_at=model.updated_at,
             image=image,
@@ -63,7 +62,7 @@ class DjangoPictureRepository(DjangoRepository[Picture], PictureRepository):
     def search_pictures(
         self,
         content_type: int | None = None,
-        object_id: int | uuid.UUID | None = None,
+        object_id: int | str | None = None,
         picture_type: str = "",
     ) -> list[Picture]:
         pictures = self.model_class.objects.all()
@@ -88,7 +87,7 @@ class DjangoPictureRepository(DjangoRepository[Picture], PictureRepository):
     def search_first_picture(
         self,
         content_type: int | None = None,
-        object_id: int | uuid.UUID | None = None,
+        object_id: int | str | None = None,
         picture_type: str = "",
     ) -> Picture | None:
         pictures = self.model_class.objects.all()

@@ -2,7 +2,6 @@
 Picture related domain implementations.
 """
 
-import uuid
 from datetime import datetime
 from typing import Any
 
@@ -17,7 +16,7 @@ class Picture(AggregateRoot):
         image: FileField,
         picture_type: str,
         content_type_id: int,
-        object_id: int | uuid.UUID,
+        object_id: int | str,
         id: str | None = None,
         title: str | None = None,
         alternative: str | None = None,
@@ -53,7 +52,7 @@ class Picture(AggregateRoot):
         return self._content_type_id
 
     @property
-    def object_id(self) -> int | uuid.UUID:
+    def object_id(self) -> int | str:
         return self._object_id
 
     def update_image(self, new_image: FileField) -> None:

@@ -24,7 +24,7 @@ urlpatterns = [
                         name="update",
                     ),
                     path(
-                        "delete/<str:picture_id>/",
+                        "delete/<str:pk>/",
                         picture.DeletePictureView.as_view(),
                         name="delete",
                     ),

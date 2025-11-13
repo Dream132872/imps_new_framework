@@ -12,7 +12,7 @@ __all__ = ("UserDTO",)
 
 @dataclass
 class UserDTO:
-    id: uuid.UUID
+    id: str
     username: str
     email: str
     first_name: str

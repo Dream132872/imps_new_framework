@@ -50,7 +50,7 @@ class BaseUserQueryHandler:
             UserDTO: an instance of UserDTO
         """
         return UserDTO(
-            id=user.id,  # type: ignore
+            id=user.id,
             username=user.username,
             email=user.email.value if user.email else "",
             first_name=user.first_name,
@@ -71,7 +71,7 @@ class GetUserByIdQueryHandler(
     def handle(self, query: GetUserByIdQuery) -> UserDTO:
         try:
             with self.uow:
-                user = self.uow[UserRepository].get_by_id(str(query.user_id))
+                user = self.uow[UserRepository].get_by_id(query.user_id)
                 if user:
                     return self._to_dto(user)
 

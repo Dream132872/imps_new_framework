@@ -15,12 +15,12 @@ __all__ = ("PictureDTO",)
 class PictureDTO:
     """Data Transfer Object for picture."""
 
-    id: uuid.UUID
+    id: str
     image: FileFieldDTO
     picture_type: str
     title: str
     alternative: str
     content_type: int
-    object_id: int | uuid.UUID
+    object_id: int | str
     created_at: datetime
     updated_at: datetime

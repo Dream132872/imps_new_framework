@@ -20,14 +20,14 @@ class PictureRepository(Repository[Picture]):
     def search_pictures(
         self,
         content_type: int | None = None,
-        object_id: int | uuid.UUID | None = None,
+        object_id: int | str | None = None,
         picture_type: str = "",
     ) -> list[Picture]:
         """Search pictures based on inputs.
 
         Args:
             content_type (int | None, optional): django app content_type. Defaults to None.
-            object_id (int | uuid.UUID | None, optional): id of the object in related item. Defaults to None.
+            object_id (int | str | None, optional): id of the object in related item. Defaults to None.
             picture_type (str, optional): type of the picture (main, avatar, ...). Defaults to "".
 
         Returns:
@@ -49,14 +49,14 @@ class PictureRepository(Repository[Picture]):
     def search_first_picture(
         self,
         content_type: int | None = None,
-        object_id: int | uuid.UUID | None = None,
+        object_id: int | str | None = None,
         picture_type: str = "",
     ) -> Picture | None:
         """Search pictures based on inputs and return the first item.
 
         Args:
             content_type (int | None, optional): django app content_type. Defaults to None.
-            object_id (int | uuid.UUID | None, optional): id of the object in related item. Defaults to None.
+            object_id (int | str | None, optional): id of the object in related item. Defaults to None.
             picture_type (str, optional): type of the picture (main, avatar, ...). Defaults to "".
 
         Returns:

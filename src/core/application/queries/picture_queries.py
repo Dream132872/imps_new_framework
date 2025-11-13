@@ -11,7 +11,7 @@ from shared.application.cqrs import Query
 @dataclass
 class GetPictureByIdQuery(Query):
     # picture id
-    picture_id: uuid.UUID
+    picture_id: str
 
 
 @dataclass
@@ -19,7 +19,7 @@ class SearchPicturesQuery(Query):
     # django content type foreign key
     content_type_id: int | None = None
     # object id of related model
-    object_id: uuid.UUID | int | None = None
+    object_id: str | int | None = None
     # picture type
     picture_type: str = "main"
 

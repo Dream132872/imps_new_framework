@@ -61,12 +61,12 @@ class DeleteView(ApplicationExceptionHandlerMixin, django_generics.View):
     command_class: type[Command]
     return_exc_response_as_json = True
 
-    def delete(self, request: HttpRequest, pk: int | str):
+    def post(self, request: HttpRequest, pk: int | str):
         command_obj = self.command_class(pk=pk)  # type: ignore
         res = dispatch_command(command_obj)
         return JsonResponse(
             {
-                "detail": {"pk": pk},
+                "details": {"pk": pk},
                 "message": _("The requested information was successfully deleted"),
             }
         )

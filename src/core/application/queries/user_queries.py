@@ -18,7 +18,7 @@ __all__ = (
 class GetUserByIdQuery(Query):
     """Query to get user by id."""
 
-    user_id: uuid.UUID
+    user_id: str
 
 
 @dataclass

@@ -5,7 +5,7 @@ Manage picture views.
 import logging
 from dataclasses import asdict
 from functools import lru_cache
-from typing import Any, Dict
+from typing import Any
 
 from django.forms.forms import BaseForm
 from django.http import Http404, HttpRequest, HttpResponse, JsonResponse
@@ -17,7 +17,6 @@ from core.application.dtos.picture_dtos import PictureDTO
 from core.application.queries import picture_queries
 from core.infrastructure.forms.picture import UpsertPictureForm
 from shared.application.cqrs import dispatch_command, dispatch_query
-from shared.application.exceptions import ApplicationNotFoundError
 from shared.infrastructure import views
 
 logger = logging.getLogger(__file__)
