@@ -3,7 +3,7 @@
 
 {% block head_ref %}
   {{ form.media.css }}
-  <link rel="stylesheet" href="{% static 'shared/libs/chunk-upload/css/jquery.fileupload.css' %}">
+  <link rel="stylesheet" href="{% static 'shared/libs/chunk-upload/css/jquery.fileupload.css' %}" />
   <style>
     .fileupload-progress {
       margin-top: 10px;
@@ -46,7 +46,7 @@
 
       if (fileInput.length) {
         // Monitor file input to toggle ajax form behavior
-        fileInput.on('change', function() {
+        fileInput.on('change', function () {
           const file = this.files[0]
           if (file) {
             // Temporarily disable ajax form submission when file is selected
@@ -58,7 +58,7 @@
         })
 
         // Intercept form submission
-        form.on('submit', function(e) {
+        form.on('submit', function (e) {
           const file = fileInput[0].files[0]
 
           // Only intercept if file is selected
@@ -87,7 +87,7 @@
 
       isUploading = true
       $('#fileupload-progress').show()
-      updateProgress(0, 'Initializing upload...')
+      updateProgress(0, '{% translate "Initializing upload..." %}')
 
       // Create chunk upload session
       $.ajax({
@@ -98,11 +98,11 @@
           total_size: file.size,
           csrfmiddlewaretoken: $('[name=csrfmiddlewaretoken]').val()
         },
-        success: function(response) {
+        success: function (response) {
           currentUploadId = response.upload_id
           uploadChunks(file, 0)
         },
-        error: function(xhr) {
+        error: function (xhr) {
           isUploading = false
           $('#fileupload-progress').hide()
           showToast('{% translate "Error" %}', xhr.responseJSON?.error || '{% translate "Failed to initialize upload" %}', 'error')
@@ -130,20 +130,24 @@
         data: formData,
         processData: false,
         contentType: false,
-        xhr: function() {
+        xhr: function () {
           const xhr = new window.XMLHttpRequest()
-          xhr.upload.addEventListener('progress', function(e) {
-            if (e.lengthComputable) {
-              const chunkProgress = (e.loaded / e.total) * 100
-              const totalProgress = ((offset + e.loaded) / file.size) * 100
-              updateProgress(totalProgress, 'Uploading: ' + Math.round(totalProgress) + '%')
-            }
-          }, false)
+          xhr.upload.addEventListener(
+            'progress',
+            function (e) {
+              if (e.lengthComputable) {
+                const chunkProgress = (e.loaded / e.total) * 100
+                const totalProgress = ((offset + e.loaded) / file.size) * 100
+                updateProgress(totalProgress, '{% translate "Uploading" %}: ' + Math.round(totalProgress) + '%')
+              }
+            },
+            false
+          )
           return xhr
         },
-        success: function(response) {
+        success: function (response) {
           const newOffset = response.offset
-          updateProgress((newOffset / file.size) * 100, 'Uploading: ' + Math.round((newOffset / file.size) * 100) + '%')
+          updateProgress((newOffset / file.size) * 100, '{% translate "Uploading" %}: ' + Math.round((newOffset / file.size) * 100) + '%')
 
           if (response.completed) {
             completeUpload()
@@ -151,7 +155,7 @@
             uploadChunks(file, newOffset)
           }
         },
-        error: function(xhr) {
+        error: function (xhr) {
           isUploading = false
           $('#fileupload-progress').hide()
           showToast('{% translate "Error" %}', xhr.responseJSON?.error || '{% translate "Failed to upload chunk" %}', 'error')
@@ -160,7 +164,7 @@
     }
 
     function completeUpload() {
-      updateProgress(100, 'Completing upload...')
+      updateProgress(100, '{% translate "Completing upload..." %}')
 
       const formData = new FormData()
       formData.append('upload_id', currentUploadId)
@@ -180,12 +184,12 @@
         data: formData,
         processData: false,
         contentType: false,
-        success: function(response) {
+        success: function (response) {
           isUploading = false
           $('#fileupload-progress').hide()
           pictureHasBeenManaged(response)
         },
-        error: function(xhr) {
+        error: function (xhr) {
           isUploading = false
           $('#fileupload-progress').hide()
           pictureManagerHasError(xhr)

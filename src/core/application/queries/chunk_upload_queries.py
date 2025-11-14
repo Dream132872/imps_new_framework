@@ -13,3 +13,4 @@ __all__ = ("GetChunkUploadStatusQuery",)
 class GetChunkUploadStatusQuery(Query):
     upload_id: str
 
+

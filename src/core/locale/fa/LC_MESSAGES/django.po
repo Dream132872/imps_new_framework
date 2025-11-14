@@ -234,8 +234,18 @@ msgid "Pending"
 msgstr "در انتظار"
 
 #: .\src\core\infrastructure\models\chunk_upload.py:55
+#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:141
+#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:150
 msgid "Uploading"
 msgstr "در حال بارگذاری"
+
+#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:90
+msgid "Initializing upload..."
+msgstr "در حال آماده‌سازی بارگذاری..."
+
+#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:167
+msgid "Completing upload..."
+msgstr "در حال تکمیل بارگذاری..."
 
 #: .\src\core\infrastructure\models\chunk_upload.py:56
 msgid "Completed"

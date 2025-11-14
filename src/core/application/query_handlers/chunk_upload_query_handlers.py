@@ -62,3 +62,4 @@ class GetChunkUploadStatusQueryHandler(
                 _("Could not get chunk upload status: {message}").format(message=str(e))
             ) from e
 
+

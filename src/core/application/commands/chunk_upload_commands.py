@@ -39,3 +39,4 @@ class CompleteChunkUploadCommand(Command):
     alternative: str
     picture_id: str | None = None
 
+
