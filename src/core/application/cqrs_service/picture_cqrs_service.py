@@ -23,10 +23,6 @@ register_query_handler(
     picture_queries.SearchFirstPictureQuery,
     picture_query_handlers.SearchFirstPictureQueryHandler,
 )
-register_query_handler(
-    picture_queries.GetChunkUploadStatusQuery,
-    picture_query_handlers.GetChunkUploadStatusQueryHandler,
-)
 
 # ============================
 # register commands
@@ -42,16 +38,4 @@ register_command_handler(
 register_command_handler(
     picture_commands.DeletePictureCommand,
     picture_command_handlers.DeletePictureCommandHandler,
-)
-register_command_handler(
-    picture_commands.CreateChunkUploadCommand,
-    picture_command_handlers.CreateChunkUploadCommandHandler,
-)
-register_command_handler(
-    picture_commands.UploadChunkCommand,
-    picture_command_handlers.UploadChunkCommandHandler,
-)
-register_command_handler(
-    picture_commands.CompleteChunkUploadCommand,
-    picture_command_handlers.CompleteChunkUploadCommandHandler,
 )

@@ -8,8 +8,8 @@ from dataclasses import asdict
 from django.http import HttpRequest, JsonResponse
 from django.utils.translation import gettext_lazy as _
 
-from core.application.commands import picture_commands
-from core.application.queries import picture_queries
+from core.application.commands import chunk_upload_commands
+from core.application.queries import chunk_upload_queries
 from shared.application.cqrs import dispatch_command, dispatch_query
 from shared.infrastructure import views
 
@@ -33,7 +33,7 @@ class CreateChunkUploadView(views.AdminGenericMixin, views.View):
 
         try:
             result = dispatch_command(
-                picture_commands.CreateChunkUploadCommand(
+                chunk_upload_commands.CreateChunkUploadCommand(
                     filename=filename,
                     total_size=int(total_size),
                 )
@@ -61,7 +61,7 @@ class UploadChunkView(views.AdminGenericMixin, views.View):
 
         try:
             result = dispatch_command(
-                picture_commands.UploadChunkCommand(
+                chunk_upload_commands.UploadChunkCommand(
                     upload_id=upload_id,
                     chunk=chunk,
                     offset=int(offset),
@@ -96,7 +96,7 @@ class CompleteChunkUploadView(views.AdminGenericMixin, views.View):
 
         try:
             picture = dispatch_command(
-                picture_commands.CompleteChunkUploadCommand(
+                chunk_upload_commands.CompleteChunkUploadCommand(
                     upload_id=upload_id,
                     content_type_id=int(content_type_id),
                     object_id=object_id,
@@ -130,7 +130,7 @@ class GetChunkUploadStatusView(views.AdminGenericMixin, views.View):
     def get(self, request: HttpRequest, upload_id: str) -> JsonResponse:
         try:
             result = dispatch_query(
-                picture_queries.GetChunkUploadStatusQuery(upload_id=upload_id)
+                chunk_upload_queries.GetChunkUploadStatusQuery(upload_id=upload_id)
             )
             return JsonResponse(result)
         except Exception as e:

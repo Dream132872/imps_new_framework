@@ -55,7 +55,10 @@ class CreatePictureView(views.AdminGenericMixin, views.FormView):
             {
                 "status": "success",
                 "message": _("Picture has been created successfully"),
-                "details": {"picture": asdict(picture), "is_update": False},
+                "details": {
+                    "picture": asdict(picture),
+                    "is_update": False,
+                },
             }
         )
 

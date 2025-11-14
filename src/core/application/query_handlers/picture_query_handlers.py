@@ -15,7 +15,7 @@ from core.application.dtos.picture_dtos import PictureDTO
 from core.application.queries import picture_queries
 from core.domain.entities import Picture
 from core.domain.exceptions.picture import *
-from core.domain.repositories import ChunkUploadRepository, PictureRepository
+from core.domain.repositories import PictureRepository
 from shared.application.cqrs import QueryHandler
 from shared.application.dtos import FileFieldDTO
 from shared.application.exceptions import ApplicationError
@@ -28,11 +28,8 @@ class BasePictureQueryHandler:
     """Base class for picture query handlers with common functionalities"""
 
     @inject
-    def __init__(
-        self, uow: UnitOfWork, chunk_upload_repository: ChunkUploadRepository | None = None
-    ) -> None:
+    def __init__(self, uow: UnitOfWork) -> None:
         self.uow = uow
-        self.chunk_upload_repository = chunk_upload_repository
 
     def _to_dto(self, picture: Picture) -> PictureDTO:
         image = FileFieldDTO(
@@ -118,35 +115,4 @@ class GetPictureByIdQueryHandler(
                 _("Could not get picture with ID: {picture_id}").format(
                     picture_id=query.picture_id
                 )
-            ) from e
-
-
-class GetChunkUploadStatusQueryHandler(
-    QueryHandler[picture_queries.GetChunkUploadStatusQuery, dict[str, Any]],
-    BasePictureQueryHandler,
-):
-    def handle(
-        self, query: picture_queries.GetChunkUploadStatusQuery
-    ) -> dict[str, Any]:
-        if not self.chunk_upload_repository:
-            raise ApplicationError(_("Chunk upload repository not available"))
-
-        try:
-            chunk_upload = self.chunk_upload_repository.get_by_upload_id(query.upload_id)
-            if not chunk_upload:
-                raise ApplicationError(_("Chunk upload not found"))
-
-            return {
-                "upload_id": chunk_upload.upload_id,
-                "filename": chunk_upload.filename,
-                "total_size": chunk_upload.total_size,
-                "uploaded_size": chunk_upload.uploaded_size,
-                "chunk_count": chunk_upload.chunk_count,
-                "status": chunk_upload.status,
-                "progress": chunk_upload.get_progress_percent(),
-                "completed": chunk_upload.is_complete(),
-            }
-        except Exception as e:
-            raise ApplicationError(
-                _("Could not get chunk upload status: {message}").format(message=str(e))
             ) from e

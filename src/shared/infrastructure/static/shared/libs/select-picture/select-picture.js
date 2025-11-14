@@ -117,17 +117,21 @@ function addPictureBox(res) {
 
 // update single picture
 function updateSinglePicture(res) {
+    console.log(res.popupData);
+
     const picture = res?.res?.picture;
     let pictureEl = getPictureElement(picture, res.popupData);
     $(`[single-picture-box="${res.popupData.picture_box_id}"]`).html(pictureEl);
 }
 
+// replace the picture box with new uploaded one
 function replaceUpdatedPicture(res) {
     const picture = res?.res?.picture;
     let pictureEl = getPictureElement(picture, res.popupData);
     $("#" + picture.id).replaceWith(pictureEl);
 }
 
+// callback method name that should be called after singular picture is removed
 function singlePictureRemovalCallback(el, res) {
     let createPictureUrl = DjangoUrls["core:picture:create"]({
         picture_type: res.details.picture_type,
@@ -145,6 +149,7 @@ function singlePictureRemovalCallback(el, res) {
         picture_type: res.details.picture_type,
         object_id: res.details.object_id,
     };
+    console.log("picture popup data: ", picturePopupData);
 
     let selectPictureEl = $(`
     <div class="me-3 mb-3">

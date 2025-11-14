@@ -9,30 +9,10 @@
   <div class="row">
     <div class="col-lg-12">
       {% render_form form %}
-      <hr />
-      <button class="btn btn-success" data-delete-url="https://toplearn.com">hello</button>
     </div>
   </div>
-  {% comment %} <div class="row">
-    <div class="col-lg-12">
-      <p>
-        May (month):{% translate 'May' context 'month name' %}
-      </p>
-      <p>
-        May (verb):{% translate 'May' context 'verb' %}
-      </p>
-      <p>
-        {% blocktranslate count items_count=items_count %}There is still {{ items_count }} item{% plural %}There are still {{ items_count }} items{% endblocktranslate %}
-      </p>
-    </div>
-  </div> {% endcomment %}
 {% endblock %}
 
 {% block footer_ref %}
   {{ form.media.js }}
-  <script>
-    $(document).ready(function () {
-      //console.log(interpolate(ngettext('Item has been removed: %(name)s', 'Items have been removed: %(name)s', 1), { name: 'محمد اردوخانی' }, true))
-    })
-  </script>
 {% endblock %}

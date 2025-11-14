@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-13 09:16+0330\n"
-"PO-Revision-Date: 2025-11-13 09:21+0000\n"
+"POT-Creation-Date: 2025-11-14 19:43+0330\n"
+"PO-Revision-Date: 2025-11-14 19:47+0000\n"
 "Last-Translator: محمد اردوخانی <admin@admin.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: fa\n"
@@ -18,53 +18,92 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Translated-Using: django-rosetta 0.10.2\n"
 
-#: .\src\core\application\command_handlers\picture_command_handlers.py:64
-msgid "You should pass the image file"
-msgstr "شما باید فایل تصویر را ارسال کنید"
+#: .\src\core\application\command_handlers\chunk_upload_command_handlers.py:78
+#: .\src\core\application\command_handlers\chunk_upload_command_handlers.py:115
+#: .\src\core\application\command_handlers\chunk_upload_command_handlers.py:148
+#: .\src\core\application\query_handlers\chunk_upload_query_handlers.py:43
+msgid "Chunk upload repository not available"
+msgstr "ریپوزیتوری بارگذاری تکه ای در دسترس نیست"
 
-#: .\src\core\application\command_handlers\picture_command_handlers.py:71
+#: .\src\core\application\command_handlers\chunk_upload_command_handlers.py:94
+#, python-brace-format
+msgid "Failed to create chunk upload: {message}"
+msgstr "ایجاد بارگذاری تکه ای ناموفق بود: {message}"
+
+#: .\src\core\application\command_handlers\chunk_upload_command_handlers.py:104
+#: .\src\core\application\command_handlers\chunk_upload_command_handlers.py:145
+msgid "Chunk upload service not available"
+msgstr "سرویس بارگذاری تکه ای در دسترس نیست"
+
+#: .\src\core\application\command_handlers\chunk_upload_command_handlers.py:121
+#: .\src\core\application\command_handlers\chunk_upload_command_handlers.py:156
+#: .\src\core\application\query_handlers\chunk_upload_query_handlers.py:48
+msgid "Chunk upload not found"
+msgstr "بارگذاری تکه ای یافت نشد"
+
+#: .\src\core\application\command_handlers\chunk_upload_command_handlers.py:133
+#, python-brace-format
+msgid "Failed to upload chunk: {message}"
+msgstr "بارگذاری تکه ناموفق بود: {message}"
+
+#: .\src\core\application\command_handlers\chunk_upload_command_handlers.py:159
+msgid "Upload is not completed yet"
+msgstr "بارگذاری به اتمام نرسیده است"
+
+#: .\src\core\application\command_handlers\chunk_upload_command_handlers.py:165
+#: .\src\core\application\command_handlers\picture_command_handlers.py:75
 msgid "Picture type is not valid"
 msgstr "نوع تصویر معتبر نمی باشد"
 
-#: .\src\core\application\command_handlers\picture_command_handlers.py:97
+#: .\src\core\application\command_handlers\chunk_upload_command_handlers.py:180
+#: .\src\core\application\command_handlers\picture_command_handlers.py:117
+#: .\src\core\application\query_handlers\picture_query_handlers.py:103
 #, python-brace-format
-#| msgid "Failed to search users: {message}"
-msgid "Failed to create picture: {message}"
-msgstr "ایجاد تصویر ناموفق بود: {message}"
-
-#: .\src\core\application\command_handlers\picture_command_handlers.py:113
-#: .\src\core\application\query_handlers\picture_query_handlers.py:102
-#, python-brace-format
-#| msgid "User with ID {user_id} not found"
 msgid "There is no picture with ID: {picture_id}"
 msgstr "تصویری با آی دی {picture_id} یافت نشد"
 
-#: .\src\core\application\command_handlers\picture_command_handlers.py:139
-#: .\src\core\application\query_handlers\picture_query_handlers.py:110
+#: .\src\core\application\command_handlers\chunk_upload_command_handlers.py:223
+#, python-brace-format
+msgid "Failed to complete chunk upload: {message}"
+msgstr "تکمیل بارگذاری تکه ای ناموفق بود: {message}"
+
+#: .\src\core\application\command_handlers\picture_command_handlers.py:68
+msgid "You should pass the image file"
+msgstr "شما باید فایل تصویر را ارسال کنید"
+
+#: .\src\core\application\command_handlers\picture_command_handlers.py:101
+#, python-brace-format
+msgid "Failed to create picture: {message}"
+msgstr "ایجاد تصویر ناموفق بود: {message}"
+
+#: .\src\core\application\command_handlers\picture_command_handlers.py:143
+#: .\src\core\application\query_handlers\picture_query_handlers.py:111
 #, python-brace-format
 msgid "Picture not found: {msg}"
 msgstr "تصویر یافت نشد: {msg}"
 
-#: .\src\core\application\command_handlers\picture_command_handlers.py:143
+#: .\src\core\application\command_handlers\picture_command_handlers.py:147
 #, python-brace-format
 msgid "An error occurred during updating picture: {msg}"
 msgstr "در هنگام ویرایش تصویر خطایی رخ داد : {msg}"
 
-#: .\src\core\application\command_handlers\picture_command_handlers.py:156
+#: .\src\core\application\command_handlers\picture_command_handlers.py:161
 #, python-brace-format
-#| msgid "User with ID {user_id} not found"
 msgid "Picture with ID {picture_id} not found"
 msgstr "تصویری با آی دی {picture_id} یافت نشد"
 
-#: .\src\core\application\command_handlers\picture_command_handlers.py:171
+#: .\src\core\application\command_handlers\picture_command_handlers.py:175
 #, python-brace-format
-#| msgid "Failed to get user with ID '{user_id}': {message}"
 msgid "Failed to delete picture with ID '{picture_id}': {message}"
 msgstr "حذف تصویر با آی دی {picture_id} ناموفق بود: {message}"
 
-#: .\src\core\application\query_handlers\picture_query_handlers.py:114
+#: .\src\core\application\query_handlers\chunk_upload_query_handlers.py:62
 #, python-brace-format
-#| msgid "Failed to get user with ID '{user_id}': {message}"
+msgid "Could not get chunk upload status: {message}"
+msgstr "وضعیت آپلود تکه ای را نمیتوان دریافت کرد : {message}"
+
+#: .\src\core\application\query_handlers\picture_query_handlers.py:115
+#, python-brace-format
 msgid "Could not get picture with ID: {picture_id}"
 msgstr "دریافت تصویر با آی دی {picture_id} ناموفق بود"
 
@@ -122,7 +161,6 @@ msgstr "کلمه عبور"
 
 #: .\src\core\infrastructure\forms\picture.py:49
 #: .\src\core\infrastructure\forms\picture.py:50
-#| msgid "Image"
 msgid "Image file"
 msgstr "فایل تصویر"
 
@@ -136,14 +174,88 @@ msgid "Title of the image"
 msgstr "عنوان تصویر"
 
 #: .\src\core\infrastructure\forms\picture.py:65
-#| msgid "Alternative text"
 msgid "Alternative"
 msgstr "جایگزین"
 
 #: .\src\core\infrastructure\forms\picture.py:66
-#| msgid "Alternative text"
 msgid "Alternative text for image"
 msgstr "متن جایگزین برای تصویر"
+
+#: .\src\core\infrastructure\models\chunk_upload.py:22
+msgid "Upload ID"
+msgstr "شناسه ی بارگذاری"
+
+#: .\src\core\infrastructure\models\chunk_upload.py:23
+msgid "Unique identifier for this upload session"
+msgstr "شناسه یکتا برای این جلسه بارگذاری"
+
+#: .\src\core\infrastructure\models\chunk_upload.py:27
+msgid "Filename"
+msgstr "نام فایل"
+
+#: .\src\core\infrastructure\models\chunk_upload.py:28
+msgid "Original filename"
+msgstr "نام فایل اصلی"
+
+#: .\src\core\infrastructure\models\chunk_upload.py:31
+msgid "Total Size"
+msgstr "حجم کل"
+
+#: .\src\core\infrastructure\models\chunk_upload.py:32
+msgid "Total file size in bytes"
+msgstr "حجم کل فایل به بایت"
+
+#: .\src\core\infrastructure\models\chunk_upload.py:36
+msgid "Uploaded Size"
+msgstr "حجم بارگذاری شده"
+
+#: .\src\core\infrastructure\models\chunk_upload.py:37
+msgid "Total bytes uploaded so far"
+msgstr "تعداد کل بایت‌های بارگذاری شده تاکنون"
+
+#: .\src\core\infrastructure\models\chunk_upload.py:41
+msgid "Chunk Count"
+msgstr "تعداد تکه‌ها"
+
+#: .\src\core\infrastructure\models\chunk_upload.py:42
+msgid "Number of chunks uploaded"
+msgstr "تعداد تکه‌های بارگذاری شده"
+
+#: .\src\core\infrastructure\models\chunk_upload.py:48
+msgid "Temporary File Path"
+msgstr "مسیر فایل موقت"
+
+#: .\src\core\infrastructure\models\chunk_upload.py:49
+msgid "Path to the temporary file being assembled"
+msgstr "مسیر فایل موقتی که در حال مونتاژ است"
+
+#: .\src\core\infrastructure\models\chunk_upload.py:54
+msgid "Pending"
+msgstr "در انتظار"
+
+#: .\src\core\infrastructure\models\chunk_upload.py:55
+msgid "Uploading"
+msgstr "در حال بارگذاری"
+
+#: .\src\core\infrastructure\models\chunk_upload.py:56
+msgid "Completed"
+msgstr "تکمیل شده"
+
+#: .\src\core\infrastructure\models\chunk_upload.py:57
+msgid "Failed"
+msgstr "ناموفق"
+
+#: .\src\core\infrastructure\models\chunk_upload.py:60
+msgid "Status"
+msgstr "وضعیت"
+
+#: .\src\core\infrastructure\models\chunk_upload.py:67
+msgid "Chunk Upload"
+msgstr "بارگذاری تکه ای"
+
+#: .\src\core\infrastructure\models\chunk_upload.py:68
+msgid "Chunk Uploads"
+msgstr "بارگذاری‌های تکه ای"
 
 #: .\src\core\infrastructure\models\picture.py:38
 msgid "Main image"
@@ -206,13 +318,27 @@ msgstr "مدیریت رصدخانه اجتماعی و اقتصادی ایران 
 msgid "Login"
 msgstr "ورود"
 
-#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:21
+#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:108
+#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:157
+#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:214
+msgid "Error"
+msgstr "خطا"
+
+#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:108
+msgid "Failed to initialize upload"
+msgstr "مقداردهی اولیه بارگذاری ناموفق بود"
+
+#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:157
+msgid "Failed to upload chunk"
+msgstr "بارگذاری تکه ناموفق بود"
+
+#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:202
 msgid "Notification"
 msgstr "اعلان"
 
-#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:33
-msgid "Error"
-msgstr "خطا"
+#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:214
+msgid "An error occurred"
+msgstr "خطایی رخ داد"
 
 #: .\src\core\infrastructure\views\auth.py:50
 msgid "You dont have enough permissions"
@@ -226,12 +352,24 @@ msgstr "حساب کاربری شما فعال نمی باشد"
 msgid "There is no user with these credentials"
 msgstr "کاربری با اطلاعات وارد شده یافت نشد"
 
-#: .\src\core\infrastructure\views\picture.py:58
+#: .\src\core\infrastructure\views\chunk_upload.py:31
+msgid "Filename and total_size are required"
+msgstr "نام فایل و حجم کل الزامی است"
+
+#: .\src\core\infrastructure\views\chunk_upload.py:59
+msgid "upload_id, chunk, and offset are required"
+msgstr "شناسه بارگذاری، تکه و آفست الزامی است"
+
+#: .\src\core\infrastructure\views\chunk_upload.py:95
+msgid "Missing required fields"
+msgstr "فیلدهای الزامی موجود نیست"
+
+#: .\src\core\infrastructure\views\chunk_upload.py:113
+#: .\src\core\infrastructure\views\picture.py:57
 msgid "Picture has been created successfully"
 msgstr "تصویر با موفقیت ثبت شد"
 
-#: .\src\core\infrastructure\views\picture.py:114
-#| msgid "Picture has been created successfully"
+#: .\src\core\infrastructure\views\picture.py:113
 msgid "Picture has been updated successfully"
 msgstr "تصویر با موفقیت ویرایش شد"
 

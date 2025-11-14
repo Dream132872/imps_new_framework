@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-13 09:16+0330\n"
+"POT-Creation-Date: 2025-11-14 19:43+0330\n"
 "PO-Revision-Date: 2025-11-13 09:22+0000\n"
 "Last-Translator: محمد اردوخانی <admin@admin.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -71,6 +71,6 @@ msgstr "خیر"
 msgid "All rights reserved"
 msgstr "تمامی حقوق محفوظ است"
 
-#: .\src\shared\infrastructure\views\generics.py:70
+#: .\src\shared\infrastructure\views\generics.py:75
 msgid "The requested information was successfully deleted"
 msgstr "اطلاعات مورد نظر با موفقیت حذف شد"
