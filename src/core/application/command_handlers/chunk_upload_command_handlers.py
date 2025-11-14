@@ -11,8 +11,8 @@ from injector import inject
 
 from core.application.commands import chunk_upload_commands
 from core.application.dtos.picture_dtos import PictureDTO
-from core.domain.entities.picture import Picture
 from core.domain.entities.chunk_upload import ChunkUpload
+from core.domain.entities.picture import Picture
 from core.domain.exceptions.picture import PictureNotFoundError, PictureValidationError
 from core.domain.repositories import ChunkUploadRepository, PictureRepository
 from core.domain.services import ChunkUploadService, FileStorageService
@@ -37,12 +37,10 @@ class BaseChunkUploadCommandHandler:
         uow: UnitOfWork,
         file_storage_service: FileStorageService,
         chunk_upload_service: ChunkUploadService | None = None,
-        chunk_upload_repository: ChunkUploadRepository | None = None,
     ) -> None:
         self.uow = uow
         self.file_storage_service = file_storage_service
         self.chunk_upload_service = chunk_upload_service
-        self.chunk_upload_repository = chunk_upload_repository
 
     def _to_dto(self, picture: Picture) -> PictureDTO:
         image = FileFieldDTO(
@@ -74,9 +72,6 @@ class CreateChunkUploadCommandHandler(
     def handle(
         self, command: chunk_upload_commands.CreateChunkUploadCommand
     ) -> dict[str, Any]:
-        if not self.chunk_upload_repository:
-            raise ApplicationError(_("Chunk upload repository not available"))
-
         try:
             chunk_upload = ChunkUpload(
                 upload_id=uuid.uuid4(),
@@ -84,7 +79,7 @@ class CreateChunkUploadCommandHandler(
                 total_size=command.total_size,
                 status="pending",
             )
-            chunk_upload = self.chunk_upload_repository.save(chunk_upload)
+            chunk_upload = self.uow[ChunkUploadRepository].save(chunk_upload)
             return {
                 "upload_id": chunk_upload.upload_id,
                 "offset": 0,
@@ -99,7 +94,9 @@ class UploadChunkCommandHandler(
     CommandHandler[chunk_upload_commands.UploadChunkCommand, dict[str, Any]],
     BaseChunkUploadCommandHandler,
 ):
-    def handle(self, command: chunk_upload_commands.UploadChunkCommand) -> dict[str, Any]:
+    def handle(
+        self, command: chunk_upload_commands.UploadChunkCommand
+    ) -> dict[str, Any]:
         if not self.chunk_upload_service:
             raise ApplicationError(_("Chunk upload service not available"))
 
@@ -111,10 +108,7 @@ class UploadChunkCommandHandler(
                 command.chunk_size,
             )
 
-            if not self.chunk_upload_repository:
-                raise ApplicationError(_("Chunk upload repository not available"))
-
-            chunk_upload = self.chunk_upload_repository.get_by_upload_id(
+            chunk_upload = self.uow[ChunkUploadRepository].get_by_upload_id(
                 command.upload_id
             )
             if not chunk_upload:
@@ -144,12 +138,9 @@ class CompleteChunkUploadCommandHandler(
         if not self.chunk_upload_service:
             raise ApplicationError(_("Chunk upload service not available"))
 
-        if not self.chunk_upload_repository:
-            raise ApplicationError(_("Chunk upload repository not available"))
-
         image_path = ""
         try:
-            chunk_upload = self.chunk_upload_repository.get_by_upload_id(
+            chunk_upload = self.uow[ChunkUploadRepository].get_by_upload_id(
                 command.upload_id
             )
             if not chunk_upload:
@@ -222,5 +213,3 @@ class CompleteChunkUploadCommandHandler(
             raise ApplicationError(
                 _("Failed to complete chunk upload: {message}").format(message=str(e))
             ) from e
-
-

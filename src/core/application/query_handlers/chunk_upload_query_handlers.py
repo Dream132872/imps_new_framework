@@ -26,10 +26,9 @@ class BaseChunkUploadQueryHandler:
 
     @inject
     def __init__(
-        self, uow: UnitOfWork, chunk_upload_repository: ChunkUploadRepository | None = None
+        self, uow: UnitOfWork
     ) -> None:
         self.uow = uow
-        self.chunk_upload_repository = chunk_upload_repository
 
 
 class GetChunkUploadStatusQueryHandler(
@@ -39,11 +38,8 @@ class GetChunkUploadStatusQueryHandler(
     def handle(
         self, query: chunk_upload_queries.GetChunkUploadStatusQuery
     ) -> dict[str, Any]:
-        if not self.chunk_upload_repository:
-            raise ApplicationError(_("Chunk upload repository not available"))
-
         try:
-            chunk_upload = self.chunk_upload_repository.get_by_upload_id(query.upload_id)
+            chunk_upload = self.uow[ChunkUploadRepository].get_by_upload_id(query.upload_id)
             if not chunk_upload:
                 raise ApplicationError(_("Chunk upload not found"))
 

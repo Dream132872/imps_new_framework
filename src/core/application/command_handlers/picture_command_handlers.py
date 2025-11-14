@@ -152,7 +152,6 @@ class DeletePictureCommandHandler(
     CommandHandler[picture_commands.DeletePictureCommand, PictureDTO],
     BasePictureCommandHandler,
 ):
-
     def handle(self, command: picture_commands.DeletePictureCommand) -> PictureDTO:
         try:
             picture = self.uow[PictureRepository].get_by_id(str(command.pk))
