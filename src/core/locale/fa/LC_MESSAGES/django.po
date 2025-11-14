@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-14 19:43+0330\n"
+"POT-Creation-Date: 2025-11-14 23:19+0330\n"
 "PO-Revision-Date: 2025-11-14 19:47+0000\n"
 "Last-Translator: محمد اردوخانی <admin@admin.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -234,18 +234,10 @@ msgid "Pending"
 msgstr "در انتظار"
 
 #: .\src\core\infrastructure\models\chunk_upload.py:55
-#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:141
-#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:150
+#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:189
+#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:198
 msgid "Uploading"
 msgstr "در حال بارگذاری"
-
-#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:90
-msgid "Initializing upload..."
-msgstr "در حال آماده‌سازی بارگذاری..."
-
-#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:167
-msgid "Completing upload..."
-msgstr "در حال تکمیل بارگذاری..."
 
 #: .\src\core\infrastructure\models\chunk_upload.py:56
 msgid "Completed"
@@ -328,25 +320,37 @@ msgstr "مدیریت رصدخانه اجتماعی و اقتصادی ایران 
 msgid "Login"
 msgstr "ورود"
 
-#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:108
-#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:157
-#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:214
+#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:47
+msgid "Submitting..."
+msgstr "در حال ارسال ..."
+
+#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:137
+msgid "Initializing upload..."
+msgstr "در حال آماده‌سازی بارگذاری..."
+
+#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:156
+#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:210
+#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:277
 msgid "Error"
 msgstr "خطا"
 
-#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:108
+#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:156
 msgid "Failed to initialize upload"
 msgstr "مقداردهی اولیه بارگذاری ناموفق بود"
 
-#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:157
+#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:210
 msgid "Failed to upload chunk"
 msgstr "بارگذاری تکه ناموفق بود"
 
-#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:202
+#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:216
+msgid "Completing upload..."
+msgstr "در حال تکمیل بارگذاری..."
+
+#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:257
 msgid "Notification"
 msgstr "اعلان"
 
-#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:214
+#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:277
 msgid "An error occurred"
 msgstr "خطایی رخ داد"
 
@@ -379,7 +383,7 @@ msgstr "فیلدهای الزامی موجود نیست"
 msgid "Picture has been created successfully"
 msgstr "تصویر با موفقیت ثبت شد"
 
-#: .\src\core\infrastructure\views\picture.py:113
+#: .\src\core\infrastructure\views\picture.py:116
 msgid "Picture has been updated successfully"
 msgstr "تصویر با موفقیت ویرایش شد"
 

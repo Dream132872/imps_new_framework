@@ -17,13 +17,13 @@
 {% endblock %}
 
 {% block content %}
-  {% render_form form %}
   <div id="fileupload-progress" class="fileupload-progress">
+    <div class="progress-text text-center"></div>
     <div class="progress">
       <div class="progress-bar progress-bar-success" role="progressbar" style="width: 0%"></div>
     </div>
-    <div class="progress-text text-center"></div>
   </div>
+  {% render_form form %}
 {% endblock %}
 
 {% block footer_ref %}
@@ -36,6 +36,23 @@
     let currentUploadId = null
     let chunkSize = 0.5 * 1024 * 1024 // 500KB chunks
     let isUploading = false
+    let isSubmitting = false
+
+    function setFormSubmitting(submitting) {
+      isSubmitting = submitting
+      const submitButton = $('form button[type="submit"]')
+      if (submitting) {
+        submitButton.prop('disabled', true)
+        submitButton.data('original-text', submitButton.html())
+        submitButton.html('<i class="fas fa-spinner fa-spin"></i> {% translate "Submitting..." %}')
+      } else {
+        submitButton.prop('disabled', false)
+        const originalText = submitButton.data('original-text')
+        if (originalText) {
+          submitButton.html(originalText)
+        }
+      }
+    }
 
     $(document).ready(function () {
       popupData = window.PopupManager.getData()
@@ -44,6 +61,11 @@
       const form = $('form')
       const fileInput = $('#id_image')
 
+      // Override AJAX complete handler to re-enable form on completion
+      if (form.attr('data-ajax') === 'true') {
+        form.attr('data-ajax-complete', 'pictureFormAjaxCompleted')
+      }
+
       if (fileInput.length) {
         // Monitor file input to toggle ajax form behavior
         fileInput.on('change', function () {
@@ -51,14 +73,24 @@
           if (file) {
             // Temporarily disable ajax form submission when file is selected
             form.attr('data-ajax', 'false')
+            form.removeAttr('data-ajax-complete')
           } else {
             // Re-enable ajax form submission when no file
             form.attr('data-ajax', 'true')
+            form.attr('data-ajax-complete', 'pictureFormAjaxCompleted')
           }
         })
 
         // Intercept form submission
         form.on('submit', function (e) {
+          // Prevent multiple submissions
+          if (isSubmitting || isUploading) {
+            e.preventDefault()
+            e.stopPropagation()
+            e.stopImmediatePropagation()
+            return false
+          }
+
           const file = fileInput[0].files[0]
 
           // Only intercept if file is selected
@@ -66,6 +98,7 @@
             e.preventDefault()
             e.stopPropagation()
             e.stopImmediatePropagation()
+            setFormSubmitting(true)
             startChunkUpload(file)
             return false
           }
@@ -73,11 +106,25 @@
           // If no file in update mode, re-enable ajax and allow normal submission
           if (!file && $('#id_picture_id').val()) {
             form.attr('data-ajax', 'true')
+            form.attr('data-ajax-complete', 'pictureFormAjaxCompleted')
+            setFormSubmitting(true)
             return true
           }
 
           // If no file in create mode, let validation handle it
+          setFormSubmitting(true)
           return true
+        })
+      } else {
+        // If no file input, handle normal form submission
+        form.on('submit', function (e) {
+          if (isSubmitting) {
+            e.preventDefault()
+            e.stopPropagation()
+            e.stopImmediatePropagation()
+            return false
+          }
+          setFormSubmitting(true)
         })
       }
     })
@@ -104,6 +151,7 @@
         },
         error: function (xhr) {
           isUploading = false
+          setFormSubmitting(false)
           $('#fileupload-progress').hide()
           showToast('{% translate "Error" %}', xhr.responseJSON?.error || '{% translate "Failed to initialize upload" %}', 'error')
         }
@@ -157,6 +205,7 @@
         },
         error: function (xhr) {
           isUploading = false
+          setFormSubmitting(false)
           $('#fileupload-progress').hide()
           showToast('{% translate "Error" %}', xhr.responseJSON?.error || '{% translate "Failed to upload chunk" %}', 'error')
         }
@@ -186,11 +235,13 @@
         contentType: false,
         success: function (response) {
           isUploading = false
+          setFormSubmitting(false)
           $('#fileupload-progress').hide()
           pictureHasBeenManaged(response)
         },
         error: function (xhr) {
           isUploading = false
+          setFormSubmitting(false)
           $('#fileupload-progress').hide()
           pictureManagerHasError(xhr)
         }
@@ -214,7 +265,15 @@
       }, 1000)
     }
 
+    function pictureFormAjaxCompleted() {
+      setFormSubmitting(false)
+      if (typeof defaultAjaxFormCompleted === 'function') {
+        defaultAjaxFormCompleted()
+      }
+    }
+
     function pictureManagerHasError(res) {
+      setFormSubmitting(false)
       showToast('{% translate "Error" %}', res.responseJSON?.error || '{% translate "An error occurred" %}', 'error')
     }
   </script>
