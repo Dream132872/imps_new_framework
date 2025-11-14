@@ -114,7 +114,6 @@ ASGI_APPLICATION = "config.asgi.application"
 # django-js-reverse configuration
 JS_REVERSE_JS_VAR_NAME = "DjangoUrls"
 JS_REVERSE_JS_MINIFY = True
-# JS_REVERSE_EXCLUDE_NAMESPACES = ["admin", "djdt", "django_js_url_reverse"]
 JS_REVERSE_INCLUDE_ONLY_NAMESPACES = ["shared", "core"]
 
 # number of threads for threadpool in asgi webserver like daphne

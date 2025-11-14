@@ -3,6 +3,8 @@ This file contains all required django generic views as Custom generic views.
 each generic view has its own implementation, therefore, you should use them instead of django's generic views.
 """
 
+import dataclasses
+
 from django.http import HttpRequest, JsonResponse
 from django.utils.translation import gettext_lazy as _
 from django.views import generic as django_generics
@@ -55,7 +57,7 @@ class DeleteView(ApplicationExceptionHandlerMixin, django_generics.View):
     """
     Custom implementation of DeleteView.
     the url should take pk as url parameter.
-    the command class should has pk input too.
+    the command class should has pk input too and also should return the whole deleted object.
     """
 
     command_class: type[Command]
@@ -64,9 +66,12 @@ class DeleteView(ApplicationExceptionHandlerMixin, django_generics.View):
     def post(self, request: HttpRequest, pk: int | str):
         command_obj = self.command_class(pk=pk)  # type: ignore
         res = dispatch_command(command_obj)
+        if dataclasses.is_dataclass(res):
+            res = dataclasses.asdict(res)  # type: ignore
+
         return JsonResponse(
             {
-                "details": {"pk": pk},
+                "details": res,
                 "message": _("The requested information was successfully deleted"),
             }
         )

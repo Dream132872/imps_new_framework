@@ -145,10 +145,11 @@ class UpdatePictureCommandHandler(
 
 
 class DeletePictureCommandHandler(
-    CommandHandler[picture_commands.DeletePictureCommand, str],
+    CommandHandler[picture_commands.DeletePictureCommand, PictureDTO],
     BasePictureCommandHandler,
 ):
-    def handle(self, command: picture_commands.DeletePictureCommand) -> str:
+
+    def handle(self, command: picture_commands.DeletePictureCommand) -> PictureDTO:
         try:
             picture = self.uow[PictureRepository].get_by_id(str(command.pk))
             if not picture:
@@ -159,9 +160,8 @@ class DeletePictureCommandHandler(
                 )
 
             self.uow[PictureRepository].delete(picture)
-            # todo: change this to domain event system
             self.file_storage_service.delete_image(picture.image.path)
-            return str(command.pk)
+            return self._to_dto(picture)
         except PictureNotFoundError as e:
             # Use the exception mapper for automatic transformation
             raise map_domain_exception_to_application(e) from e

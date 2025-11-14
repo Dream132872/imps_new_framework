@@ -54,6 +54,17 @@ function getPictureElement(picture, popupData) {
     let updatePictureUrl = DjangoUrls["core:picture:update"]({
         picture_id: picture.id,
     });
+    let deletePictureUrl = DjangoUrls["core:picture:delete"]({
+        pk: picture.id,
+    });
+
+    let deleteScenario = "";
+    if (popupData.many) {
+        deleteScenario = `data-delete-element="#${picture.id}"`;
+    } else {
+        deleteScenario = `data-delete-callbacl="singlePictureRemovalCallback"`;
+    }
+
     return $(`
         <div class="me-3 mb-3" id="${picture.id}">
           <div class="image-box rounded-3">
@@ -70,7 +81,7 @@ function getPictureElement(picture, popupData) {
                 <a class="action-button cursor-pointer d-flex justify-content-center align-items-center" data-popup-open="${updatePictureUrl}" data-popup-name="select_picture_popup" data-popup-data="${JSON.stringify(
         popupData
     )}"><i class="bi bi-pen"></i></a>
-                <a class="action-button cursor-pointer d-flex justify-content-center align-items-center"><i class="bi bi-trash"></i></a>
+                <a class="action-button cursor-pointer d-flex justify-content-center align-items-center" data-delete-url="${deletePictureUrl}" ${deleteScenario}><i class="bi bi-trash"></i></a>
               </div>
             </div>
           </div>
@@ -115,6 +126,42 @@ function replaceUpdatedPicture(res) {
     const picture = res?.res?.picture;
     let pictureEl = getPictureElement(picture, res.popupData);
     $("#" + picture.id).replaceWith(pictureEl);
+}
+
+function singlePictureRemovalCallback(el, res) {
+    let createPictureUrl = DjangoUrls["core:picture:create"]({
+        picture_type: res.details.picture_type,
+        content_type: res.details.content_type,
+        object_id: res.details.object_id,
+    });
+
+    let pictureBoxId = $("#" + res.details.id)
+        .parent()
+        .attr("single-picture-box");
+
+    let picturePopupData = {
+        picture_box_id: pictureBoxId,
+        many: false,
+        picture_type: res.details.picture_type,
+        object_id: res.details.object_id,
+    };
+
+    let selectPictureEl = $(`
+    <div class="me-3 mb-3">
+        <div class="image-box add-image rounded-3 cursor-pointer">
+          <img src="/static/shared/images/defaults/dummy_150x150.jpg" width="150" height="150" alt="Add new image" />
+          <div class="overlay d-flex flex-column justify-content-end align-items-center w-100 h-100" data-popup-open="${createPictureUrl}" data-popup-name="select_picture_popup" data-popup-data="${JSON.stringify(
+        picturePopupData
+    )}">
+            <div class="actions d-flex justify-content-evenly align-items-center w-100 mb-3">
+              <a class="action-button cursor-pointer d-flex justify-content-center align-items-center"><i class="bi bi-plus-lg"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    `);
+
+    $("#" + res.details.id).replaceWith(selectPictureEl);
 }
 
 // manage response of the select picture popup

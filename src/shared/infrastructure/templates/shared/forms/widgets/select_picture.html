@@ -12,7 +12,7 @@
               <div class="actions d-flex justify-content-evenly align-items-center w-100 mb-3">
                 <a class="action-button cursor-pointer d-flex justify-content-center align-items-center" data-popup-open="{{ pic.image.url }}" data-popup-name="picture_preview_popup" data-popup-features="width={{ pic.image.width }},height={{ pic.image.height }}"><i class="bi bi-eye"></i></a>
                 <a class="action-button cursor-pointer d-flex justify-content-center align-items-center" data-popup-open="{% url 'core:picture:update' picture_id=pic.id %}" data-popup-name="select_picture_popup" data-popup-data="{{ widget_obj.bound_field.popup_data|to_json }}"><i class="bi bi-pen"></i></a>
-                <a class="action-button cursor-pointer d-flex justify-content-center align-items-center" data-delete-url="{% url 'core:picture:delete' pk=widget_obj.field.picture.id %}" data-delete-element="#{{ pic.id }}"><i class="bi bi-trash"></i></a>
+                <a class="action-button cursor-pointer d-flex justify-content-center align-items-center" data-delete-url="{% url 'core:picture:delete' pk=pic.id %}" data-delete-element="#{{ pic.id }}"><i class="bi bi-trash"></i></a>
               </div>
             </div>
           </div>
@@ -39,7 +39,7 @@
               <div class="actions d-flex justify-content-evenly align-items-center w-100 mb-3">
                 <a class="action-button cursor-pointer d-flex justify-content-center align-items-center" data-popup-open="{{ widget_obj.field.picture.image.url }}" data-popup-features="width={{ widget_obj.field.picture.image.width }},height={{ widget_obj.field.picture.image.height }}" width="150" height="150"><i class="bi bi-eye"></i></a>
                 <a class="action-button cursor-pointer d-flex justify-content-center align-items-center" data-popup-open="{% url 'core:picture:update' picture_id=widget_obj.field.picture.id %}" data-popup-name="select_picture_popup" data-popup-data="{{ widget_obj.bound_field.popup_data|to_json }}"><i class="bi bi-pen"></i></a>
-                <a class="action-button cursor-pointer d-flex justify-content-center align-items-center" data-delete-url="{% url 'core:picture:delete' pk=widget_obj.field.picture.id %}"><i class="bi bi-trash"></i></a>
+                <a class="action-button cursor-pointer d-flex justify-content-center align-items-center" data-delete-url="{% url 'core:picture:delete' pk=widget_obj.field.picture.id %}" data-delete-callback="singlePictureRemovalCallback"><i class="bi bi-trash"></i></a>
               </div>
             </div>
           {% else %}
