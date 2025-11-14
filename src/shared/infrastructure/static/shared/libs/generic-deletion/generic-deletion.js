@@ -126,7 +126,7 @@
                             icon: "success",
                             title: gettext("Success!"),
                             text: successMessage,
-                            timer: 2000,
+                            timer: 1000,
                             showConfirmButton: false,
                             showClass: {
                                 popup: `animate__animated animate__zoomIn animate__faster`,

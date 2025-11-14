@@ -1,21 +1,202 @@
 {% extends 'shared/admin/layout/layout.html' %}
-{% load i18n forms utils %}
+{% load i18n forms utils static %}
 
 {% block head_ref %}
   {{ form.media.css }}
+  <link rel="stylesheet" href="{% static 'shared/libs/chunk-upload/css/jquery.fileupload.css' %}">
+  <style>
+    .fileupload-progress {
+      margin-top: 10px;
+      display: none;
+    }
+    .fileupload-progress .progress {
+      height: 20px;
+      margin-bottom: 5px;
+    }
+  </style>
 {% endblock %}
 
 {% block content %}
   {% render_form form %}
+  <div id="fileupload-progress" class="fileupload-progress">
+    <div class="progress">
+      <div class="progress-bar progress-bar-success" role="progressbar" style="width: 0%"></div>
+    </div>
+    <div class="progress-text text-center"></div>
+  </div>
 {% endblock %}
 
 {% block footer_ref %}
   {{ form.media.js }}
+  <script src="{% static 'shared/libs/chunk-upload/js/vendor/jquery.ui.widget.js' %}"></script>
+  <script src="{% static 'shared/libs/chunk-upload/js/jquery.iframe-transport.js' %}"></script>
+  <script src="{% static 'shared/libs/chunk-upload/js/jquery.fileupload.js' %}"></script>
   <script>
     let popupData
+    let currentUploadId = null
+    let chunkSize = 0.5 * 1024 * 1024 // 500KB chunks
+    let isUploading = false
+
     $(document).ready(function () {
       popupData = window.PopupManager.getData()
+
+      // Override form submission to use chunk upload
+      const form = $('form')
+      const fileInput = $('#id_image')
+
+      if (fileInput.length) {
+        // Monitor file input to toggle ajax form behavior
+        fileInput.on('change', function() {
+          const file = this.files[0]
+          if (file) {
+            // Temporarily disable ajax form submission when file is selected
+            form.attr('data-ajax', 'false')
+          } else {
+            // Re-enable ajax form submission when no file
+            form.attr('data-ajax', 'true')
+          }
+        })
+
+        // Intercept form submission
+        form.on('submit', function(e) {
+          const file = fileInput[0].files[0]
+
+          // Only intercept if file is selected
+          if (file && !isUploading) {
+            e.preventDefault()
+            e.stopPropagation()
+            e.stopImmediatePropagation()
+            startChunkUpload(file)
+            return false
+          }
+
+          // If no file in update mode, re-enable ajax and allow normal submission
+          if (!file && $('#id_picture_id').val()) {
+            form.attr('data-ajax', 'true')
+            return true
+          }
+
+          // If no file in create mode, let validation handle it
+          return true
+        })
+      }
     })
+
+    function startChunkUpload(file) {
+      if (isUploading) return
+
+      isUploading = true
+      $('#fileupload-progress').show()
+      updateProgress(0, 'Initializing upload...')
+
+      // Create chunk upload session
+      $.ajax({
+        url: '{% url "core:picture:chunk_create" %}',
+        method: 'POST',
+        data: {
+          filename: file.name,
+          total_size: file.size,
+          csrfmiddlewaretoken: $('[name=csrfmiddlewaretoken]').val()
+        },
+        success: function(response) {
+          currentUploadId = response.upload_id
+          uploadChunks(file, 0)
+        },
+        error: function(xhr) {
+          isUploading = false
+          $('#fileupload-progress').hide()
+          showToast('{% translate "Error" %}', xhr.responseJSON?.error || '{% translate "Failed to initialize upload" %}', 'error')
+        }
+      })
+    }
+
+    function uploadChunks(file, offset) {
+      if (offset >= file.size) {
+        // All chunks uploaded, complete the upload
+        completeUpload()
+        return
+      }
+
+      const chunk = file.slice(offset, offset + chunkSize)
+      const formData = new FormData()
+      formData.append('upload_id', currentUploadId)
+      formData.append('offset', offset)
+      formData.append('chunk', chunk)
+      formData.append('csrfmiddlewaretoken', $('[name=csrfmiddlewaretoken]').val())
+
+      $.ajax({
+        url: '{% url "core:picture:chunk_upload" %}',
+        method: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        xhr: function() {
+          const xhr = new window.XMLHttpRequest()
+          xhr.upload.addEventListener('progress', function(e) {
+            if (e.lengthComputable) {
+              const chunkProgress = (e.loaded / e.total) * 100
+              const totalProgress = ((offset + e.loaded) / file.size) * 100
+              updateProgress(totalProgress, 'Uploading: ' + Math.round(totalProgress) + '%')
+            }
+          }, false)
+          return xhr
+        },
+        success: function(response) {
+          const newOffset = response.offset
+          updateProgress((newOffset / file.size) * 100, 'Uploading: ' + Math.round((newOffset / file.size) * 100) + '%')
+
+          if (response.completed) {
+            completeUpload()
+          } else {
+            uploadChunks(file, newOffset)
+          }
+        },
+        error: function(xhr) {
+          isUploading = false
+          $('#fileupload-progress').hide()
+          showToast('{% translate "Error" %}', xhr.responseJSON?.error || '{% translate "Failed to upload chunk" %}', 'error')
+        }
+      })
+    }
+
+    function completeUpload() {
+      updateProgress(100, 'Completing upload...')
+
+      const formData = new FormData()
+      formData.append('upload_id', currentUploadId)
+      formData.append('content_type_id', $('#id_content_type').val())
+      formData.append('object_id', $('#id_object_id').val())
+      formData.append('picture_type', $('#id_picture_type').val())
+      formData.append('title', $('#id_title').val())
+      formData.append('alternative', $('#id_alternative').val())
+      if ($('#id_picture_id').val()) {
+        formData.append('picture_id', $('#id_picture_id').val())
+      }
+      formData.append('csrfmiddlewaretoken', $('[name=csrfmiddlewaretoken]').val())
+
+      $.ajax({
+        url: '{% url "core:picture:chunk_complete" %}',
+        method: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(response) {
+          isUploading = false
+          $('#fileupload-progress').hide()
+          pictureHasBeenManaged(response)
+        },
+        error: function(xhr) {
+          isUploading = false
+          $('#fileupload-progress').hide()
+          pictureManagerHasError(xhr)
+        }
+      })
+    }
+
+    function updateProgress(percent, text) {
+      $('.progress-bar').css('width', percent + '%')
+      $('.progress-text').text(text || Math.round(percent) + '%')
+    }
 
     function pictureHasBeenManaged(res) {
       showToast('{% translate "Notification" %}', res.message, 'success')
@@ -30,7 +211,7 @@
     }
 
     function pictureManagerHasError(res) {
-      showToast('{% translate "Error" %}', res.responseJSON.error, 'error')
+      showToast('{% translate "Error" %}', res.responseJSON?.error || '{% translate "An error occurred" %}', 'error')
     }
   </script>
 {% endblock %}

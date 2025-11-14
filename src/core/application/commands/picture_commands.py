@@ -34,3 +34,28 @@ class UpdatePictureCommand(Command):
 @dataclass
 class DeletePictureCommand(Command):
     pk: uuid.UUID
+
+
+@dataclass
+class CreateChunkUploadCommand(Command):
+    filename: str
+    total_size: int
+
+
+@dataclass
+class UploadChunkCommand(Command):
+    upload_id: str
+    chunk: BinaryIO
+    offset: int
+    chunk_size: int
+
+
+@dataclass
+class CompleteChunkUploadCommand(Command):
+    upload_id: str
+    content_type_id: int
+    object_id: uuid.UUID
+    picture_type: str
+    title: str
+    alternative: str
+    picture_id: uuid.UUID | None = None

@@ -27,3 +27,8 @@ class SearchPicturesQuery(Query):
 @dataclass
 class SearchFirstPictureQuery(SearchPicturesQuery):
     pass
+
+
+@dataclass
+class GetChunkUploadStatusQuery(Query):
+    upload_id: str
