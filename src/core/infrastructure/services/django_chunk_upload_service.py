@@ -9,9 +9,15 @@ from io import BytesIO
 from typing import BinaryIO
 
 from django.core.files.storage import default_storage
+from django.utils.translation import gettext_lazy as _
 from injector import inject
 
 from core.domain.entities.chunk_upload import ChunkUpload
+from core.domain.exceptions.chunk_upload import (
+    ChunkUploadInvalidEntityError,
+    ChunkUploadNotFoundError,
+    ChunkUploadValidationError,
+)
 from core.domain.repositories import ChunkUploadRepository
 from core.domain.services.chunk_upload_service import ChunkUploadService
 
@@ -30,13 +36,15 @@ class DjangoChunkUploadService(ChunkUploadService):
     ) -> int:
         chunk_upload = self.chunk_upload_repository.get_by_upload_id(upload_id)
         if not chunk_upload:
-            raise ValueError(f"Upload session {upload_id} not found")
+            raise ChunkUploadNotFoundError(
+                _("Upload session {upload_id} not found").format(upload_id=upload_id)
+            )
 
         if chunk_upload.status == "completed":
             return chunk_upload.uploaded_size
 
         if chunk_upload.status == "failed":
-            raise ValueError("Upload session has failed")
+            raise ChunkUploadInvalidEntityError(_("Upload session has failed"))
 
         chunk_upload.set_status("uploading")
 
@@ -44,7 +52,7 @@ class DjangoChunkUploadService(ChunkUploadService):
         chunk_file_path = os.path.join(chunk_dir, f"chunk_{offset}.tmp")
 
         # Read chunk data - handle both UploadedFile and bytes
-        if hasattr(chunk, 'read'):
+        if hasattr(chunk, "read"):
             # It's a file-like object (UploadedFile)
             chunk.seek(0)  # Ensure we're at the start
             chunk_data = chunk.read()
@@ -95,7 +103,9 @@ class DjangoChunkUploadService(ChunkUploadService):
             chunk_data = chunk_file.read()
 
         if default_storage.exists(chunk_upload.temp_file_path):
-            with default_storage.open(chunk_upload.temp_file_path, "rb") as existing_file:
+            with default_storage.open(
+                chunk_upload.temp_file_path, "rb"
+            ) as existing_file:
                 existing_data = existing_file.read()
 
             if offset == 0:
@@ -186,9 +196,11 @@ class DjangoChunkUploadService(ChunkUploadService):
                 # Django storage API doesn't support directory deletion directly
                 # So we use os operations if the storage is local
                 try:
-                    if hasattr(default_storage, 'location'):
+                    if hasattr(default_storage, "location"):
                         # Local file storage
-                        full_dir_path = os.path.join(default_storage.location, chunk_dir)
+                        full_dir_path = os.path.join(
+                            default_storage.location, chunk_dir
+                        )
                         if os.path.exists(full_dir_path):
                             time.sleep(0.1)  # Small delay for Windows
                             shutil.rmtree(full_dir_path, ignore_errors=True)

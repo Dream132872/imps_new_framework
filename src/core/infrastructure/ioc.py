@@ -4,7 +4,7 @@ Inversion of Control in Core layer.
 
 from injector import Binder, Module
 
-from core.application.services import (
+from core.infrastructure.services import (
     DjangoChunkUploadService,
     DjangoFileStorageService,
 )

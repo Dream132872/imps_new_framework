@@ -4,7 +4,7 @@ Base domain event service interface
 
 from abc import ABC, abstractmethod
 
-from shared.domain.events import EventBus, get_event_bus
+from shared.domain.events import DomainEvent, EventBus, get_event_bus
 
 
 class BaseEventService(ABC):
@@ -27,3 +27,6 @@ class BaseEventService(ABC):
             EventBus: instance of EventBus
         """
         return self._event_bus
+
+    def publish_event(self, event: DomainEvent):
+        self.event_bus.publish(event=event)

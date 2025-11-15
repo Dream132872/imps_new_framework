@@ -3,11 +3,12 @@ Base entity and aggregate root classes.
 """
 
 from abc import ABC, abstractmethod
-from datetime import datetime
 from typing import Any
 from uuid import uuid4
 
 from django.utils import timezone
+
+from shared.domain.events import DomainEvent
 
 from ..events import *
 
@@ -24,8 +25,8 @@ class Entity(ABC):
     def __init__(
         self,
         id: str | None = None,
-        created_at: datetime | None = None,
-        updated_at: datetime | None = None,
+        created_at: timezone.timezone | None = None,
+        updated_at: timezone.timezone | None = None,
     ):
         self._id = id or str(uuid4())
         self._created_at = created_at or timezone.now()
@@ -37,12 +38,12 @@ class Entity(ABC):
         return self._id
 
     @property
-    def created_at(self) -> datetime:
+    def created_at(self) -> timezone.timezone:
         """Get the creation timestamp of the entity."""
         return self._created_at
 
     @property
-    def updated_at(self) -> datetime:
+    def updated_at(self) -> timezone.timezone:
         """Get the last updated timestamp of the entity."""
         return self._updated_at
 
@@ -80,8 +81,8 @@ class AggregateRoot(Entity):
     def __init__(
         self,
         id: str | None,
-        created_at: datetime | None = None,
-        updated_at: datetime | None = None,
+        created_at: timezone.timezone | None = None,
+        updated_at: timezone.timezone | None = None,
     ) -> None:
         super().__init__(id=id, created_at=created_at, updated_at=updated_at)
         self._domain_events = []

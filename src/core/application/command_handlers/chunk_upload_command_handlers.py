@@ -13,6 +13,7 @@ from core.application.commands import chunk_upload_commands
 from core.application.dtos.picture_dtos import PictureDTO
 from core.domain.entities.chunk_upload import ChunkUpload
 from core.domain.entities.picture import Picture
+from core.domain.exceptions.chunk_upload import ChunkUploadNotFoundError
 from core.domain.exceptions.picture import PictureNotFoundError, PictureValidationError
 from core.domain.repositories import ChunkUploadRepository, PictureRepository
 from core.domain.services import ChunkUploadService, FileStorageService
@@ -112,7 +113,7 @@ class UploadChunkCommandHandler(
                 command.upload_id
             )
             if not chunk_upload:
-                raise ApplicationError(_("Chunk upload not found"))
+                raise ChunkUploadNotFoundError(_("Chunk upload not found"))
 
             return {
                 "upload_id": command.upload_id,
@@ -122,6 +123,11 @@ class UploadChunkCommandHandler(
             }
         except ValueError as e:
             raise ApplicationError(str(e)) from e
+        except ChunkUploadNotFoundError as e:
+            raise map_domain_exception_to_application(
+                e,
+                _("An error occurred while chunk uploading: {msg}").format(msg=str(e)),
+            ) from e
         except Exception as e:
             raise ApplicationError(
                 _("Failed to upload chunk: {message}").format(message=str(e))

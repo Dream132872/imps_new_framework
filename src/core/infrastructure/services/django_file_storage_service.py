@@ -19,13 +19,13 @@ class DjangoFileStorageService(FileStorageService):
         # Ensure file is at the start
         if hasattr(file_content, 'seek'):
             file_content.seek(0)
-        
+
         # Get file extension from name if available
         if hasattr(file_content, 'name') and file_content.name:
             name, ext = os.path.splitext(file_content.name)
         else:
             ext = ".jpg"  # Default extension
-        
+
         image_path = f"images/{uuid.uuid4()}{ext}"
         return default_storage.save(image_path, file_content)
 
@@ -35,3 +35,4 @@ class DjangoFileStorageService(FileStorageService):
 
     def image_exists(self, image_path: str) -> bool:
         return bool(image_path and default_storage.exists(image_path))
+
