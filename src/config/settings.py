@@ -73,6 +73,8 @@ LOCAL_APPS = [
     "core.infrastructure",
     # picture bounded context
     "picture.infrastructure",
+    # chunk upload bounded context
+    "chunk_upload.infrastructure",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -112,11 +114,6 @@ TEMPLATES = [
 # configuration of wsgi and asgi
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
-
-# django-js-reverse configuration
-JS_REVERSE_JS_VAR_NAME = "DjangoUrls"
-JS_REVERSE_JS_MINIFY = True
-JS_REVERSE_INCLUDE_ONLY_NAMESPACES = ["shared", "core", "picture"]
 
 # number of threads for threadpool in asgi webserver like daphne
 # Optimized for high concurrency: increase thread pool for I/O operations
@@ -377,6 +374,16 @@ LOGGING = {
 }
 
 os.makedirs("logs", exist_ok=True)
+
+# django-js-reverse configuration
+JS_REVERSE_JS_VAR_NAME = "DjangoUrls"
+JS_REVERSE_JS_MINIFY = True
+JS_REVERSE_INCLUDE_ONLY_NAMESPACES = [
+    "shared",
+    "core",
+    "picture",
+    "chunk_upload",
+]
 
 # debug toolbar configuration
 if not TESTING:
