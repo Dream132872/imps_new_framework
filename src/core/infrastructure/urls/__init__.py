@@ -9,7 +9,6 @@ urlpatterns = [
                 [
                     path("", include("core.infrastructure.urls.base")),
                     path("", include("core.infrastructure.urls.auth")),
-                    path("", include("core.infrastructure.urls.picture")),
                 ],
                 "core",
             ),

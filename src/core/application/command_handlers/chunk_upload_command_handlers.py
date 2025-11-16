@@ -10,12 +10,13 @@ from django.utils.translation import gettext_lazy as _
 from injector import inject
 
 from core.application.commands import chunk_upload_commands
-from core.application.dtos.picture_dtos import PictureDTO
+from picture.application.dtos import PictureDTO
 from core.domain.entities.chunk_upload import ChunkUpload
-from core.domain.entities.picture import Picture
+from picture.domain.entities import Picture
 from core.domain.exceptions.chunk_upload import ChunkUploadNotFoundError
-from core.domain.exceptions.picture import PictureNotFoundError, PictureValidationError
-from core.domain.repositories import ChunkUploadRepository, PictureRepository
+from picture.domain.exceptions import PictureNotFoundError, PictureValidationError
+from core.domain.repositories import ChunkUploadRepository
+from picture.domain.repositories import PictureRepository
 from core.domain.services import ChunkUploadService, FileStorageService
 from shared.application.cqrs import CommandHandler
 from shared.application.dtos import FileFieldDTO
@@ -37,7 +38,7 @@ class BaseChunkUploadCommandHandler:
         self,
         uow: UnitOfWork,
         file_storage_service: FileStorageService,
-        chunk_upload_service: ChunkUploadService | None = None,
+        chunk_upload_service: ChunkUploadService,
     ) -> None:
         self.uow = uow
         self.file_storage_service = file_storage_service

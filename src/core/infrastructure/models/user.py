@@ -7,7 +7,7 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import gettext_noop
 
-from core.infrastructure.models.managers.user_manager import UserManager
+from core.infrastructure.models.managers.user_manager import CustomUserManager
 from shared.infrastructure.models import BaseModel
 
 __all__ = ("User",)
@@ -17,9 +17,9 @@ class User(AbstractUser, BaseModel):
     """Model definition for User."""
 
     # user avatar
-    avatar = GenericRelation("core_infrastructure.Picture")
+    avatar = GenericRelation("picture_infrastructure.Picture")
 
-    manager = UserManager()
+    objects = CustomUserManager()
 
     class Meta:
         """Meta definition for User."""

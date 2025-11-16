@@ -1,0 +1,183 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-15 21:28+0330\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+#: .\src\picture\application\command_handlers.py:72
+msgid "You should pass the image file"
+msgstr ""
+
+#: .\src\picture\application\command_handlers.py:79
+msgid "Picture type is not valid"
+msgstr ""
+
+#: .\src\picture\application\command_handlers.py:105
+#, python-brace-format
+msgid "Failed to create picture: {message}"
+msgstr ""
+
+#: .\src\picture\application\command_handlers.py:121
+#: .\src\picture\application\query_handlers.py:107
+#, python-brace-format
+msgid "There is no picture with ID: {picture_id}"
+msgstr ""
+
+#: .\src\picture\application\command_handlers.py:147
+#: .\src\picture\application\query_handlers.py:115
+#, python-brace-format
+msgid "Picture not found: {msg}"
+msgstr ""
+
+#: .\src\picture\application\command_handlers.py:151
+#, python-brace-format
+msgid "An error occurred during updating picture: {msg}"
+msgstr ""
+
+#: .\src\picture\application\command_handlers.py:164
+#, python-brace-format
+msgid "Picture with ID {picture_id} not found"
+msgstr ""
+
+#: .\src\picture\application\command_handlers.py:178
+#, python-brace-format
+msgid "Failed to delete picture with ID '{picture_id}': {message}"
+msgstr ""
+
+#: .\src\picture\application\query_handlers.py:119
+#, python-brace-format
+msgid "Could not get picture with ID: {picture_id}"
+msgstr ""
+
+#: .\src\picture\infrastructure\admin.py:18
+#: .\src\picture\infrastructure\apps.py:9
+#: .\src\picture\infrastructure\models\picture.py:85
+msgid "Picture"
+msgstr ""
+
+#: .\src\picture\infrastructure\admin.py:19
+#: .\src\picture\infrastructure\models\picture.py:86
+msgid "Pictures"
+msgstr ""
+
+#: .\src\picture\infrastructure\forms.py:49
+#: .\src\picture\infrastructure\forms.py:50
+msgid "Image file"
+msgstr ""
+
+#: .\src\picture\infrastructure\forms.py:57
+#: .\src\picture\infrastructure\models\picture.py:52
+msgid "Title"
+msgstr ""
+
+#: .\src\picture\infrastructure\forms.py:58
+msgid "Title of the image"
+msgstr ""
+
+#: .\src\picture\infrastructure\forms.py:65
+msgid "Alternative"
+msgstr ""
+
+#: .\src\picture\infrastructure\forms.py:66
+msgid "Alternative text for image"
+msgstr ""
+
+#: .\src\picture\infrastructure\models\picture.py:38
+msgid "Main image"
+msgstr ""
+
+#: .\src\picture\infrastructure\models\picture.py:39
+msgid "Gallery image"
+msgstr ""
+
+#: .\src\picture\infrastructure\models\picture.py:40
+msgid "Avatar"
+msgstr ""
+
+#: .\src\picture\infrastructure\models\picture.py:41
+msgid "Banner"
+msgstr ""
+
+#: .\src\picture\infrastructure\models\picture.py:45
+msgid "Image"
+msgstr ""
+
+#: .\src\picture\infrastructure\models\picture.py:49
+msgid "Alternative text"
+msgstr ""
+
+#: .\src\picture\infrastructure\models\picture.py:58
+msgid "Content type"
+msgstr ""
+
+#: .\src\picture\infrastructure\models\picture.py:62
+msgid "Object id"
+msgstr ""
+
+#: .\src\picture\infrastructure\models\picture.py:72
+msgid "Picture Type"
+msgstr ""
+
+#: .\src\picture\infrastructure\models\picture.py:76
+msgid "Display order"
+msgstr ""
+
+#: .\src\picture\infrastructure\templates\picture\picture_upsert.html:47
+msgid "Submitting..."
+msgstr ""
+
+#: .\src\picture\infrastructure\templates\picture\picture_upsert.html:137
+msgid "Initializing upload..."
+msgstr ""
+
+#: .\src\picture\infrastructure\templates\picture\picture_upsert.html:156
+#: .\src\picture\infrastructure\templates\picture\picture_upsert.html:210
+#: .\src\picture\infrastructure\templates\picture\picture_upsert.html:277
+msgid "Error"
+msgstr ""
+
+#: .\src\picture\infrastructure\templates\picture\picture_upsert.html:156
+msgid "Failed to initialize upload"
+msgstr ""
+
+#: .\src\picture\infrastructure\templates\picture\picture_upsert.html:189
+#: .\src\picture\infrastructure\templates\picture\picture_upsert.html:198
+msgid "Uploading"
+msgstr ""
+
+#: .\src\picture\infrastructure\templates\picture\picture_upsert.html:210
+msgid "Failed to upload chunk"
+msgstr ""
+
+#: .\src\picture\infrastructure\templates\picture\picture_upsert.html:216
+msgid "Completing upload..."
+msgstr ""
+
+#: .\src\picture\infrastructure\templates\picture\picture_upsert.html:257
+msgid "Notification"
+msgstr ""
+
+#: .\src\picture\infrastructure\templates\picture\picture_upsert.html:277
+msgid "An error occurred"
+msgstr ""
+
+#: .\src\picture\infrastructure\views.py:61
+msgid "Picture has been created successfully"
+msgstr ""
+
+#: .\src\picture\infrastructure\views.py:120
+msgid "Picture has been updated successfully"
+msgstr ""

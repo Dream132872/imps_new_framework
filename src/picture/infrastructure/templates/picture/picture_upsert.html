@@ -138,7 +138,7 @@
 
       // Create chunk upload session
       $.ajax({
-        url: '{% url "core:picture:chunk_create" %}',
+        url: '{% url "picture:chunk_create" %}',
         method: 'POST',
         data: {
           filename: file.name,
@@ -173,7 +173,7 @@
       formData.append('csrfmiddlewaretoken', $('[name=csrfmiddlewaretoken]').val())
 
       $.ajax({
-        url: '{% url "core:picture:chunk_upload" %}',
+        url: '{% url "picture:chunk_upload" %}',
         method: 'POST',
         data: formData,
         processData: false,
@@ -228,7 +228,7 @@
       formData.append('csrfmiddlewaretoken', $('[name=csrfmiddlewaretoken]').val())
 
       $.ajax({
-        url: '{% url "core:picture:chunk_complete" %}',
+        url: '{% url "picture:chunk_complete" %}',
         method: 'POST',
         data: formData,
         processData: false,
@@ -278,3 +278,4 @@
     }
   </script>
 {% endblock %}
+

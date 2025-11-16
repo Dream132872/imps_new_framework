@@ -9,7 +9,8 @@ from django.utils.translation import gettext_lazy as _
 
 from shared.infrastructure.admin import BaseModelAdmin
 
-from .models import *
+from .models import User
+from picture.infrastructure.models.picture import Picture
 
 
 class ManagePictureInline(GenericStackedInline):
@@ -23,22 +24,3 @@ class ManagePictureInline(GenericStackedInline):
 @admin.register(User)
 class UserAdmin(BaseModelAdmin, BaesUserAdmin):
     inlines = [ManagePictureInline]
-
-
-@admin.register(Picture)
-class PictureAdmin(BaseModelAdmin):
-    list_display = (
-        "image_tag",
-        "picture_type",
-        "related_object",
-        "content_type",
-        "object_id",
-        "created_at",
-    )
-    list_filter = ("picture_type", "content_type")
-    search_fields = ("title", "alternative")
-
-    def related_object(self, obj):  # type: ignore
-        return obj.content_object
-
-    related_object.short_description = "Related object"  # type: ignore

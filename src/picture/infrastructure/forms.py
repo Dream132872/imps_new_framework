@@ -65,3 +65,4 @@ class UpsertPictureForm(forms.Form):
         label=_("Alternative"),
         help_text=_("Alternative text for image"),
     )
+

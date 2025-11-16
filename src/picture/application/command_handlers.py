@@ -8,11 +8,15 @@ from typing import Any
 from django.utils.translation import gettext_lazy as _
 from injector import inject
 
-from core.application.commands import picture_commands
-from core.application.dtos.picture_dtos import PictureDTO
-from core.domain.entities.picture import Picture
-from core.domain.exceptions.picture import PictureNotFoundError, PictureValidationError
-from core.domain.repositories import PictureRepository
+from picture.application.commands import (
+    CreatePictureCommand,
+    DeletePictureCommand,
+    UpdatePictureCommand,
+)
+from picture.application.dtos import PictureDTO
+from picture.domain.entities import Picture
+from picture.domain.exceptions import PictureNotFoundError, PictureValidationError
+from picture.domain.repositories import PictureRepository
 from core.domain.services import FileStorageService
 from shared.application.cqrs import CommandHandler
 from shared.application.dtos import FileFieldDTO
@@ -56,10 +60,10 @@ class BasePictureCommandHandler:
 
 
 class CreatePictureCommandHandler(
-    CommandHandler[picture_commands.CreatePictureCommand, PictureDTO],
+    CommandHandler[CreatePictureCommand, PictureDTO],
     BasePictureCommandHandler,
 ):
-    def handle(self, command: picture_commands.CreatePictureCommand) -> PictureDTO:
+    def handle(self, command: CreatePictureCommand) -> PictureDTO:
         image_path = ""
         try:
             # raise PictureValidationError("Test error")
@@ -103,10 +107,10 @@ class CreatePictureCommandHandler(
 
 
 class UpdatePictureCommandHandler(
-    CommandHandler[picture_commands.UpdatePictureCommand, PictureDTO],
+    CommandHandler[UpdatePictureCommand, PictureDTO],
     BasePictureCommandHandler,
 ):
-    def handle(self, command: picture_commands.UpdatePictureCommand) -> PictureDTO:
+    def handle(self, command: UpdatePictureCommand) -> PictureDTO:
         try:
             with self.uow:
                 # get picture by it's id
@@ -149,10 +153,10 @@ class UpdatePictureCommandHandler(
 
 
 class DeletePictureCommandHandler(
-    CommandHandler[picture_commands.DeletePictureCommand, PictureDTO],
+    CommandHandler[DeletePictureCommand, PictureDTO],
     BasePictureCommandHandler,
 ):
-    def handle(self, command: picture_commands.DeletePictureCommand) -> PictureDTO:
+    def handle(self, command: DeletePictureCommand) -> PictureDTO:
         try:
             picture = self.uow[PictureRepository].get_by_id(str(command.pk))
             if not picture:
@@ -176,3 +180,4 @@ class DeletePictureCommandHandler(
                 ),
                 details={"picture_id": command.pk},
             ) from e
+

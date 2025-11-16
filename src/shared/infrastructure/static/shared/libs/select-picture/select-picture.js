@@ -51,10 +51,10 @@ function getPicturesBox(pictureBoxId) {
 
 // get picture html element
 function getPictureElement(picture, popupData) {
-    let updatePictureUrl = DjangoUrls["core:picture:update"]({
+    let updatePictureUrl = DjangoUrls["picture:update"]({
         picture_id: picture.id,
     });
-    let deletePictureUrl = DjangoUrls["core:picture:delete"]({
+    let deletePictureUrl = DjangoUrls["picture:delete"]({
         pk: picture.id,
     });
 
@@ -62,7 +62,7 @@ function getPictureElement(picture, popupData) {
     if (popupData.many) {
         deleteScenario = `data-delete-element="#${picture.id}"`;
     } else {
-        deleteScenario = `data-delete-callbacl="singlePictureRemovalCallback"`;
+        deleteScenario = `data-delete-callback="singlePictureRemovalCallback"`;
     }
 
     return $(`
@@ -133,7 +133,7 @@ function replaceUpdatedPicture(res) {
 
 // callback method name that should be called after singular picture is removed
 function singlePictureRemovalCallback(el, res) {
-    let createPictureUrl = DjangoUrls["core:picture:create"]({
+    let createPictureUrl = DjangoUrls["picture:create"]({
         picture_type: res.details.picture_type,
         content_type: res.details.content_type,
         object_id: res.details.object_id,

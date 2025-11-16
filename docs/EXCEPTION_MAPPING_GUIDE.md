@@ -37,7 +37,7 @@ The `map_domain_exception_to_application()` utility automatically maps domain ex
 
 ```python
 from shared.application.exception_mapper import map_domain_exception_to_application
-from core.domain.exceptions.picture import PictureNotFoundError
+from picture.domain.exceptions.picture import PictureNotFoundError
 
 class DeletePictureCommandHandler:
     def handle(self, command: DeletePictureCommand) -> str:
@@ -45,7 +45,7 @@ class DeletePictureCommandHandler:
             picture = self.uow[PictureRepository].get_by_id(command.picture_id)
             if not picture:
                 raise PictureNotFoundError(f"Picture {command.picture_id} not found")
-            
+
             self.uow[PictureRepository].delete(picture)
             return str(command.picture_id)
         except PictureNotFoundError as e:
@@ -70,7 +70,7 @@ class DeletePictureCommandHandler:
             picture = self.uow[PictureRepository].get_by_id(command.picture_id)
             if not picture:
                 raise PictureNotFoundError(f"Picture {command.picture_id} not found")
-            
+
             self.uow[PictureRepository].delete(picture)
             return str(command.picture_id)
         except PictureNotFoundError as e:
@@ -99,19 +99,19 @@ class UpdatePictureCommandHandler:
             picture = self.uow[PictureRepository].get_by_id(command.picture_id)
             if not picture:
                 raise PictureNotFoundError(f"Picture {command.picture_id} not found")
-            
+
             # Domain validation
             if not command.title:
                 raise DomainValidationError("Title is required")
-            
+
             # Business rule check
             if picture.is_locked and not command.force:
                 raise DomainBusinessRuleViolationError("Picture is locked and cannot be modified")
-            
+
             picture.update(command.title, command.description)
             self.uow[PictureRepository].save(picture)
             return str(picture.id)
-            
+
         except (DomainEntityNotFoundError, DomainValidationError, DomainBusinessRuleViolationError) as e:
             # Automatically maps to the correct Application exception
             raise map_domain_exception_to_application(e) from e
@@ -131,7 +131,7 @@ class DeletePictureCommandHandler:
             picture = self.uow[PictureRepository].get_by_id(command.picture_id)
             if not picture:
                 raise PictureNotFoundError(f"Picture {command.picture_id} not found")
-            
+
             self.uow[PictureRepository].delete(picture)
             return str(command.picture_id)
         except PictureNotFoundError as e:

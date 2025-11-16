@@ -19,7 +19,7 @@ logger = logging.getLogger(__file__)
 class CreateChunkUploadView(views.AdminGenericMixin, views.View):
     """View to create a new chunked upload session."""
 
-    permission_required = ["core_infrastructure.add_picture"]
+    permission_required = ["picture_infrastructure.add_picture"]
     return_exc_response_as_json = True
 
     def post(self, request: HttpRequest) -> JsonResponse:
@@ -31,22 +31,19 @@ class CreateChunkUploadView(views.AdminGenericMixin, views.View):
                 {"error": _("Filename and total_size are required")}, status=400
             )
 
-        try:
-            result = dispatch_command(
-                chunk_upload_commands.CreateChunkUploadCommand(
-                    filename=filename,
-                    total_size=int(total_size),
-                )
+        result = dispatch_command(
+            chunk_upload_commands.CreateChunkUploadCommand(
+                filename=filename,
+                total_size=int(total_size),
             )
-            return JsonResponse(result)
-        except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
+        )
+        return JsonResponse(result)
 
 
 class UploadChunkView(views.AdminGenericMixin, views.View):
     """View to upload a chunk of the file."""
 
-    permission_required = ["core_infrastructure.add_picture"]
+    permission_required = ["picture_infrastructure.add_picture"]
     return_exc_response_as_json = True
 
     def post(self, request: HttpRequest) -> JsonResponse:
@@ -59,26 +56,23 @@ class UploadChunkView(views.AdminGenericMixin, views.View):
                 {"error": _("upload_id, chunk, and offset are required")}, status=400
             )
 
-        try:
-            result = dispatch_command(
-                chunk_upload_commands.UploadChunkCommand(
-                    upload_id=upload_id,
-                    chunk=chunk,
-                    offset=int(offset),
-                    chunk_size=chunk.size,
-                )
+        result = dispatch_command(
+            chunk_upload_commands.UploadChunkCommand(
+                upload_id=upload_id,
+                chunk=chunk,
+                offset=int(offset),
+                chunk_size=chunk.size,
             )
-            return JsonResponse(result)
-        except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
+        )
+        return JsonResponse(result)
 
 
 class CompleteChunkUploadView(views.AdminGenericMixin, views.View):
     """View to complete the chunked upload and create/update picture."""
 
     permission_required = [
-        "core_infrastructure.add_picture",
-        "core_infrastructure.change_picture",
+        "picture_infrastructure.add_picture",
+        "picture_infrastructure.change_picture",
     ]
     return_exc_response_as_json = True
 
@@ -94,44 +88,38 @@ class CompleteChunkUploadView(views.AdminGenericMixin, views.View):
         if not upload_id or not content_type_id or not object_id or not picture_type:
             return JsonResponse({"error": _("Missing required fields")}, status=400)
 
-        try:
-            picture = dispatch_command(
-                chunk_upload_commands.CompleteChunkUploadCommand(
-                    upload_id=upload_id,
-                    content_type_id=int(content_type_id),
-                    object_id=object_id,
-                    picture_type=picture_type,
-                    title=title,
-                    alternative=alternative,
-                    picture_id=picture_id if picture_id else None,
-                )
+        picture = dispatch_command(
+            chunk_upload_commands.CompleteChunkUploadCommand(
+                upload_id=upload_id,
+                content_type_id=int(content_type_id),
+                object_id=object_id,
+                picture_type=picture_type,
+                title=title,
+                alternative=alternative,
+                picture_id=picture_id if picture_id else None,
             )
+        )
 
-            return JsonResponse(
-                {
-                    "status": "success",
-                    "message": _("Picture has been created successfully"),
-                    "details": {
-                        "picture": asdict(picture),
-                        "is_update": bool(picture_id),
-                    },
-                }
-            )
-        except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
+        return JsonResponse(
+            {
+                "status": "success",
+                "message": _("Picture has been created successfully"),
+                "details": {
+                    "picture": asdict(picture),
+                    "is_update": bool(picture_id),
+                },
+            }
+        )
 
 
 class GetChunkUploadStatusView(views.AdminGenericMixin, views.View):
     """View to get the status of a chunked upload."""
 
-    permission_required = ["core_infrastructure.add_picture"]
+    permission_required = ["picture_infrastructure.add_picture"]
     return_exc_response_as_json = True
 
     def get(self, request: HttpRequest, upload_id: str) -> JsonResponse:
-        try:
-            result = dispatch_query(
-                chunk_upload_queries.GetChunkUploadStatusQuery(upload_id=upload_id)
-            )
-            return JsonResponse(result)
-        except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
+        result = dispatch_query(
+            chunk_upload_queries.GetChunkUploadStatusQuery(upload_id=upload_id)
+        )
+        return JsonResponse(result)

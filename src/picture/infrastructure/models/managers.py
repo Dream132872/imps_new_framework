@@ -9,3 +9,4 @@ __all__ = ("PictureManager",)
 
 class PictureManager(Manager):
     pass
+

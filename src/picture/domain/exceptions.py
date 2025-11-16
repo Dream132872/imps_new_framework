@@ -16,3 +16,4 @@ class PictureNotFoundError(DomainEntityNotFoundError):
 
 class PictureValidationError(DomainValidationError):
     """Raised when picture validation fails."""
+

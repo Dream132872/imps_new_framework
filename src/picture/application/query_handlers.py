@@ -10,14 +10,18 @@ from typing import Any
 from django.utils.translation import gettext_lazy as _
 from injector import inject
 
-from core.application.command_handlers import map_domain_exception_to_application
-from core.application.dtos.picture_dtos import PictureDTO
-from core.application.queries import picture_queries
-from core.domain.entities import Picture
-from core.domain.exceptions.picture import *
-from core.domain.repositories import PictureRepository
+from picture.application.dtos import PictureDTO
+from picture.application.queries import (
+    GetPictureByIdQuery,
+    SearchFirstPictureQuery,
+    SearchPicturesQuery,
+)
+from picture.domain.entities import Picture
+from picture.domain.exceptions import PictureNotFoundError
+from picture.domain.repositories import PictureRepository
 from shared.application.cqrs import QueryHandler
 from shared.application.dtos import FileFieldDTO
+from shared.application.exception_mapper import map_domain_exception_to_application
 from shared.application.exceptions import ApplicationError
 from shared.domain.repositories import UnitOfWork
 
@@ -55,12 +59,12 @@ class BasePictureQueryHandler:
 
 
 class SearchPicturesQueryHandler(
-    QueryHandler[picture_queries.SearchPicturesQuery, list[PictureDTO]],
+    QueryHandler[SearchPicturesQuery, list[PictureDTO]],
     BasePictureQueryHandler,
 ):
     """Searches between all pictures based on query inputs."""
 
-    def handle(self, query: picture_queries.SearchPicturesQuery) -> list[PictureDTO]:
+    def handle(self, query: SearchPicturesQuery) -> list[PictureDTO]:
         with self.uow:
             pictures = self.uow[PictureRepository].search_pictures(
                 content_type=query.content_type_id,
@@ -72,13 +76,13 @@ class SearchPicturesQueryHandler(
 
 
 class SearchFirstPictureQueryHandler(
-    QueryHandler[picture_queries.SearchFirstPictureQuery, PictureDTO | None],
+    QueryHandler[SearchFirstPictureQuery, PictureDTO | None],
     BasePictureQueryHandler,
 ):
     """Finds the first picture based on query inputs."""
 
     def handle(
-        self, query: picture_queries.SearchFirstPictureQuery
+        self, query: SearchFirstPictureQuery
     ) -> PictureDTO | None:
         with self.uow:
             picture = self.uow[PictureRepository].search_first_picture(
@@ -91,10 +95,10 @@ class SearchFirstPictureQueryHandler(
 
 
 class GetPictureByIdQueryHandler(
-    QueryHandler[picture_queries.GetPictureByIdQuery, PictureDTO],
+    QueryHandler[GetPictureByIdQuery, PictureDTO],
     BasePictureQueryHandler,
 ):
-    def handle(self, query: picture_queries.GetPictureByIdQuery) -> PictureDTO:
+    def handle(self, query: GetPictureByIdQuery) -> PictureDTO:
         try:
             with self.uow:
                 picture = self.uow[PictureRepository].get_by_id(str(query.picture_id))
@@ -116,3 +120,4 @@ class GetPictureByIdQueryHandler(
                     picture_id=query.picture_id
                 )
             ) from e
+

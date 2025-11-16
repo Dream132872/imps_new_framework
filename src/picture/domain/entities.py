@@ -98,3 +98,4 @@ class Picture(AggregateRoot):
             }
         )
         return base_dict
+

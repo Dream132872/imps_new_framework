@@ -4,9 +4,9 @@ Django repository implementation for picture.
 
 import uuid
 
-from core.domain.entities import Picture
-from core.domain.repositories import PictureRepository
-from core.infrastructure.models import Picture as PictureModel
+from picture.domain.entities import Picture
+from picture.domain.repositories import PictureRepository
+from picture.infrastructure.models.picture import Picture as PictureModel
 from shared.domain.factories import FileFieldFactory
 from shared.infrastructure.repositories import DjangoRepository
 
@@ -103,3 +103,4 @@ class DjangoPictureRepository(DjangoRepository[Picture], PictureRepository):
 
         first_picture = pictures.order_by("display_order", "created_at").first()
         return self._model_to_entity(first_picture) if first_picture else None
+

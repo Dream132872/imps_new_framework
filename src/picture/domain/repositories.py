@@ -5,7 +5,7 @@ Picture domain repository interface.
 import uuid
 from abc import abstractmethod
 
-from core.domain.entities import Picture
+from picture.domain.entities import Picture
 from shared.domain.repositories import Repository
 
 __all__ = ("PictureRepository",)
@@ -62,3 +62,4 @@ class PictureRepository(Repository[Picture]):
         Returns:
             Picture | None: an instance of Picture entity.
         """
+

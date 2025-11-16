@@ -27,3 +27,4 @@ class SearchPicturesQuery(Query):
 @dataclass
 class SearchFirstPictureQuery(SearchPicturesQuery):
     pass
+

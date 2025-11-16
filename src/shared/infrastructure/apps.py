@@ -76,7 +76,7 @@ class SharedInfrastructureConfig(AppConfig):
                 ):
                     # install found class to injector
                     self.injector.binder.install(klass)
-            except ImportError as e:
+            except Exception as e:
                 logger.error(
                     f"Failed to load ioc module for app {django_app_dot_location}: {e}"
                 )

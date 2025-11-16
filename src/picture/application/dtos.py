@@ -24,3 +24,4 @@ class PictureDTO:
     object_id: int | str
     created_at: datetime
     updated_at: datetime
+

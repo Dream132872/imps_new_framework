@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-14 23:19+0330\n"
+"POT-Creation-Date: 2025-11-15 21:28+0330\n"
 "PO-Revision-Date: 2025-11-14 19:47+0000\n"
 "Last-Translator: محمد اردوخانی <admin@admin.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,94 +18,55 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Translated-Using: django-rosetta 0.10.2\n"
 
-#: .\src\core\application\command_handlers\chunk_upload_command_handlers.py:78
-#: .\src\core\application\command_handlers\chunk_upload_command_handlers.py:115
-#: .\src\core\application\command_handlers\chunk_upload_command_handlers.py:148
-#: .\src\core\application\query_handlers\chunk_upload_query_handlers.py:43
-msgid "Chunk upload repository not available"
-msgstr "ریپوزیتوری بارگذاری تکه ای در دسترس نیست"
-
-#: .\src\core\application\command_handlers\chunk_upload_command_handlers.py:94
+#: .\src\core\application\command_handlers\chunk_upload_command_handlers.py:91
 #, python-brace-format
 msgid "Failed to create chunk upload: {message}"
 msgstr "ایجاد بارگذاری تکه ای ناموفق بود: {message}"
 
-#: .\src\core\application\command_handlers\chunk_upload_command_handlers.py:104
-#: .\src\core\application\command_handlers\chunk_upload_command_handlers.py:145
+#: .\src\core\application\command_handlers\chunk_upload_command_handlers.py:103
+#: .\src\core\application\command_handlers\chunk_upload_command_handlers.py:146
 msgid "Chunk upload service not available"
 msgstr "سرویس بارگذاری تکه ای در دسترس نیست"
 
-#: .\src\core\application\command_handlers\chunk_upload_command_handlers.py:121
-#: .\src\core\application\command_handlers\chunk_upload_command_handlers.py:156
-#: .\src\core\application\query_handlers\chunk_upload_query_handlers.py:48
+#: .\src\core\application\command_handlers\chunk_upload_command_handlers.py:117
+#: .\src\core\application\command_handlers\chunk_upload_command_handlers.py:154
+#: .\src\core\application\query_handlers\chunk_upload_query_handlers.py:44
 msgid "Chunk upload not found"
 msgstr "بارگذاری تکه ای یافت نشد"
 
-#: .\src\core\application\command_handlers\chunk_upload_command_handlers.py:133
+#: .\src\core\application\command_handlers\chunk_upload_command_handlers.py:130
+#, fuzzy, python-brace-format
+#| msgid "An error occurred during updating picture: {msg}"
+msgid "An error occurred while chunk uploading: {msg}"
+msgstr "در هنگام ویرایش تصویر خطایی رخ داد : {msg}"
+
+#: .\src\core\application\command_handlers\chunk_upload_command_handlers.py:134
 #, python-brace-format
 msgid "Failed to upload chunk: {message}"
 msgstr "بارگذاری تکه ناموفق بود: {message}"
 
-#: .\src\core\application\command_handlers\chunk_upload_command_handlers.py:159
+#: .\src\core\application\command_handlers\chunk_upload_command_handlers.py:157
 msgid "Upload is not completed yet"
 msgstr "بارگذاری به اتمام نرسیده است"
 
-#: .\src\core\application\command_handlers\chunk_upload_command_handlers.py:165
-#: .\src\core\application\command_handlers\picture_command_handlers.py:75
+#: .\src\core\application\command_handlers\chunk_upload_command_handlers.py:163
 msgid "Picture type is not valid"
 msgstr "نوع تصویر معتبر نمی باشد"
 
-#: .\src\core\application\command_handlers\chunk_upload_command_handlers.py:180
-#: .\src\core\application\command_handlers\picture_command_handlers.py:117
-#: .\src\core\application\query_handlers\picture_query_handlers.py:103
+#: .\src\core\application\command_handlers\chunk_upload_command_handlers.py:178
 #, python-brace-format
 msgid "There is no picture with ID: {picture_id}"
 msgstr "تصویری با آی دی {picture_id} یافت نشد"
 
-#: .\src\core\application\command_handlers\chunk_upload_command_handlers.py:223
+#: .\src\core\application\command_handlers\chunk_upload_command_handlers.py:221
 #, python-brace-format
 msgid "Failed to complete chunk upload: {message}"
 msgstr "تکمیل بارگذاری تکه ای ناموفق بود: {message}"
 
-#: .\src\core\application\command_handlers\picture_command_handlers.py:68
-msgid "You should pass the image file"
-msgstr "شما باید فایل تصویر را ارسال کنید"
-
-#: .\src\core\application\command_handlers\picture_command_handlers.py:101
-#, python-brace-format
-msgid "Failed to create picture: {message}"
-msgstr "ایجاد تصویر ناموفق بود: {message}"
-
-#: .\src\core\application\command_handlers\picture_command_handlers.py:143
-#: .\src\core\application\query_handlers\picture_query_handlers.py:111
-#, python-brace-format
-msgid "Picture not found: {msg}"
-msgstr "تصویر یافت نشد: {msg}"
-
-#: .\src\core\application\command_handlers\picture_command_handlers.py:147
-#, python-brace-format
-msgid "An error occurred during updating picture: {msg}"
-msgstr "در هنگام ویرایش تصویر خطایی رخ داد : {msg}"
-
-#: .\src\core\application\command_handlers\picture_command_handlers.py:161
-#, python-brace-format
-msgid "Picture with ID {picture_id} not found"
-msgstr "تصویری با آی دی {picture_id} یافت نشد"
-
-#: .\src\core\application\command_handlers\picture_command_handlers.py:175
-#, python-brace-format
-msgid "Failed to delete picture with ID '{picture_id}': {message}"
-msgstr "حذف تصویر با آی دی {picture_id} ناموفق بود: {message}"
-
-#: .\src\core\application\query_handlers\chunk_upload_query_handlers.py:62
+#: .\src\core\application\query_handlers\chunk_upload_query_handlers.py:58
 #, python-brace-format
 msgid "Could not get chunk upload status: {message}"
 msgstr "وضعیت آپلود تکه ای را نمیتوان دریافت کرد : {message}"
-
-#: .\src\core\application\query_handlers\picture_query_handlers.py:115
-#, python-brace-format
-msgid "Could not get picture with ID: {picture_id}"
-msgstr "دریافت تصویر با آی دی {picture_id} ناموفق بود"
 
 #: .\src\core\application\query_handlers\user_query_handlers.py:79
 #, python-brace-format
@@ -126,13 +87,11 @@ msgstr "جستجوی کاربران ناموفق بود: {message}"
 msgid "Email format is not valid"
 msgstr "فرمت ایمیل صحیح نمی باشد"
 
-#: .\src\core\infrastructure\admin.py:19
-#: .\src\core\infrastructure\models\picture.py:85
+#: .\src\core\infrastructure\admin.py:20
 msgid "Picture"
 msgstr "تصویر"
 
-#: .\src\core\infrastructure\admin.py:20
-#: .\src\core\infrastructure\models\picture.py:86
+#: .\src\core\infrastructure\admin.py:21
 msgid "Pictures"
 msgstr "تصاویر"
 
@@ -158,28 +117,6 @@ msgstr "نام کاربری"
 #: .\src\core\infrastructure\forms\auth.py:32
 msgid "Password"
 msgstr "کلمه عبور"
-
-#: .\src\core\infrastructure\forms\picture.py:49
-#: .\src\core\infrastructure\forms\picture.py:50
-msgid "Image file"
-msgstr "فایل تصویر"
-
-#: .\src\core\infrastructure\forms\picture.py:57
-#: .\src\core\infrastructure\models\picture.py:52
-msgid "Title"
-msgstr "عنوان"
-
-#: .\src\core\infrastructure\forms\picture.py:58
-msgid "Title of the image"
-msgstr "عنوان تصویر"
-
-#: .\src\core\infrastructure\forms\picture.py:65
-msgid "Alternative"
-msgstr "جایگزین"
-
-#: .\src\core\infrastructure\forms\picture.py:66
-msgid "Alternative text for image"
-msgstr "متن جایگزین برای تصویر"
 
 #: .\src\core\infrastructure\models\chunk_upload.py:22
 msgid "Upload ID"
@@ -234,8 +171,6 @@ msgid "Pending"
 msgstr "در انتظار"
 
 #: .\src\core\infrastructure\models\chunk_upload.py:55
-#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:189
-#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:198
 msgid "Uploading"
 msgstr "در حال بارگذاری"
 
@@ -259,46 +194,6 @@ msgstr "بارگذاری تکه ای"
 msgid "Chunk Uploads"
 msgstr "بارگذاری‌های تکه ای"
 
-#: .\src\core\infrastructure\models\picture.py:38
-msgid "Main image"
-msgstr "عکس اصلی"
-
-#: .\src\core\infrastructure\models\picture.py:39
-msgid "Gallery image"
-msgstr "عکس گالری"
-
-#: .\src\core\infrastructure\models\picture.py:40
-msgid "Avatar"
-msgstr "آواتار"
-
-#: .\src\core\infrastructure\models\picture.py:41
-msgid "Banner"
-msgstr "بنر"
-
-#: .\src\core\infrastructure\models\picture.py:45
-msgid "Image"
-msgstr "عکس"
-
-#: .\src\core\infrastructure\models\picture.py:49
-msgid "Alternative text"
-msgstr "متن جایگزین"
-
-#: .\src\core\infrastructure\models\picture.py:58
-msgid "Content type"
-msgstr "نوع محتوا"
-
-#: .\src\core\infrastructure\models\picture.py:62
-msgid "Object id"
-msgstr "آی دی موجودیت"
-
-#: .\src\core\infrastructure\models\picture.py:72
-msgid "Picture Type"
-msgstr "نوع تصویر"
-
-#: .\src\core\infrastructure\models\picture.py:76
-msgid "Display order"
-msgstr "اولویت نمایش"
-
 #: .\src\core\infrastructure\models\user.py:28
 msgid "User"
 msgstr "کاربر"
@@ -311,6 +206,16 @@ msgstr "کاربران"
 msgid "Can view admin dashboard"
 msgstr "نمایش صفحه اصلی ادمین"
 
+#: .\src\core\infrastructure\services\django_chunk_upload_service.py:40
+#, fuzzy, python-brace-format
+#| msgid "Chunk upload not found"
+msgid "Upload session {upload_id} not found"
+msgstr "بارگذاری تکه ای یافت نشد"
+
+#: .\src\core\infrastructure\services\django_chunk_upload_service.py:47
+msgid "Upload session has failed"
+msgstr ""
+
 #: .\src\core\infrastructure\templates\core\auth\login.html:13
 msgid "Management of the Iranian Social and Economic Observatory (RASA)"
 msgstr "مدیریت رصدخانه اجتماعی و اقتصادی ایران ( رصا )"
@@ -319,40 +224,6 @@ msgstr "مدیریت رصدخانه اجتماعی و اقتصادی ایران 
 #: .\src\core\infrastructure\views\auth.py:20
 msgid "Login"
 msgstr "ورود"
-
-#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:47
-msgid "Submitting..."
-msgstr "در حال ارسال ..."
-
-#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:137
-msgid "Initializing upload..."
-msgstr "در حال آماده‌سازی بارگذاری..."
-
-#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:156
-#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:210
-#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:277
-msgid "Error"
-msgstr "خطا"
-
-#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:156
-msgid "Failed to initialize upload"
-msgstr "مقداردهی اولیه بارگذاری ناموفق بود"
-
-#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:210
-msgid "Failed to upload chunk"
-msgstr "بارگذاری تکه ناموفق بود"
-
-#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:216
-msgid "Completing upload..."
-msgstr "در حال تکمیل بارگذاری..."
-
-#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:257
-msgid "Notification"
-msgstr "اعلان"
-
-#: .\src\core\infrastructure\templates\core\picture\picture_upsert.html:277
-msgid "An error occurred"
-msgstr "خطایی رخ داد"
 
 #: .\src\core\infrastructure\views\auth.py:50
 msgid "You dont have enough permissions"
@@ -370,22 +241,115 @@ msgstr "کاربری با اطلاعات وارد شده یافت نشد"
 msgid "Filename and total_size are required"
 msgstr "نام فایل و حجم کل الزامی است"
 
-#: .\src\core\infrastructure\views\chunk_upload.py:59
+#: .\src\core\infrastructure\views\chunk_upload.py:56
 msgid "upload_id, chunk, and offset are required"
 msgstr "شناسه بارگذاری، تکه و آفست الزامی است"
 
-#: .\src\core\infrastructure\views\chunk_upload.py:95
+#: .\src\core\infrastructure\views\chunk_upload.py:89
 msgid "Missing required fields"
 msgstr "فیلدهای الزامی موجود نیست"
 
-#: .\src\core\infrastructure\views\chunk_upload.py:113
-#: .\src\core\infrastructure\views\picture.py:57
+#: .\src\core\infrastructure\views\chunk_upload.py:106
 msgid "Picture has been created successfully"
 msgstr "تصویر با موفقیت ثبت شد"
 
-#: .\src\core\infrastructure\views\picture.py:116
-msgid "Picture has been updated successfully"
-msgstr "تصویر با موفقیت ویرایش شد"
+#~ msgid "Chunk upload repository not available"
+#~ msgstr "ریپوزیتوری بارگذاری تکه ای در دسترس نیست"
+
+#~ msgid "You should pass the image file"
+#~ msgstr "شما باید فایل تصویر را ارسال کنید"
+
+#, python-brace-format
+#~ msgid "Failed to create picture: {message}"
+#~ msgstr "ایجاد تصویر ناموفق بود: {message}"
+
+#, python-brace-format
+#~ msgid "Picture not found: {msg}"
+#~ msgstr "تصویر یافت نشد: {msg}"
+
+#, python-brace-format
+#~ msgid "Picture with ID {picture_id} not found"
+#~ msgstr "تصویری با آی دی {picture_id} یافت نشد"
+
+#, python-brace-format
+#~ msgid "Failed to delete picture with ID '{picture_id}': {message}"
+#~ msgstr "حذف تصویر با آی دی {picture_id} ناموفق بود: {message}"
+
+#, python-brace-format
+#~ msgid "Could not get picture with ID: {picture_id}"
+#~ msgstr "دریافت تصویر با آی دی {picture_id} ناموفق بود"
+
+#~ msgid "Image file"
+#~ msgstr "فایل تصویر"
+
+#~ msgid "Title"
+#~ msgstr "عنوان"
+
+#~ msgid "Title of the image"
+#~ msgstr "عنوان تصویر"
+
+#~ msgid "Alternative"
+#~ msgstr "جایگزین"
+
+#~ msgid "Alternative text for image"
+#~ msgstr "متن جایگزین برای تصویر"
+
+#~ msgid "Main image"
+#~ msgstr "عکس اصلی"
+
+#~ msgid "Gallery image"
+#~ msgstr "عکس گالری"
+
+#~ msgid "Avatar"
+#~ msgstr "آواتار"
+
+#~ msgid "Banner"
+#~ msgstr "بنر"
+
+#~ msgid "Image"
+#~ msgstr "عکس"
+
+#~ msgid "Alternative text"
+#~ msgstr "متن جایگزین"
+
+#~ msgid "Content type"
+#~ msgstr "نوع محتوا"
+
+#~ msgid "Object id"
+#~ msgstr "آی دی موجودیت"
+
+#~ msgid "Picture Type"
+#~ msgstr "نوع تصویر"
+
+#~ msgid "Display order"
+#~ msgstr "اولویت نمایش"
+
+#~ msgid "Submitting..."
+#~ msgstr "در حال ارسال ..."
+
+#~ msgid "Initializing upload..."
+#~ msgstr "در حال آماده‌سازی بارگذاری..."
+
+#~ msgid "Error"
+#~ msgstr "خطا"
+
+#~ msgid "Failed to initialize upload"
+#~ msgstr "مقداردهی اولیه بارگذاری ناموفق بود"
+
+#~ msgid "Failed to upload chunk"
+#~ msgstr "بارگذاری تکه ناموفق بود"
+
+#~ msgid "Completing upload..."
+#~ msgstr "در حال تکمیل بارگذاری..."
+
+#~ msgid "Notification"
+#~ msgstr "اعلان"
+
+#~ msgid "An error occurred"
+#~ msgstr "خطایی رخ داد"
+
+#~ msgid "Picture has been updated successfully"
+#~ msgstr "تصویر با موفقیت ویرایش شد"
 
 #~ msgctxt "month name"
 #~ msgid "May"

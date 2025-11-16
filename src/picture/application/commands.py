@@ -34,3 +34,4 @@ class UpdatePictureCommand(Command):
 @dataclass
 class DeletePictureCommand(Command):
     pk: uuid.UUID
+

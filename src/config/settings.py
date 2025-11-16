@@ -71,6 +71,8 @@ LOCAL_APPS = [
     "shared.infrastructure",
     # core application that has core functionalities
     "core.infrastructure",
+    # picture bounded context
+    "picture.infrastructure",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -114,7 +116,7 @@ ASGI_APPLICATION = "config.asgi.application"
 # django-js-reverse configuration
 JS_REVERSE_JS_VAR_NAME = "DjangoUrls"
 JS_REVERSE_JS_MINIFY = True
-JS_REVERSE_INCLUDE_ONLY_NAMESPACES = ["shared", "core"]
+JS_REVERSE_INCLUDE_ONLY_NAMESPACES = ["shared", "core", "picture"]
 
 # number of threads for threadpool in asgi webserver like daphne
 # Optimized for high concurrency: increase thread pool for I/O operations
