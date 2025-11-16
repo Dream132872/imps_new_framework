@@ -1,5 +1,5 @@
 """
-Chunk Upload Queries for CQRS implementation.
+Chunk Upload Queries for CQRS implementation (moved from core bounded context).
 """
 
 from dataclasses import dataclass
@@ -12,7 +12,5 @@ __all__ = ("GetChunkUploadStatusQuery",)
 @dataclass
 class GetChunkUploadStatusQuery(Query):
     upload_id: str
-
-
 
 

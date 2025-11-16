@@ -1,5 +1,5 @@
 """
-Chunk upload domain entity.
+Chunk upload domain entity (moved from core bounded context).
 """
 
 from datetime import datetime
@@ -65,32 +65,26 @@ class ChunkUpload(Entity):
         return self._status
 
     def is_complete(self) -> bool:
-        """Check if upload is complete."""
         return self._uploaded_size >= self._total_size and self._status == "completed"
 
     def get_progress_percent(self) -> float:
-        """Get upload progress as percentage."""
         if self._total_size == 0:
             return 0.0
         return min(100.0, (self._uploaded_size / self._total_size) * 100)
 
     def update_uploaded_size(self, size: int) -> None:
-        """Update uploaded size."""
         self._uploaded_size = size
         self.update_timestamp()
 
     def increment_chunk_count(self) -> None:
-        """Increment chunk count."""
         self._chunk_count += 1
         self.update_timestamp()
 
     def set_status(self, status: str) -> None:
-        """Set upload status."""
         self._status = status
         self.update_timestamp()
 
     def set_temp_file_path(self, path: str) -> None:
-        """Set temporary file path."""
         self._temp_file_path = path
         self.update_timestamp()
 
@@ -116,4 +110,5 @@ class ChunkUpload(Entity):
             }
         )
         return base_dict
+
 

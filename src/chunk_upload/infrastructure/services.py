@@ -12,14 +12,14 @@ from django.core.files.storage import default_storage
 from django.utils.translation import gettext_lazy as _
 from injector import inject
 
-from core.domain.entities.chunk_upload import ChunkUpload
-from core.domain.exceptions.chunk_upload import (
+from chunk_upload.domain.entities import ChunkUpload
+from chunk_upload.domain.exceptions import (
     ChunkUploadInvalidEntityError,
     ChunkUploadNotFoundError,
     ChunkUploadValidationError,
 )
-from core.domain.repositories import ChunkUploadRepository
-from core.domain.services.chunk_upload_service import ChunkUploadService
+from chunk_upload.domain.repositories import ChunkUploadRepository
+from chunk_upload.domain.services import ChunkUploadService
 
 __all__ = ("DjangoChunkUploadService",)
 
@@ -53,11 +53,9 @@ class DjangoChunkUploadService(ChunkUploadService):
 
         # Read chunk data - handle both UploadedFile and bytes
         if hasattr(chunk, "read"):
-            # It's a file-like object (UploadedFile)
-            chunk.seek(0)  # Ensure we're at the start
+            chunk.seek(0)
             chunk_data = chunk.read()
         elif isinstance(chunk, bytes):
-            # It's already bytes
             chunk_data = chunk
         else:
             raise ValueError(f"Unsupported chunk type: {type(chunk)}")
@@ -95,7 +93,6 @@ class DjangoChunkUploadService(ChunkUploadService):
     def _merge_chunk(
         self, chunk_upload: ChunkUpload, chunk_path: str, offset: int
     ) -> None:
-        """Merge a chunk into the final file by appending sequentially."""
         if not chunk_upload.temp_file_path:
             return
 
@@ -103,9 +100,7 @@ class DjangoChunkUploadService(ChunkUploadService):
             chunk_data = chunk_file.read()
 
         if default_storage.exists(chunk_upload.temp_file_path):
-            with default_storage.open(
-                chunk_upload.temp_file_path, "rb"
-            ) as existing_file:
+            with default_storage.open(chunk_upload.temp_file_path, "rb") as existing_file:
                 existing_data = existing_file.read()
 
             if offset == 0:
@@ -119,12 +114,10 @@ class DjangoChunkUploadService(ChunkUploadService):
                 final_file.write(new_data)
         else:
             if offset == 0:
-                # Save initial chunk data
                 chunk_file_obj = BytesIO(chunk_data)
                 chunk_file_obj.name = chunk_upload.filename
                 default_storage.save(chunk_upload.temp_file_path, chunk_file_obj)
             else:
-                # Create file with padding for offset
                 padding = b"\x00" * offset
                 padded_data = padding + chunk_data
                 chunk_file_obj = BytesIO(padded_data)
@@ -134,25 +127,24 @@ class DjangoChunkUploadService(ChunkUploadService):
     def get_completed_file(self, upload_id: str) -> BinaryIO:
         chunk_upload = self.chunk_upload_repository.get_by_upload_id(upload_id)
         if not chunk_upload:
-            raise ValueError(f"Upload session {upload_id} not found")
+            raise ChunkUploadValidationError(
+                _("Upload session {upload_id} not found").format(upload_id=upload_id)
+            )
 
         if not chunk_upload.is_complete():
-            raise ValueError("Upload is not complete yet")
+            raise ChunkUploadValidationError(_("Upload is not complete yet"))
 
         if not chunk_upload.temp_file_path:
-            raise ValueError("No file path available")
+            raise ChunkUploadValidationError(_("No file path available"))
 
         if not default_storage.exists(chunk_upload.temp_file_path):
-            raise ValueError("Completed file not found")
+            raise ChunkUploadValidationError(_("Completed file not found"))
 
-        # Read file content into memory and return BytesIO to avoid file locking issues
         with default_storage.open(chunk_upload.temp_file_path, "rb") as file:
             file_data = file.read()
 
-        # File is now closed, create BytesIO from the data
         file_obj = BytesIO(file_data)
         file_obj.name = chunk_upload.filename
-        # Ensure we're at the start of the file
         file_obj.seek(0)
         return file_obj
 
@@ -163,27 +155,22 @@ class DjangoChunkUploadService(ChunkUploadService):
 
         temp_file_path = chunk_upload.temp_file_path
 
-        # Small delay to ensure file handles are released (Windows issue)
         time.sleep(0.1)
 
         if temp_file_path and default_storage.exists(temp_file_path):
             try:
                 default_storage.delete(temp_file_path)
             except Exception:
-                # File might still be in use, try again after a bit
                 time.sleep(0.2)
                 try:
                     default_storage.delete(temp_file_path)
                 except Exception:
                     pass
 
-        # Clean up chunk directory and all its contents
         chunk_dir = f"chunks/{upload_id}"
         if default_storage.exists(chunk_dir):
             try:
-                # List all files in the directory
                 dirs, files = default_storage.listdir(chunk_dir)
-                # Delete all files
                 for file in files:
                     try:
                         file_path = os.path.join(chunk_dir, file)
@@ -192,17 +179,11 @@ class DjangoChunkUploadService(ChunkUploadService):
                     except Exception:
                         pass
 
-                # Try to delete the directory itself if using local storage
-                # Django storage API doesn't support directory deletion directly
-                # So we use os operations if the storage is local
                 try:
                     if hasattr(default_storage, "location"):
-                        # Local file storage
-                        full_dir_path = os.path.join(
-                            default_storage.location, chunk_dir
-                        )
+                        full_dir_path = os.path.join(default_storage.location, chunk_dir)
                         if os.path.exists(full_dir_path):
-                            time.sleep(0.1)  # Small delay for Windows
+                            time.sleep(0.1)
                             shutil.rmtree(full_dir_path, ignore_errors=True)
                 except Exception:
                     pass
@@ -210,4 +191,5 @@ class DjangoChunkUploadService(ChunkUploadService):
                 pass
 
         self.chunk_upload_repository.delete(chunk_upload)
+
 

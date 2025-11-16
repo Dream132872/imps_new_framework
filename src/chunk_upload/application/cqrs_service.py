@@ -1,11 +1,11 @@
 """
-CQRS Service for Chunk Upload.
+CQRS Service for Chunk Upload (moved from core bounded context).
 """
 
-from core.application.command_handlers import chunk_upload_command_handlers
-from core.application.commands import chunk_upload_commands
-from core.application.queries import chunk_upload_queries
-from core.application.query_handlers import chunk_upload_query_handlers
+from chunk_upload.application import command_handlers as chunk_upload_command_handlers
+from chunk_upload.application import commands as chunk_upload_commands
+from chunk_upload.application import queries as chunk_upload_queries
+from chunk_upload.application import query_handlers as chunk_upload_query_handlers
 from shared.application.cqrs import register_command_handler, register_query_handler
 
 # ============================
@@ -31,7 +31,5 @@ register_command_handler(
     chunk_upload_commands.CompleteChunkUploadCommand,
     chunk_upload_command_handlers.CompleteChunkUploadCommandHandler,
 )
-
-
 
 

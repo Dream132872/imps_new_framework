@@ -8,7 +8,7 @@ from picture.infrastructure.views import (
     DeletePictureView,
     UpdatePictureView,
 )
-from core.infrastructure.views import chunk_upload
+from chunk_upload.infrastructure import views as chunk_upload_views
 
 
 urlpatterns = [
@@ -34,22 +34,22 @@ urlpatterns = [
                     ),
                     path(
                         "chunk/create/",
-                        chunk_upload.CreateChunkUploadView.as_view(),
+                        chunk_upload_views.CreateChunkUploadView.as_view(),
                         name="chunk_create",
                     ),
                     path(
                         "chunk/upload/",
-                        chunk_upload.UploadChunkView.as_view(),
+                        chunk_upload_views.UploadChunkView.as_view(),
                         name="chunk_upload",
                     ),
                     path(
                         "chunk/complete/",
-                        chunk_upload.CompleteChunkUploadView.as_view(),
+                        chunk_upload_views.CompleteChunkUploadView.as_view(),
                         name="chunk_complete",
                     ),
                     path(
                         "chunk/status/<str:upload_id>/",
-                        chunk_upload.GetChunkUploadStatusView.as_view(),
+                        chunk_upload_views.GetChunkUploadStatusView.as_view(),
                         name="chunk_status",
                     ),
                 ],

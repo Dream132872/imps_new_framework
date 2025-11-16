@@ -1,6 +1,5 @@
 """
 Chunk Upload Command Handlers for CQRS implementations.
-Handlers execute business logic for chunk upload commands.
 """
 
 import uuid
@@ -9,15 +8,16 @@ from typing import Any
 from django.utils.translation import gettext_lazy as _
 from injector import inject
 
-from core.application.commands import chunk_upload_commands
+from chunk_upload.application import commands as chunk_upload_commands
+from chunk_upload.domain.entities import ChunkUpload
+from chunk_upload.domain.exceptions import ChunkUploadNotFoundError
+from chunk_upload.domain.repositories import ChunkUploadRepository
+from chunk_upload.domain.services import ChunkUploadService
+from core.domain.services import FileStorageService
 from picture.application.dtos import PictureDTO
-from core.domain.entities.chunk_upload import ChunkUpload
 from picture.domain.entities import Picture
-from core.domain.exceptions.chunk_upload import ChunkUploadNotFoundError
 from picture.domain.exceptions import PictureNotFoundError, PictureValidationError
-from core.domain.repositories import ChunkUploadRepository
 from picture.domain.repositories import PictureRepository
-from core.domain.services import ChunkUploadService, FileStorageService
 from shared.application.cqrs import CommandHandler
 from shared.application.dtos import FileFieldDTO
 from shared.application.exception_mapper import map_domain_exception_to_application

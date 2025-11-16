@@ -10,8 +10,8 @@ from typing import Any
 from django.utils.translation import gettext_lazy as _
 from injector import inject
 
-from core.application.queries import chunk_upload_queries
-from core.domain.repositories import ChunkUploadRepository
+from chunk_upload.application import queries as chunk_upload_queries
+from chunk_upload.domain.repositories import ChunkUploadRepository
 from shared.application.cqrs import QueryHandler
 from shared.application.exceptions import ApplicationError
 from shared.domain.repositories import UnitOfWork
@@ -22,12 +22,8 @@ logger = logging.getLogger(__file__)
 
 
 class BaseChunkUploadQueryHandler:
-    """Base class for chunk upload query handlers with common functionalities"""
-
     @inject
-    def __init__(
-        self, uow: UnitOfWork
-    ) -> None:
+    def __init__(self, uow: UnitOfWork) -> None:
         self.uow = uow
 
 
@@ -39,7 +35,9 @@ class GetChunkUploadStatusQueryHandler(
         self, query: chunk_upload_queries.GetChunkUploadStatusQuery
     ) -> dict[str, Any]:
         try:
-            chunk_upload = self.uow[ChunkUploadRepository].get_by_upload_id(query.upload_id)
+            chunk_upload = self.uow[ChunkUploadRepository].get_by_upload_id(
+                query.upload_id
+            )
             if not chunk_upload:
                 raise ApplicationError(_("Chunk upload not found"))
 
@@ -55,7 +53,9 @@ class GetChunkUploadStatusQueryHandler(
             }
         except Exception as e:
             raise ApplicationError(
-                _("Could not get chunk upload status: {message}").format(message=str(e))
+                _("Could not get chunk upload status: {message}").format(
+                    message=str(e)
+                )
             ) from e
 
 

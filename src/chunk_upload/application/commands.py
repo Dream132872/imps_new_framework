@@ -1,6 +1,5 @@
 """
-Chunk Upload Commands for CQRS implementation.
-Commands handle write operations for chunk upload functionality.
+Chunk Upload Commands for CQRS implementation (moved from core bounded context).
 """
 
 from dataclasses import dataclass
@@ -38,7 +37,5 @@ class CompleteChunkUploadCommand(Command):
     title: str
     alternative: str
     picture_id: str | None = None
-
-
 
 

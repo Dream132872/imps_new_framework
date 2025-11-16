@@ -4,15 +4,17 @@ Django repository implementation for chunk upload.
 
 from uuid import UUID
 
-from core.domain.entities.chunk_upload import ChunkUpload
-from core.domain.repositories import ChunkUploadRepository
-from core.infrastructure.models import ChunkUpload as ChunkUploadModel
+from chunk_upload.domain.entities import ChunkUpload
+from chunk_upload.domain.repositories import ChunkUploadRepository
+from chunk_upload.infrastructure.models import ChunkUpload as ChunkUploadModel
 from shared.infrastructure.repositories import DjangoRepository
 
 __all__ = ("DjangoChunkUploadRepository",)
 
 
-class DjangoChunkUploadRepository(DjangoRepository[ChunkUpload], ChunkUploadRepository):
+class DjangoChunkUploadRepository(
+    DjangoRepository[ChunkUpload], ChunkUploadRepository
+):
     """Django implementation of chunk upload repository."""
 
     def __init__(self) -> None:
@@ -64,3 +66,5 @@ class DjangoChunkUploadRepository(DjangoRepository[ChunkUpload], ChunkUploadRepo
             return self._model_to_entity(model_instance)
         except self.model_class.DoesNotExist:
             return None
+
+
