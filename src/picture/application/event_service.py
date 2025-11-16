@@ -1,4 +1,0 @@
-"""
-Picture Event Service.
-"""
-

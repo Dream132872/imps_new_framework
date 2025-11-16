@@ -10,7 +10,7 @@ from django.utils.translation import gettext_lazy as _
 from shared.infrastructure.admin import BaseModelAdmin
 
 from .models import User
-from picture.infrastructure.models.picture import Picture
+from media.infrastructure.models import Picture
 
 
 class ManagePictureInline(GenericStackedInline):

@@ -1,2 +1,0 @@
-from .picture import *
-

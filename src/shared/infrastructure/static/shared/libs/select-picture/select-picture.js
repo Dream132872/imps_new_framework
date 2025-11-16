@@ -51,10 +51,10 @@ function getPicturesBox(pictureBoxId) {
 
 // get picture html element
 function getPictureElement(picture, popupData) {
-    let updatePictureUrl = DjangoUrls["picture:update"]({
+    let updatePictureUrl = DjangoUrls["media:picture:update"]({
         picture_id: picture.id,
     });
-    let deletePictureUrl = DjangoUrls["picture:delete"]({
+    let deletePictureUrl = DjangoUrls["media:picture:delete"]({
         pk: picture.id,
     });
 
@@ -117,8 +117,6 @@ function addPictureBox(res) {
 
 // update single picture
 function updateSinglePicture(res) {
-    console.log(res.popupData);
-
     const picture = res?.res?.picture;
     let pictureEl = getPictureElement(picture, res.popupData);
     $(`[single-picture-box="${res.popupData.picture_box_id}"]`).html(pictureEl);
@@ -133,7 +131,7 @@ function replaceUpdatedPicture(res) {
 
 // callback method name that should be called after singular picture is removed
 function singlePictureRemovalCallback(el, res) {
-    let createPictureUrl = DjangoUrls["picture:create"]({
+    let createPictureUrl = DjangoUrls["media:picture:create"]({
         picture_type: res.details.picture_type,
         content_type: res.details.content_type,
         object_id: res.details.object_id,
@@ -149,7 +147,6 @@ function singlePictureRemovalCallback(el, res) {
         picture_type: res.details.picture_type,
         object_id: res.details.object_id,
     };
-    console.log("picture popup data: ", picturePopupData);
 
     let selectPictureEl = $(`
     <div class="me-3 mb-3">

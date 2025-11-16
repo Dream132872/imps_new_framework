@@ -10,8 +10,8 @@ from functools import lru_cache
 from django import forms as django_forms
 from django.contrib.contenttypes.models import ContentType
 
-from picture.application.dtos import PictureDTO
-from picture.application.queries import (
+from media.application.dtos import PictureDTO
+from media.application.queries import (
     SearchFirstPictureQuery,
     SearchPicturesQuery,
 )

@@ -17,7 +17,7 @@ class User(AbstractUser, BaseModel):
     """Model definition for User."""
 
     # user avatar
-    avatar = GenericRelation("picture_infrastructure.Picture")
+    avatar = GenericRelation("media_infrastructure.Picture")
 
     objects = CustomUserManager()
 

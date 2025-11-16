@@ -71,10 +71,8 @@ LOCAL_APPS = [
     "shared.infrastructure",
     # core application that has core functionalities
     "core.infrastructure",
-    # picture bounded context
-    "picture.infrastructure",
-    # chunk upload bounded context
-    "chunk_upload.infrastructure",
+    # media bounded context
+    "media.infrastructure",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -381,8 +379,7 @@ JS_REVERSE_JS_MINIFY = True
 JS_REVERSE_INCLUDE_ONLY_NAMESPACES = [
     "shared",
     "core",
-    "picture",
-    "chunk_upload",
+    "media",
 ]
 
 # debug toolbar configuration
