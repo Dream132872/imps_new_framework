@@ -179,7 +179,7 @@ DATABASES = {
 }
 
 AUTH_USER_MODEL = "identity_infrastructure.User"
-LOGIN_URL = reverse_lazy("core:auth:login")
+LOGIN_URL = reverse_lazy("identity:auth:login")
 
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",

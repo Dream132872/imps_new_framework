@@ -7,11 +7,12 @@ urlpatterns = [
         include(
             (
                 [
-                    path("", include("core.infrastructure.urls.base")),
+                    path("", include("identity.infrastructure.urls.auth")),
                 ],
-                "core",
+                "identity",
             ),
-            namespace="core",
+            namespace="identity",
         ),
     ),
 ]
+

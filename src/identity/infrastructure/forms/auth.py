@@ -1,12 +1,12 @@
 """
-core auth forms.
+identity auth forms.
 """
 
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 from parsley.decorators import parsleyfy
 
-from core.infrastructure import forms
+from shared.infrastructure import forms
 
 __all__ = ("LoginForm",)
 
@@ -36,3 +36,4 @@ class LoginForm(forms.Form):
             }
         ),
     )
+

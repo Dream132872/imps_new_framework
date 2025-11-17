@@ -69,6 +69,7 @@ urlpatterns += i18n_patterns(
     ),
     path("", include("shared.infrastructure.urls")),
     path("", include("core.infrastructure.urls")),
+    path("", include("identity.infrastructure.urls")),
     path("", include("media.infrastructure.urls")),
     prefix_default_language=settings.MULTILANGUAGE_URL_PREFIX,
 )

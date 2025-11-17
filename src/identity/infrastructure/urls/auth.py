@@ -5,7 +5,7 @@ from ..views import auth
 urlpatterns = [
     path(
         # admin views for auth
-        "admin/auth/",
+        "admin/identity/",
         include(
             (
                 [
@@ -18,3 +18,4 @@ urlpatterns = [
         ),
     ),
 ]
+

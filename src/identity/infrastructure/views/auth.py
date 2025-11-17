@@ -12,14 +12,14 @@ from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext_lazy as _
 
-from core.infrastructure.forms.auth import LoginForm
+from identity.infrastructure.forms.auth import LoginForm
 from shared.infrastructure import views
 
 
 class LoginView(views.ViewTitleMixin, views.FormView):
     page_title = _("Login")
     form_class = LoginForm
-    template_name = "core/auth/login.html"
+    template_name = "identity/auth/login.html"
 
     def dispatch(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         if request.user.is_authenticated:
@@ -66,4 +66,5 @@ class LogoutView(views.View):
         if user.is_authenticated:
             await alogout(request)
 
-        return redirect(reverse("core:auth:login"), permanent=True)
+        return redirect(reverse("identity:auth:login"), permanent=True)
+
