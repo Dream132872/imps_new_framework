@@ -44,3 +44,4 @@ class FileStorageService(ABC):
             bool: True if image exists, False otherwise.
         """
         pass
+

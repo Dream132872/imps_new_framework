@@ -18,7 +18,7 @@ __all__ = ("Picture",)
 
 
 def image_upload_path(instance: "Picture", filepath: str) -> str:
-    """this method generate new unique random image name for picture
+    """This method generate new unique random image name for picture
 
     Args:
         instance (Picture): instance of an object of Picture model.
@@ -42,24 +42,42 @@ class Picture(BaseModel):
 
     # main image in db
     image = models.ImageField(
-        max_length=200, upload_to=image_upload_path, null=True, blank=True, verbose_name=_("Image")  # type: ignore
+        max_length=200,
+        upload_to=image_upload_path,  # type: ignore
+        null=True,
+        blank=True,
+        verbose_name=_("Image"),  # type: ignore
+        help_text=_("The main image"),
     )
     # alternative text
     alternative = models.CharField(
-        max_length=300, blank=True, verbose_name=_("Alternative text")
+        max_length=300,
+        blank=True,
+        verbose_name=_("Alternative text"),
+        help_text=_("Alternative text of the image when it's not loaded"),
     )
+
     # title of the image
-    title = models.CharField(max_length=300, blank=True, verbose_name=_("Title"))
+    title = models.CharField(
+        max_length=300,
+        blank=True,
+        verbose_name=_("Title"),
+        help_text=_("Title of the image"),
+    )
 
     # content type for generic relation
     content_type = models.ForeignKey(
         ContentType,
         on_delete=models.CASCADE,
         verbose_name=_("Content type"),
+        help_text=_("Django content type foreign key"),
     )
 
     # object id for generic relation
-    object_id = models.CharField(verbose_name=_("Object id"))
+    object_id = models.CharField(
+        verbose_name=_("Object id"),
+        help_text=_("Object id of the related model"),
+    )
 
     # content object
     content_object = GenericForeignKey("content_type", "object_id")
@@ -70,10 +88,15 @@ class Picture(BaseModel):
         choices=PictureType.choices,
         default="main",
         verbose_name=_("Picture Type"),
+        help_text=_("Type of the picture to manage"),
     )
 
     # Order for gallery images
-    display_order = models.IntegerField(default=0, verbose_name=_("Display order"))
+    display_order = models.IntegerField(
+        default=0,
+        verbose_name=_("Display order"),
+        help_text=_("Display order of the image that manage it's priority"),
+    )
 
     # default manager of Picture model
     objects = PictureManager()
@@ -99,5 +122,5 @@ class Picture(BaseModel):
         return f"<Picture pk={self.id} name={self.image} type={self.picture_type}/>"
 
     def image_tag(self) -> str:
+        """Image html tag that is used in admin"""
         return mark_safe(f'<img src="{self.image.url}" width="100" height="100" />')
-

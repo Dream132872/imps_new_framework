@@ -17,7 +17,7 @@ from media.application.dtos import PictureDTO
 from media.domain.entities import Picture
 from media.domain.exceptions import PictureNotFoundError, PictureValidationError
 from media.domain.repositories import PictureRepository
-from core.domain.services import FileStorageService
+from media.domain.services import FileStorageService
 from shared.application.cqrs import CommandHandler
 from shared.application.dtos import FileFieldDTO
 from shared.application.exception_mapper import map_domain_exception_to_application

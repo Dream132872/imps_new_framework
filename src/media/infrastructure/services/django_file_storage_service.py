@@ -8,7 +8,7 @@ from typing import BinaryIO
 
 from django.core.files.storage import default_storage
 
-from core.domain.services import FileStorageService
+from media.domain.services import FileStorageService
 
 __all__ = ("DjangoFileStorageService",)
 
@@ -35,3 +35,4 @@ class DjangoFileStorageService(FileStorageService):
 
     def image_exists(self, image_path: str) -> bool:
         return bool(image_path and default_storage.exists(image_path))
+
