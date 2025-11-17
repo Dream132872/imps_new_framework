@@ -3,22 +3,19 @@ Chunk Upload Command Handlers for CQRS implementations.
 """
 
 import uuid
-from typing import Any
+from typing import Any, BinaryIO
 
 from django.utils.translation import gettext_lazy as _
 from injector import inject
 
 from media.application import commands as chunk_upload_commands
-from media.application.dtos import PictureDTO
-from media.domain.entities import ChunkUpload, Picture
-from media.domain.exceptions import ChunkUploadNotFoundError, PictureNotFoundError, PictureValidationError
-from media.domain.repositories import ChunkUploadRepository, PictureRepository
+from media.domain.entities import ChunkUpload
+from media.domain.exceptions import ChunkUploadNotFoundError, ChunkUploadValidationError
+from media.domain.repositories import ChunkUploadRepository
 from media.domain.services import ChunkUploadService, FileStorageService
 from shared.application.cqrs import CommandHandler
-from shared.application.dtos import FileFieldDTO
 from shared.application.exception_mapper import map_domain_exception_to_application
 from shared.application.exceptions import ApplicationError
-from shared.domain.factories import FileFieldFactory
 from shared.domain.repositories import UnitOfWork
 
 __all__ = (
@@ -39,28 +36,6 @@ class BaseChunkUploadCommandHandler:
         self.uow = uow
         self.file_storage_service = file_storage_service
         self.chunk_upload_service = chunk_upload_service
-
-    def _to_dto(self, picture: Picture) -> PictureDTO:
-        image = FileFieldDTO(
-            file_type="image",
-            url=picture.image.url,
-            name=picture.image.name,
-            size=picture.image.size,
-            width=picture.image.width,
-            height=picture.image.height,
-            content_type=picture.image.content_type,
-        )
-        return PictureDTO(
-            id=picture.id,
-            image=image,
-            picture_type=picture.picture_type,
-            title=picture.title,
-            alternative=picture.alternative,
-            content_type=picture.content_type,
-            object_id=picture.object_id,
-            created_at=picture.created_at,
-            updated_at=picture.updated_at,
-        )
 
 
 class CreateChunkUploadCommandHandler(
@@ -132,16 +107,15 @@ class UploadChunkCommandHandler(
 
 
 class CompleteChunkUploadCommandHandler(
-    CommandHandler[chunk_upload_commands.CompleteChunkUploadCommand, PictureDTO],
+    CommandHandler[chunk_upload_commands.CompleteChunkUploadCommand, BinaryIO],
     BaseChunkUploadCommandHandler,
 ):
     def handle(
         self, command: chunk_upload_commands.CompleteChunkUploadCommand
-    ) -> PictureDTO:
+    ) -> BinaryIO:
         if not self.chunk_upload_service:
             raise ApplicationError(_("Chunk upload service not available"))
 
-        image_path = ""
         try:
             chunk_upload = self.uow[ChunkUploadRepository].get_by_upload_id(
                 command.upload_id
@@ -150,64 +124,18 @@ class CompleteChunkUploadCommandHandler(
                 raise ApplicationError(_("Chunk upload not found"))
 
             if not chunk_upload.is_complete():
-                raise PictureValidationError(_("Upload is not completed yet"))
+                raise ChunkUploadValidationError(_("Upload is not completed yet"))
 
-            with self.uow:
-                if not self.uow[PictureRepository].is_valid_picture_type(
-                    command.picture_type
-                ):
-                    raise PictureValidationError(_("Picture type is not valid"))
-
-                completed_file = self.chunk_upload_service.get_completed_file(
-                    command.upload_id
-                )
-                image_name = self.file_storage_service.save_image(completed_file)
-                image_file = FileFieldFactory.from_image_name(image_name)
-                image_path = image_file.path
-
-                if command.picture_id:
-                    picture = self.uow[PictureRepository].get_by_id(
-                        str(command.picture_id)
-                    )
-                    if not picture:
-                        raise PictureNotFoundError(
-                            _("There is no picture with ID: {picture_id}").format(
-                                picture_id=command.picture_id
-                            )
-                        )
-                    self.file_storage_service.delete_image(picture.image.name)
-                    picture.update_image(image_file)
-                    picture.update_information(
-                        title=command.title, alternative=command.alternative
-                    )
-                else:
-                    picture = Picture(
-                        image=image_file,
-                        picture_type=command.picture_type,
-                        content_type_id=command.content_type_id,
-                        object_id=command.object_id,
-                        title=command.title,
-                        alternative=command.alternative,
-                    )
-
-                picture = self.uow[PictureRepository].save(picture)
-                self.chunk_upload_service.cleanup_upload(command.upload_id)
-                return self._to_dto(picture)
-        except PictureValidationError as e:
-            if image_path:
-                self.file_storage_service.delete_image(image_path)
-            raise map_domain_exception_to_application(e) from e
-        except PictureNotFoundError as e:
-            if image_path:
-                self.file_storage_service.delete_image(image_path)
+            completed_file = self.chunk_upload_service.get_completed_file(
+                command.upload_id
+            )
+            self.chunk_upload_service.cleanup_upload(command.upload_id)
+            return completed_file
+        except ChunkUploadValidationError as e:
             raise map_domain_exception_to_application(e) from e
         except ValueError as e:
-            if image_path:
-                self.file_storage_service.delete_image(image_path)
             raise ApplicationError(str(e)) from e
         except Exception as e:
-            if image_path:
-                self.file_storage_service.delete_image(image_path)
             if self.chunk_upload_service:
                 try:
                     self.chunk_upload_service.cleanup_upload(command.upload_id)
@@ -216,4 +144,3 @@ class CompleteChunkUploadCommandHandler(
             raise ApplicationError(
                 _("Failed to complete chunk upload: {message}").format(message=str(e))
             ) from e
-

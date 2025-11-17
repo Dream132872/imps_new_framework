@@ -3,6 +3,7 @@ Chunk upload views for handling chunked file uploads.
 """
 
 import logging
+import uuid
 from dataclasses import asdict
 
 from django.http import HttpRequest, JsonResponse
@@ -10,6 +11,7 @@ from django.utils.translation import gettext_lazy as _
 
 from media.application import commands as chunk_upload_commands
 from media.application import queries as chunk_upload_queries
+from media.application.commands import CreatePictureCommand
 from shared.application.cqrs import dispatch_command, dispatch_query
 from shared.infrastructure import views
 
@@ -77,20 +79,24 @@ class CompleteChunkUploadView(views.AdminGenericMixin, views.View):
         picture_type = request.POST.get("picture_type")
         title = request.POST.get("title", "")
         alternative = request.POST.get("alternative", "")
-        picture_id = request.POST.get("picture_id")
 
         if not upload_id or not content_type_id or not object_id or not picture_type:
             return JsonResponse({"error": _("Missing required fields")}, status=400)
 
-        picture = dispatch_command(
+        completed_file = dispatch_command(
             chunk_upload_commands.CompleteChunkUploadCommand(
                 upload_id=upload_id,
+            )
+        )
+
+        picture = dispatch_command(
+            CreatePictureCommand(
                 content_type_id=int(content_type_id),
-                object_id=object_id,
+                object_id=uuid.UUID(object_id),
                 picture_type=picture_type,
+                image=completed_file,
                 title=title,
                 alternative=alternative,
-                picture_id=picture_id if picture_id else None,
             )
         )
 
@@ -100,7 +106,7 @@ class CompleteChunkUploadView(views.AdminGenericMixin, views.View):
                 "message": _("Picture has been created successfully"),
                 "details": {
                     "picture": asdict(picture),
-                    "is_update": bool(picture_id),
+                    "is_update": False,
                 },
             }
         )
@@ -115,4 +121,3 @@ class GetChunkUploadStatusView(views.AdminGenericMixin, views.View):
             chunk_upload_queries.GetChunkUploadStatusQuery(upload_id=upload_id)
         )
         return JsonResponse(result)
-

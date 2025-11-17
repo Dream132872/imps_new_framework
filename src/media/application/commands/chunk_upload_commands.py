@@ -31,10 +31,4 @@ class UploadChunkCommand(Command):
 @dataclass
 class CompleteChunkUploadCommand(Command):
     upload_id: str
-    content_type_id: int
-    object_id: str
-    picture_type: str
-    title: str
-    alternative: str
-    picture_id: str | None = None
 
