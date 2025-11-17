@@ -39,6 +39,7 @@ __all__ = (
     "SelectDateWidget",
     "RichText",
     "SelectPicture",
+    "SelectAttachment",
 )
 
 
@@ -345,3 +346,11 @@ class SelectPicture(BaseCustomWidget):
     class Media:
         css = {"all": ["shared/libs/select-picture/select-picture.css"]}
         js = ["shared/libs/select-picture/select-picture.js"]
+
+
+class SelectAttachment(BaseCustomWidget):
+    template_name = "shared/forms/widgets/select_attachment.html"
+
+    class Media:
+        css = {"all": ["shared/libs/select-attachment/select-attachment.css"]}
+        js = ["shared/libs/select-attachment/select-attachment.js"]

@@ -6,6 +6,7 @@ from .chunk_upload_exceptions import (
     ChunkUploadNotFoundError,
     ChunkUploadValidationError,
 )
+from .attachment_exceptions import AttachmentNotFoundError, AttachmentValidationError
 
 __all__ = (
     "PictureNotFoundError",
@@ -15,5 +16,7 @@ __all__ = (
     "ChunkUploadInvalidEntityError",
     "ChunkUploadNotFoundError",
     "ChunkUploadValidationError",
+    "AttachmentNotFoundError",
+    "AttachmentValidationError",
 )
 

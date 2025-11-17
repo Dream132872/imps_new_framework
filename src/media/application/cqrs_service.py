@@ -9,6 +9,9 @@ from media.application.command_handlers import (
     CreateChunkUploadCommandHandler,
     UploadChunkCommandHandler,
     CompleteChunkUploadCommandHandler,
+    CreateAttachmentCommandHandler,
+    DeleteAttachmentCommandHandler,
+    UpdateAttachmentCommandHandler,
 )
 from media.application.commands import (
     CreatePictureCommand,
@@ -17,18 +20,27 @@ from media.application.commands import (
     CreateChunkUploadCommand,
     UploadChunkCommand,
     CompleteChunkUploadCommand,
+    CreateAttachmentCommand,
+    DeleteAttachmentCommand,
+    UpdateAttachmentCommand,
 )
 from media.application.queries import (
     GetPictureByIdQuery,
     SearchFirstPictureQuery,
     SearchPicturesQuery,
     GetChunkUploadStatusQuery,
+    GetAttachmentByIdQuery,
+    SearchFirstAttachmentQuery,
+    SearchAttachmentsQuery,
 )
 from media.application.query_handlers import (
     GetPictureByIdQueryHandler,
     SearchFirstPictureQueryHandler,
     SearchPicturesQueryHandler,
     GetChunkUploadStatusQueryHandler,
+    GetAttachmentByIdQueryHandler,
+    SearchFirstAttachmentQueryHandler,
+    SearchAttachmentsQueryHandler,
 )
 from shared.application.cqrs import register_command_handler, register_query_handler
 
@@ -50,6 +62,18 @@ register_query_handler(
 register_query_handler(
     GetChunkUploadStatusQuery,
     GetChunkUploadStatusQueryHandler,
+)
+register_query_handler(
+    GetAttachmentByIdQuery,
+    GetAttachmentByIdQueryHandler,
+)
+register_query_handler(
+    SearchAttachmentsQuery,
+    SearchAttachmentsQueryHandler,
+)
+register_query_handler(
+    SearchFirstAttachmentQuery,
+    SearchFirstAttachmentQueryHandler,
 )
 
 # ============================
@@ -78,5 +102,17 @@ register_command_handler(
 register_command_handler(
     CompleteChunkUploadCommand,
     CompleteChunkUploadCommandHandler,
+)
+register_command_handler(
+    CreateAttachmentCommand,
+    CreateAttachmentCommandHandler,
+)
+register_command_handler(
+    UpdateAttachmentCommand,
+    UpdateAttachmentCommandHandler,
+)
+register_command_handler(
+    DeleteAttachmentCommand,
+    DeleteAttachmentCommandHandler,
 )
 

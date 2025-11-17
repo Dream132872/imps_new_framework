@@ -11,7 +11,7 @@ from django.utils.translation import gettext_lazy as _
 
 from media.application import commands as chunk_upload_commands
 from media.application import queries as chunk_upload_queries
-from media.application.commands import CreatePictureCommand
+from media.application.commands import CreatePictureCommand, CreateAttachmentCommand, UpdateAttachmentCommand
 from shared.application.cqrs import dispatch_command, dispatch_query
 from shared.infrastructure import views
 
@@ -19,7 +19,10 @@ logger = logging.getLogger(__file__)
 
 
 class CreateChunkUploadView(views.AdminGenericMixin, views.View):
-    permission_required = ["media_infrastructure.add_picture"]
+    permission_required = [
+        "media_infrastructure.add_picture",
+        "media_infrastructure.add_attachment",
+    ]
     return_exc_response_as_json = True
 
     def post(self, request: HttpRequest) -> JsonResponse:
@@ -41,7 +44,10 @@ class CreateChunkUploadView(views.AdminGenericMixin, views.View):
 
 
 class UploadChunkView(views.AdminGenericMixin, views.View):
-    permission_required = ["media_infrastructure.add_picture"]
+    permission_required = [
+        "media_infrastructure.add_picture",
+        "media_infrastructure.add_attachment",
+    ]
     return_exc_response_as_json = True
 
     def post(self, request: HttpRequest) -> JsonResponse:
@@ -107,6 +113,65 @@ class CompleteChunkUploadView(views.AdminGenericMixin, views.View):
                 "details": {
                     "picture": asdict(picture),
                     "is_update": False,
+                },
+            }
+        )
+
+
+class CompleteAttachmentChunkUploadView(views.AdminGenericMixin, views.View):
+    permission_required = [
+        "media_infrastructure.add_attachment",
+        "media_infrastructure.change_attachment",
+    ]
+    return_exc_response_as_json = True
+
+    def post(self, request: HttpRequest) -> JsonResponse:
+        upload_id = request.POST.get("upload_id")
+        content_type_id = request.POST.get("content_type_id")
+        object_id = request.POST.get("object_id")
+        title = request.POST.get("title", "")
+        attachment_id = request.POST.get("attachment_id")
+
+        if not upload_id or not content_type_id or not object_id:
+            return JsonResponse({"error": _("Missing required fields")}, status=400)
+
+        completed_file = dispatch_command(
+            chunk_upload_commands.CompleteChunkUploadCommand(
+                upload_id=upload_id,
+            )
+        )
+
+        if attachment_id:
+            # Update existing attachment
+            attachment = dispatch_command(
+                UpdateAttachmentCommand(
+                    attachment_id=uuid.UUID(attachment_id),
+                    content_type_id=int(content_type_id),
+                    object_id=uuid.UUID(object_id),
+                    file=completed_file,
+                    title=title,
+                )
+            )
+            is_update = True
+        else:
+            # Create new attachment
+            attachment = dispatch_command(
+                CreateAttachmentCommand(
+                    content_type_id=int(content_type_id),
+                    object_id=uuid.UUID(object_id),
+                    file=completed_file,
+                    title=title,
+                )
+            )
+            is_update = False
+
+        return JsonResponse(
+            {
+                "status": "success",
+                "message": _("Attachment has been created successfully") if not is_update else _("Attachment has been updated successfully"),
+                "details": {
+                    "attachment": asdict(attachment),
+                    "is_update": is_update,
                 },
             }
         )

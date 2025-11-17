@@ -7,7 +7,13 @@ from .chunk_upload_views import (
     CreateChunkUploadView,
     UploadChunkView,
     CompleteChunkUploadView,
+    CompleteAttachmentChunkUploadView,
     GetChunkUploadStatusView,
+)
+from .attachment_views import (
+    CreateAttachmentView,
+    DeleteAttachmentView,
+    UpdateAttachmentView,
 )
 
 __all__ = (
@@ -17,6 +23,10 @@ __all__ = (
     "CreateChunkUploadView",
     "UploadChunkView",
     "CompleteChunkUploadView",
+    "CompleteAttachmentChunkUploadView",
     "GetChunkUploadStatusView",
+    "CreateAttachmentView",
+    "DeleteAttachmentView",
+    "UpdateAttachmentView",
 )
 

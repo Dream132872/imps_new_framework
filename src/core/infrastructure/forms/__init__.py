@@ -55,6 +55,24 @@ class TestWidgetsForm(Form):
         label="User galleries",
     )
 
+    documents = AttachmentField(
+        object_id_field="id",
+        app_label="core_infrastructure",
+        model_name="user",
+        many=True,
+        help_text="document attachments",
+        label="User documents",
+    )
+
+    resume = AttachmentField(
+        object_id_field="id",
+        app_label="core_infrastructure",
+        model_name="user",
+        many=False,
+        help_text="resume file",
+        label="User resume",
+    )
+
     # # Basic Input Widgets
     # text_input = CharField(
     #     label="Text input",

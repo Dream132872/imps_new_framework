@@ -294,6 +294,7 @@ class ModelForm(forms.ModelForm):
             Select,
             SelectMultiple,
             SelectPicture,
+            SelectAttachment,
             Textarea,
             TextInput,
             TimeInput,
@@ -320,6 +321,7 @@ class ModelForm(forms.ModelForm):
             "FileInput": FileInput,
             "ClearableFileInput": ClearableFileInput,
             "PictureField": SelectPicture,
+            "AttachmentField": SelectAttachment,
         }
 
         for field_name, field in self.fields.items():

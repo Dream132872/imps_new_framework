@@ -1,0 +1,68 @@
+{% extends 'shared/forms/widgets/base_input.html' %}
+{% load i18n static utils %}
+
+{% block content %}
+  {% if widget_obj.field.many %}
+    <div class="d-flex justify-content-start align-items-center flex-wrap pick-attachment" attachments-box="{{ widget_obj.bound_field.bound_field_uuid }}">
+      {% for att in widget_obj.field.attachments %}
+        <div class="me-3 mb-3" id="{{ att.id }}">
+          <div class="attachment-box rounded-3">
+            <div class="attachment-icon d-flex justify-content-center align-items-center">
+              <i class="bi bi-file-earmark"></i>
+            </div>
+            <div class="attachment-name">{{ att.file.name|default_if_none:'' }}</div>
+            <div class="overlay d-flex flex-column justify-content-end align-items-center w-100 h-100">
+              <div class="actions d-flex justify-content-evenly align-items-center w-100 mb-3">
+                <a class="action-button cursor-pointer d-flex justify-content-center align-items-center" href="{{ att.file.url }}" target="_blank"><i class="bi bi-eye"></i></a>
+                <a class="action-button cursor-pointer d-flex justify-content-center align-items-center" data-popup-open="{% url 'media:attachment:update' attachment_id=att.id %}" data-popup-name="select_attachment_popup" data-popup-data="{{ widget_obj.bound_field.popup_data|to_json }}"><i class="bi bi-pen"></i></a>
+                <a class="action-button cursor-pointer d-flex justify-content-center align-items-center" data-delete-url="{% url 'media:attachment:delete' pk=att.id %}" data-delete-element="#{{ att.id }}"><i class="bi bi-trash"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+      <div class="me-3 mb-3">
+        <div class="attachment-box add-attachment rounded-3 cursor-pointer">
+          <div class="attachment-icon d-flex justify-content-center align-items-center">
+            <i class="bi bi-file-earmark-plus"></i>
+          </div>
+          <div class="overlay d-flex flex-column justify-content-end align-items-center w-100 h-100" data-popup-open="{% url 'media:attachment:create' content_type=widget_obj.field.content_type.id object_id=widget_obj.field.object_id %}" data-popup-name="select_attachment_popup" data-popup-data="{{ widget_obj.bound_field.popup_data|to_json }}">
+            <div class="actions d-flex justify-content-evenly align-items-center w-100 mb-3">
+              <a class="action-button cursor-pointer d-flex justify-content-center align-items-center"><i class="bi bi-plus-lg"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <div class="d-flex justify-content-start align-items-center flex-wrap pick-attachment" single-attachment-box="{{ widget_obj.bound_field.bound_field_uuid }}">
+      <div class="me-3 mb-3" id="{{ widget_obj.field.attachment.id }}">
+        <div class="attachment-box add-attachment rounded-3 cursor-pointer">
+          {% if widget_obj.field.attachment %}
+            <div class="attachment-icon d-flex justify-content-center align-items-center">
+              <i class="bi bi-file-earmark"></i>
+            </div>
+            <div class="attachment-name">{{ widget_obj.field.attachment.file.name }}</div>
+            <div class="overlay d-flex flex-column justify-content-end align-items-center w-100 h-100">
+              <div class="actions d-flex justify-content-evenly align-items-center w-100 mb-3">
+                <a class="action-button cursor-pointer d-flex justify-content-center align-items-center" href="{{ widget_obj.field.attachment.file.url }}" target="_blank"><i class="bi bi-eye"></i></a>
+                <a class="action-button cursor-pointer d-flex justify-content-center align-items-center" data-popup-open="{% url 'media:attachment:update' attachment_id=widget_obj.field.attachment.id %}" data-popup-name="select_attachment_popup" data-popup-data="{{ widget_obj.bound_field.popup_data|to_json }}"><i class="bi bi-pen"></i></a>
+                <a class="action-button cursor-pointer d-flex justify-content-center align-items-center" data-delete-url="{% url 'media:attachment:delete' pk=widget_obj.field.attachment.id %}" data-delete-callback="singleAttachmentRemovalCallback"><i class="bi bi-trash"></i></a>
+              </div>
+            </div>
+          {% else %}
+            <div class="attachment-icon d-flex justify-content-center align-items-center">
+              <i class="bi bi-file-earmark-plus"></i>
+            </div>
+            <div class="overlay d-flex flex-column justify-content-end align-items-center w-100 h-100" data-popup-open="{% url 'media:attachment:create' content_type=widget_obj.field.content_type.id object_id=widget_obj.field.object_id %}" data-popup-name="select_attachment_popup" data-popup-data="{{ widget_obj.bound_field.popup_data|to_json }}">
+              <div class="actions d-flex justify-content-evenly align-items-center w-100 mb-3">
+                <a class="action-button cursor-pointer d-flex justify-content-center align-items-center"><i class="bi bi-plus-lg"></i></a>
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}
+

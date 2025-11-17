@@ -8,6 +8,11 @@ from .chunk_upload_command_handlers import (
     UploadChunkCommandHandler,
     CompleteChunkUploadCommandHandler,
 )
+from .attachment_command_handlers import (
+    CreateAttachmentCommandHandler,
+    DeleteAttachmentCommandHandler,
+    UpdateAttachmentCommandHandler,
+)
 
 __all__ = (
     "CreatePictureCommandHandler",
@@ -16,5 +21,8 @@ __all__ = (
     "CreateChunkUploadCommandHandler",
     "UploadChunkCommandHandler",
     "CompleteChunkUploadCommandHandler",
+    "CreateAttachmentCommandHandler",
+    "DeleteAttachmentCommandHandler",
+    "UpdateAttachmentCommandHandler",
 )
 

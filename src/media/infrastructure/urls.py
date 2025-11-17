@@ -10,7 +10,11 @@ from media.infrastructure.views import (
     CreateChunkUploadView,
     UploadChunkView,
     CompleteChunkUploadView,
+    CompleteAttachmentChunkUploadView,
     GetChunkUploadStatusView,
+    CreateAttachmentView,
+    DeleteAttachmentView,
+    UpdateAttachmentView,
 )
 
 app_name = "media"
@@ -33,6 +37,24 @@ picture_urlpatterns = [
     ),
 ]
 
+attachment_urlpatterns = [
+    path(
+        "create/<str:content_type>/<str:object_id>/",
+        CreateAttachmentView.as_view(),
+        name="create",
+    ),
+    path(
+        "update/<str:attachment_id>/",
+        UpdateAttachmentView.as_view(),
+        name="update",
+    ),
+    path(
+        "delete/<str:pk>/",
+        DeleteAttachmentView.as_view(),
+        name="delete",
+    ),
+]
+
 chunk_upload_urlpatterns = [
     path(
         "create/",
@@ -48,6 +70,11 @@ chunk_upload_urlpatterns = [
         "complete/",
         CompleteChunkUploadView.as_view(),
         name="complete",
+    ),
+    path(
+        "complete-attachment/",
+        CompleteAttachmentChunkUploadView.as_view(),
+        name="complete_attachment",
     ),
     path(
         "status/<str:upload_id>/",
@@ -66,6 +93,13 @@ urlpatterns = [
                     include(
                         (picture_urlpatterns, "picture"),
                         namespace="picture",
+                    ),
+                ),
+                path(
+                    "attachment/",
+                    include(
+                        (attachment_urlpatterns, "attachment"),
+                        namespace="attachment",
                     ),
                 ),
                 path(

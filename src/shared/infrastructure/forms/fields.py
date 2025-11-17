@@ -10,10 +10,12 @@ from functools import lru_cache
 from django import forms as django_forms
 from django.contrib.contenttypes.models import ContentType
 
-from media.application.dtos import PictureDTO
+from media.application.dtos import PictureDTO, AttachmentDTO
 from media.application.queries import (
     SearchFirstPictureQuery,
     SearchPicturesQuery,
+    SearchFirstAttachmentQuery,
+    SearchAttachmentsQuery,
 )
 from shared.application.cqrs import dispatch_query
 
@@ -38,6 +40,7 @@ __all__ = (
     "ModelChoiceField",
     "ModelMultipleChoiceField",
     "PictureField",
+    "AttachmentField",
 )
 
 
@@ -317,6 +320,89 @@ class PictureField(Field):
         return dispatch_query(
             SearchPicturesQuery(
                 picture_type=self.picture_type,
+                content_type_id=content_type.id if content_type else None,
+                object_id=self.object_id,
+            )
+        )
+
+
+class AttachmentField(Field):
+    """
+    This is a new field to manage attachments.
+    """
+
+    def __init__(
+        self,
+        object_id_field: str,
+        app_label: str | None = None,
+        model_name: str | None = None,
+        many: bool = False,
+        *args,  # type: ignore
+        **kwargs,  # type: ignore
+    ) -> None:
+        kwargs.setdefault("widget", SelectAttachment)
+        kwargs["required"] = False
+        self.object_id = None
+        # should manage multiple attachments or not
+        self.many = many
+        # app_label and model_name to get right ContentType instance
+        self.app_label = app_label
+        self.model_name = model_name
+
+        # current attachment (if it's not many)
+        self.current_attachment = None
+        # current attachments (if it's many)
+        self.current_attachments = []
+
+        # object_id field
+        self.object_id_field = object_id_field
+
+        super().__init__(*args, **kwargs)
+
+    def get_bound_field(
+        self, form: django_forms.BaseForm, field_name: str
+    ) -> django_forms.BoundField:
+        bound_field = super().get_bound_field(form, field_name)
+        bound_field.content_type = self.content_type
+        bound_field.attachment = self.attachment
+        bound_field.attachments = self.attachments
+        bound_field.many = self.many
+        unique_identifier = str(uuid.uuid4())
+        bound_field.bound_field_uuid = unique_identifier
+        self.object_id = form[getattr(self, "object_id_field")].initial
+        bound_field.popup_data = {
+            "attachment_box_id": unique_identifier,
+            "many": self.many,
+            "object_id": str(self.object_id),
+        }
+        return bound_field
+
+    @lru_cache
+    def content_type(self) -> ContentType | None:
+        if self.app_label and self.model_name:
+            return ContentType.objects.get_by_natural_key(
+                app_label=self.app_label, model=self.model_name
+            )
+
+        return None
+
+    @lru_cache
+    def attachment(self) -> AttachmentDTO | None:
+        content_type = self.content_type()
+
+        return dispatch_query(
+            SearchFirstAttachmentQuery(
+                content_type_id=content_type.id if content_type else None,
+                object_id=self.object_id,
+            )
+        )
+
+    @lru_cache
+    def attachments(self) -> list[AttachmentDTO]:
+        content_type = self.content_type()
+
+        return dispatch_query(
+            SearchAttachmentsQuery(
                 content_type_id=content_type.id if content_type else None,
                 object_id=self.object_id,
             )

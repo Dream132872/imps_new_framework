@@ -45,3 +45,37 @@ class FileStorageService(ABC):
         """
         pass
 
+    @abstractmethod
+    def save_file(self, file_content: BinaryIO, file_name: str | None = None) -> str:
+        """save file and return the file path/url
+
+        Args:
+            file_content (BinaryIO): Binary content of the file.
+            file_name (str): Original file name.
+
+        Returns:
+            str: The saved file path/url.
+        """
+        pass
+
+    @abstractmethod
+    def delete_file(self, file_path: str) -> None:
+        """Delete a file by it's path.
+
+        Args:
+            file_path (str): Path of the file to delete.
+        """
+        pass
+
+    @abstractmethod
+    def file_exists(self, file_path: str) -> bool:
+        """Check if file exists using Django's default storage.
+
+        Args:
+            file_path (str): Path of the file to check.
+
+        Returns:
+            bool: True if file exists, False otherwise.
+        """
+        pass
+

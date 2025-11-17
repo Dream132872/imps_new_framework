@@ -128,3 +128,52 @@ class FileFieldFactory:
             height=height,
             content_type=content_type,
         )
+
+    @staticmethod
+    def from_file_name(file_name: str) -> FileField:
+        """Create a FileField from a file name/path in default storage.
+
+        Args:
+            file_name: The file path/name (e.g., "attachments/bc42bb4f-a43e-4f62-a861-3fa0d3dccffb.pdf")
+
+        Returns:
+            FileField: A FileField object with file information from default storage
+        """
+        if not file_name or not default_storage.exists(file_name):
+            return FileField(
+                file_type=FileType.NONE,
+                path="",
+                url=None,
+                name=None,
+                size=None,
+                width=None,
+                height=None,
+                content_type=None,
+            )
+
+        # Get absolute path from default storage
+        absolute_path = default_storage.path(file_name)
+
+        # Get relative path from MEDIA_ROOT (like Django FileField.name)
+        media_root = os.path.normpath(settings.MEDIA_ROOT)
+        relative_name = os.path.relpath(absolute_path, media_root)
+        # Normalize path separators to forward slashes (like Django does)
+        relative_name = relative_name.replace(os.sep, "/")
+
+        # Get file information from default storage
+        file_size = default_storage.size(file_name)
+        file_url = default_storage.url(file_name)
+
+        # Determine content type from file extension
+        content_type, _ = mimetypes.guess_type(file_name)
+
+        return FileField(
+            file_type=FileType.FILE,
+            path=absolute_path,
+            url=file_url,
+            name=relative_name,
+            size=file_size,
+            width=None,
+            height=None,
+            content_type=content_type,
+        )

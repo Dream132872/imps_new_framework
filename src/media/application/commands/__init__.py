@@ -8,6 +8,11 @@ from .chunk_upload_commands import (
     UploadChunkCommand,
     CompleteChunkUploadCommand,
 )
+from .attachment_commands import (
+    CreateAttachmentCommand,
+    DeleteAttachmentCommand,
+    UpdateAttachmentCommand,
+)
 
 __all__ = (
     "CreatePictureCommand",
@@ -16,5 +21,8 @@ __all__ = (
     "CreateChunkUploadCommand",
     "UploadChunkCommand",
     "CompleteChunkUploadCommand",
+    "CreateAttachmentCommand",
+    "DeleteAttachmentCommand",
+    "UpdateAttachmentCommand",
 )
 
