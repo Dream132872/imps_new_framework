@@ -17,11 +17,11 @@ class DjangoFileStorageService(FileStorageService):
 
     def save_image(self, file_content: BinaryIO, image_name: str | None = None) -> str:
         # Ensure file is at the start
-        if hasattr(file_content, 'seek'):
+        if hasattr(file_content, "seek"):
             file_content.seek(0)
 
         # Get file extension from name if available
-        if hasattr(file_content, 'name') and file_content.name:
+        if hasattr(file_content, "name") and file_content.name:
             name, ext = os.path.splitext(file_content.name)
         else:
             ext = ".jpg"  # Default extension
@@ -35,4 +35,3 @@ class DjangoFileStorageService(FileStorageService):
 
     def image_exists(self, image_path: str) -> bool:
         return bool(image_path and default_storage.exists(image_path))
-

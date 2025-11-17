@@ -180,4 +180,3 @@ class DeletePictureCommandHandler(
                 ),
                 details={"picture_id": command.pk},
             ) from e
-

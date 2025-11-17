@@ -5,7 +5,7 @@ Base repository interfaces.
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, Generic, TypeVar
+from typing import Any, Generic, Self, TypeVar
 
 from .entities import Entity
 
@@ -52,7 +52,7 @@ class UnitOfWork(ABC):
     """
 
     @abstractmethod
-    def __enter__(self) -> None:
+    def __enter__(self) -> Self:
         """Enter the unit-of-work context."""
         pass
 
