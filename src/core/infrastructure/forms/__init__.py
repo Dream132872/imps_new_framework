@@ -28,7 +28,7 @@ class TestWidgetsForm(Form):
 
     avatar = PictureField(
         object_id_field="id",
-        app_label="core_infrastructure",
+        app_label="identity_infrastructure",
         model_name="user",
         picture_type="avatar",
         help_text="avatar image",
@@ -37,7 +37,7 @@ class TestWidgetsForm(Form):
 
     banners = PictureField(
         object_id_field="id",
-        app_label="core_infrastructure",
+        app_label="identity_infrastructure",
         model_name="user",
         picture_type="banner",
         many=True,
@@ -47,7 +47,7 @@ class TestWidgetsForm(Form):
 
     galleries = PictureField(
         object_id_field="id",
-        app_label="core_infrastructure",
+        app_label="identity_infrastructure",
         model_name="user",
         picture_type="gallery",
         many=True,
@@ -57,7 +57,7 @@ class TestWidgetsForm(Form):
 
     documents = AttachmentField(
         object_id_field="id",
-        app_label="core_infrastructure",
+        app_label="identity_infrastructure",
         model_name="user",
         many=True,
         help_text="document attachments",
@@ -66,7 +66,7 @@ class TestWidgetsForm(Form):
 
     resume = AttachmentField(
         object_id_field="id",
-        app_label="core_infrastructure",
+        app_label="identity_infrastructure",
         model_name="user",
         many=False,
         help_text="resume file",

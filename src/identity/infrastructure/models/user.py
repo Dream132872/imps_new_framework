@@ -7,7 +7,7 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import gettext_noop
 
-from core.infrastructure.models.managers.user_manager import CustomUserManager
+from identity.infrastructure.models.managers.user_manager import CustomUserManager
 from shared.infrastructure.models import BaseModel
 
 __all__ = ("User",)
@@ -34,3 +34,4 @@ class User(AbstractUser, BaseModel):
     @property
     def display_name(self) -> str:
         return self.get_full_name() or self.username
+

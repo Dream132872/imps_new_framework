@@ -9,12 +9,12 @@ import logging
 from django.utils.translation import gettext_lazy as _
 from injector import inject
 
-from core.application.dtos.user_dtos import UserDTO
-from core.application.queries.user_queries import GetUserByIdQuery, SearchUsersQuery
-from core.domain.entities import User
-from core.domain.exceptions import UserNotFoundError
-from core.domain.exceptions.user import UserInvalidError
-from core.domain.repositories import UserRepository
+from identity.application.dtos.user_dtos import UserDTO
+from identity.application.queries.user_queries import GetUserByIdQuery, SearchUsersQuery
+from identity.domain.entities import User
+from identity.domain.exceptions import UserNotFoundError
+from identity.domain.exceptions.user import UserInvalidError
+from identity.domain.repositories import UserRepository
 from shared.application.cqrs import QueryHandler
 from shared.application.exception_mapper import map_domain_exception_to_application
 from shared.application.exceptions import ApplicationError, ApplicationValidationError
@@ -110,3 +110,4 @@ class SearchUsersQueryHandler(
             raise ApplicationError(
                 _("Failed to search users: {message}").format(message=str(e))
             )
+

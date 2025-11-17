@@ -31,3 +31,4 @@ class UserBusinessRuleViolationError(DomainBusinessRuleViolationError):
 
 class UserConcurrencyError(DomainConcurrencyError):
     """Raised when there's a concurrency conflict for user entity."""
+

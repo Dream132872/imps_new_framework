@@ -9,3 +9,4 @@ from shared.infrastructure.filters import BaseFilter
 
 class UserFilter(BaseFilter):
     pass
+

@@ -16,7 +16,7 @@ from rest_framework import status
 from rest_framework.response import Response
 
 from core.application.queries import *
-from core.application.queries.user_queries import SearchUsersQuery
+from identity.application.queries.user_queries import SearchUsersQuery
 from core.infrastructure.forms import TestWidgetsForm
 from shared.application.cqrs import dispatch_query_async
 from shared.application.dtos import PaginatedResultDTO

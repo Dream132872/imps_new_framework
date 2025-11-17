@@ -1,5 +1,5 @@
 """
-Core model admins.
+Identity model admins.
 """
 
 from django.contrib import admin
@@ -9,6 +9,7 @@ from django.utils.translation import gettext_lazy as _
 
 from shared.infrastructure.admin import BaseModelAdmin
 
+from .models import User
 from media.infrastructure.models import Picture
 
 
@@ -20,3 +21,6 @@ class ManagePictureInline(GenericStackedInline):
     verbose_name_plural = _("Pictures")
 
 
+@admin.register(User)
+class UserAdmin(BaseModelAdmin, BaesUserAdmin):
+    inlines = [ManagePictureInline]

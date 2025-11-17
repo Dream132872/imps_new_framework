@@ -9,3 +9,4 @@ __all__ = ("CustomUserManager",)
 
 class CustomUserManager(UserManager):
     pass
+

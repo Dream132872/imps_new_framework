@@ -181,3 +181,4 @@ class User(AggregateRoot):
             }
         )
         return base_dict
+

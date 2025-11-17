@@ -8,9 +8,9 @@ from django.contrib.auth import get_user_model
 from django.db.models import F, Q, Value
 from django.db.models.functions import Concat
 
-from core.domain.entities import User
-from core.domain.exceptions import UserNotFoundError
-from core.domain.repositories import UserRepository
+from identity.domain.entities import User
+from identity.domain.exceptions import UserNotFoundError
+from identity.domain.repositories import UserRepository
 from shared.domain.pagination import DomainPaginator
 from shared.infrastructure.repositories import DjangoRepository
 from shared.infrastructure.pagination import DjangoPaginatorFactory
@@ -101,3 +101,4 @@ class DjangoUserRepository(DjangoRepository[User], UserRepository):
             page_size=page_size,
             entity_converter=self._model_to_entity,
         )
+

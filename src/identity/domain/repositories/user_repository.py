@@ -4,7 +4,7 @@ User domain repository interface.
 
 from abc import abstractmethod
 
-from core.domain.entities import User
+from identity.domain.entities import User
 from shared.domain.pagination import DomainPaginator
 from shared.domain.repositories import Repository
 
@@ -40,3 +40,4 @@ class UserRepository(Repository[User]):
             list[User]: List of all users
         """
         pass
+

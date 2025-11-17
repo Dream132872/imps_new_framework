@@ -71,6 +71,8 @@ LOCAL_APPS = [
     "shared.infrastructure",
     # core application that has core functionalities
     "core.infrastructure",
+    # identity bounded context
+    "identity.infrastructure",
     # media bounded context
     "media.infrastructure",
 ]
@@ -176,7 +178,7 @@ DATABASES = {
     }
 }
 
-AUTH_USER_MODEL = "core_infrastructure.User"
+AUTH_USER_MODEL = "identity_infrastructure.User"
 LOGIN_URL = reverse_lazy("core:auth:login")
 
 AUTHENTICATION_BACKENDS = [
@@ -380,6 +382,7 @@ JS_REVERSE_INCLUDE_ONLY_NAMESPACES = [
     "shared",
     "core",
     "media",
+    "identity",
 ]
 
 # debug toolbar configuration
