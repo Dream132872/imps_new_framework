@@ -37,6 +37,10 @@ pytz
 aiohttp==3.9.3
 pytest==8.0.0
 pytest-django==4.8.0
+pytest-xdist
+pytest-cov
+pytest-sugar
+selenium
 factory-boy==3.3.0
 coverage==7.4.1
 # formatter

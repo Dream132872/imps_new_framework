@@ -18,6 +18,7 @@ from pathlib import Path
 
 from decouple import Csv, config
 from django.urls import reverse_lazy
+from django.utils.functional import lazy
 from django.utils.translation import gettext_lazy as _
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -35,8 +36,28 @@ ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="", cast=Csv())
 CSRF_TRUSTED_ORIGINS = config("CSRF_TRUSTED_ORIGINS", default="", cast=Csv())
 # login url
 LOGIN_URL = config("LOGIN_URL", default="/")
+
+
 # check that we are in testing mode or not
-TESTING = "test" in sys.argv or "PYTEST_VERSION" in os.environ
+def testing_env():
+    return (
+        "PYTEST_VERSION" in os.environ
+        or "PYTEST_CURRENT_TEST" in os.environ
+        or os.environ.get("_PYTEST_RAISE", "") != ""
+        or any(
+            token in sys.argv
+            for token in ("test", "pytest", "py.test", "vscode_pytest")
+        )
+        or os.environ.get("DJANGO_SETTINGS_MODULE", "").endswith("test_settings")
+        or any("pytest" in arg.lower() for arg in sys.argv)
+        or any(
+            "test" in arg.lower() and "manage.py" not in " ".join(sys.argv)
+            for arg in sys.argv
+        )
+    )
+
+
+TESTING = lazy(testing_env)
 # debug toolbar status
 SHOW_DEBUG_TOOLBAR = config("SHOW_DEBUG_TOOLBAR", default=True, cast=bool)
 
@@ -141,7 +162,11 @@ DATABASES = {
         "USER": config("DATABASE_USER", default="root"),
         "PASSWORD": config("DATABASE_PASSWORD", default="admin"),
         "HOST": config("DATABASE_HOST", default="127.0.0.1"),
-        "PORT": config("DATABASE_PORT", default="6432"),  # PgBouncer port
+        "PORT": (
+            config("DATABASE_PORT", default="6432")
+            if not TESTING
+            else config("TEST_DATABASE_PORT", default="5432")
+        ),  # PgBouncer port
         "OPTIONS": {
             # PgBouncer-specific options for high concurrency
             "application_name": config(
