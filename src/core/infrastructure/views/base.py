@@ -12,12 +12,12 @@ from django.core.cache import cache
 from django.http.response import HttpResponse as HttpResponse
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
-from rest_framework import status
+from rest_framework import serializers, status
 from rest_framework.response import Response
 
 from core.application.queries import *
-from identity.application.queries.user_queries import SearchUsersQuery
 from core.infrastructure.forms import TestWidgetsForm
+from identity.application.queries.user_queries import SearchUsersQuery
 from shared.application.cqrs import dispatch_query_async
 from shared.application.dtos import PaginatedResultDTO
 from shared.infrastructure import views
@@ -51,21 +51,25 @@ class TestView(views.AdminGenericMixin, views.TemplateView):
     template_name = "core/base/test.html"
 
 
+class UserSerializer(serializers.Serializer):
+    id = serializers.UUIDField()
+    username = serializers.CharField(max_length=300)
+    first_name = serializers.CharField(max_length=300)
+    last_name = serializers.CharField(max_length=300)
+    is_active = serializers.BooleanField()
+    is_staff = serializers.BooleanField()
+    is_superuser = serializers.BooleanField()
+
+
 class SampleApiView(APIView):
     async def get(self, request: AsyncRequest) -> Response:
-        # await cache.adelete("simple_users")
-        cached_data = await cache.aget("simple_users")
-        # cached_data = None
+        res: PaginatedResultDTO = await dispatch_query_async(
+            SearchUsersQuery(page=1, page_size=100, paginated=True)
+        )
+        # users = [asdict(u) for u in res.items]
+        serializer = UserSerializer(res.items, many=True)
 
-        if not cached_data:
-            res: PaginatedResultDTO = await dispatch_query_async(
-                SearchUsersQuery(page=1, page_size=10, paginated=True)
-            )
-            users = [asdict(u) for u in res.items]
-            await cache.aset("simple_users", users)
-            cached_data = users
-
-        return Response(cached_data, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 # class HomeView(CQRSPaginatedViewMixin, AdminGenericMixin, TemplateView):

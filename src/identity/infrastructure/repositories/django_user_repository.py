@@ -5,15 +5,14 @@ Django repository implementation for user.
 from typing import Any
 
 from django.contrib.auth import get_user_model
-from django.db.models import F, Q, Value
+from django.db.models import F, Value
 from django.db.models.functions import Concat
 
 from identity.domain.entities import User
-from identity.domain.exceptions import UserNotFoundError
 from identity.domain.repositories import UserRepository
 from shared.domain.pagination import DomainPaginator
-from shared.infrastructure.repositories import DjangoRepository
 from shared.infrastructure.pagination import DjangoPaginatorFactory
+from shared.infrastructure.repositories import DjangoRepository
 
 __all__ = ("DjangoUserRepository",)
 
@@ -94,6 +93,7 @@ class DjangoUserRepository(DjangoRepository[User], UserRepository):
         if username:
             query = query.filter(username__icontains=username)
 
+        query = query.order_by("-created_at")
         # Return domain paginator
         return DjangoPaginatorFactory.create_domain_paginator(
             queryset=query,
@@ -101,4 +101,3 @@ class DjangoUserRepository(DjangoRepository[User], UserRepository):
             page_size=page_size,
             entity_converter=self._model_to_entity,
         )
-

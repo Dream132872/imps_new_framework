@@ -21,7 +21,11 @@ from shared.infrastructure.repositories import DjangoUnitOfWork
 T = TypeVar("T", bound=Entity)
 
 
-__all__ = ("get_injector", "inject_dependencies", "SharedModule")
+__all__ = (
+    "get_injector",
+    "inject_dependencies",
+    "SharedModule",
+)
 
 logger = logging.getLogger(__name__)
 

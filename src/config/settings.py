@@ -14,6 +14,7 @@ import asyncio
 import mimetypes
 import os
 import sys
+from datetime import timedelta
 from pathlib import Path
 
 from decouple import Csv, config
@@ -39,8 +40,8 @@ LOGIN_URL = config("LOGIN_URL", default="/")
 
 
 # check that we are in testing mode or not
-def testing_env():
-    return (
+def testing_env() -> bool:
+    res = (
         "PYTEST_VERSION" in os.environ
         or "PYTEST_CURRENT_TEST" in os.environ
         or os.environ.get("_PYTEST_RAISE", "") != ""
@@ -55,11 +56,12 @@ def testing_env():
             for arg in sys.argv
         )
     )
+    return res
 
 
-TESTING = lazy(testing_env)
+TESTING = lazy(testing_env, bool)
 # debug toolbar status
-SHOW_DEBUG_TOOLBAR = config("SHOW_DEBUG_TOOLBAR", default=True, cast=bool)
+SHOW_DEBUG_TOOLBAR = config("SHOW_DEBUG_TOOLBAR", default=False, cast=bool)
 
 # Application definition
 
@@ -85,6 +87,10 @@ THIRD_PARTY_APPS = [
     "django_js_reverse",
     "rosetta",
     "parsley",
+    "ninja",
+    "ninja_extra",
+    "ninja_jwt",
+    "ninja_jwt.token_blacklist",
 ]
 
 LOCAL_APPS = [
@@ -164,7 +170,7 @@ DATABASES = {
         "HOST": config("DATABASE_HOST", default="127.0.0.1"),
         "PORT": (
             config("DATABASE_PORT", default="6432")
-            if not TESTING
+            if not TESTING()
             else config("TEST_DATABASE_PORT", default="5432")
         ),  # PgBouncer port
         "OPTIONS": {
@@ -202,6 +208,7 @@ DATABASES = {
         ),  # Disable for better performance with PgBouncer
     }
 }
+
 
 AUTH_USER_MODEL = "identity_infrastructure.User"
 LOGIN_URL = reverse_lazy("identity:auth:login")
@@ -410,8 +417,36 @@ JS_REVERSE_INCLUDE_ONLY_NAMESPACES = [
     "identity",
 ]
 
+
+# JWT configuration
+NINJA_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
+    "REFRESH_TOKEN_LIFETIME": timedelta(minutes=5),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "UPDATE_LAST_LOGIN": True,
+    "ALGORITHM": "HS256",
+    "SIGNING_KEY": SECRET_KEY,
+    "VERIFYING_KEY": None,
+    "AUDIENCE": None,
+    "ISSUER": None,
+    "JWK_URL": None,
+    "LEEWAY": 0,
+    "USER_ID_FIELD": "id",
+    "USER_ID_CLAIM": "user_id",
+    "USER_AUTHENTICATION_RULE": "ninja_jwt.authentication.default_user_authentication_rule",
+    "AUTH_TOKEN_CLASSES": ("ninja_jwt.tokens.AccessToken",),
+    "TOKEN_TYPE_CLAIM": "token_type",
+    "TOKEN_USER_CLASS": "ninja_jwt.models.TokenUser",
+    "JTI_CLAIM": "jti",
+    # For Controller Schemas
+    # FOR SLIDING TOKEN
+    "TOKEN_BLACKLIST_INPUT_SCHEMA": "ninja_jwt.schema.TokenBlacklistInputSchema",
+    "TOKEN_VERIFY_INPUT_SCHEMA": "ninja_jwt.schema.TokenVerifyInputSchema",
+}
+
 # debug toolbar configuration
-if not TESTING:
+if not TESTING():
     INSTALLED_APPS.append(
         "debug_toolbar",
     )

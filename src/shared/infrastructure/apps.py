@@ -18,7 +18,7 @@ class SharedInfrastructureConfig(AppConfig):
     name = "shared.infrastructure"
     label = "shared_infrastructure"
     verbose_name = _("Shared infrastrucutre")
-    shared_modules_to_load = ()
+    shared_modules_to_load = ("api",)
     initial_loading_modules = ()
 
     def ready(self) -> None:
@@ -104,3 +104,22 @@ class SharedInfrastructureConfig(AppConfig):
                 logger.warning(
                     f"There is no cqrs_service module/file file in {config.label}. error msg: {e}"
                 )
+
+        # add api router to the urls after loading all api modules
+        add_api_urls()
+
+
+def add_api_urls() -> None:
+    """Add api urls to the main urls."""
+
+    from django.conf.urls.i18n import i18n_patterns
+    from django.urls import path
+
+    from config.urls import urlpatterns
+    from shared.infrastructure.api import api_v1
+
+    urlpatterns += i18n_patterns(
+        path("api/v1/", api_v1.urls),
+        prefix_default_language=False,
+    )
+

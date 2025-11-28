@@ -21,10 +21,10 @@ if __name__ == "__main__":
         "app": "config.asgi:application",
         "host": "0.0.0.0",
         "port": 8000,
-        "reload": True,  # Enable auto-reload for development
-        "workers": 1,  # Use 1 worker for development
+        "reload": False,  # Enable auto-reload for development
+        "workers": 4,  # Use 1 worker for development
         "log_level": "info",
-        "access_log": True,
+        "access_log": False,
     }
 
     print("Starting Uvicorn server...")
