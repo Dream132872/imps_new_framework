@@ -43,7 +43,7 @@ class DjangoPictureRepository(DjangoRepository[Picture], PictureRepository):
                 "alternative": entity.alternative,
                 "title": entity.title,
                 "picture_type": entity.picture_type,
-                "content_type_id": entity.content_type,
+                "content_type_id": entity.content_type_id,
                 "object_id": entity.object_id,
             },
         )
@@ -54,7 +54,7 @@ class DjangoPictureRepository(DjangoRepository[Picture], PictureRepository):
             model.alternative = entity.alternative
             model.title = entity.title
             model.picture_type = entity.picture_type
-            model.content_type_id = entity.content_type
+            model.content_type_id = entity.content_type_id
             model.object_id = entity.object_id if entity.object_id else None  # type: ignore
 
         return model

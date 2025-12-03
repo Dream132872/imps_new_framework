@@ -43,11 +43,7 @@ def test_mocking():
 
 @pytest.mark.integration
 @pytest.mark.django_db()
-def test_picture_creation(
-    sample_image_file: SimpleUploadedFile,
-    sample_content_type: ContentType,
-    sample_picture_model: PictureModel,
-) -> None:
+def test_picture_creation(sample_picture_model: PictureModel) -> None:
     # arrange
     picture = sample_picture_model
 

@@ -48,7 +48,7 @@ class Picture(AggregateRoot):
         return self._picture_type
 
     @property
-    def content_type(self) -> int:
+    def content_type_id(self) -> int:
         return self._content_type_id
 
     @property

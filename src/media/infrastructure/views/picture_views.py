@@ -85,7 +85,7 @@ class UpdatePictureView(views.AdminGenericMixin, views.FormView):
         init = super().get_initial()
         picture = self.get_picture_data()
         init["picture_id"] = picture.id
-        init["content_type"] = picture.content_type
+        init["content_type"] = picture.content_type_id
         init["object_id"] = picture.object_id
         init["picture_type"] = picture.picture_type
         init["title"] = picture.title

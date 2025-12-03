@@ -49,7 +49,7 @@ class BaseAttachmentQueryHandler:
             id=attachment.id,
             file=file,
             title=attachment.title,
-            content_type=attachment.content_type,
+            content_type_id=attachment.content_type,
             object_id=attachment.object_id,
             created_at=attachment.created_at,
             updated_at=attachment.updated_at,

@@ -3,15 +3,13 @@ Media related fixtures.
 """
 
 import uuid
-from unittest.mock import MagicMock
 
 import pytest
 from django.contrib.contenttypes.models import ContentType
 from django.core.files.uploadedfile import SimpleUploadedFile
 
-from media.domain.repositories import PictureRepository
-from media.domain.services import FileStorageService
 from media.infrastructure.models import Picture as PictureModel
+from shared.domain.entities import FileField, FileType
 
 
 @pytest.fixture
@@ -24,7 +22,21 @@ def sample_image_file() -> SimpleUploadedFile:
     )
 
 
-@pytest.fixture()
+@pytest.fixture
+def sample_image_field_fied() -> FileField:
+    return FileField(
+        file_type=FileType.IMAGE,
+        name="test_image.jpg",
+        path="/media/test_image.jpg",
+        url="/media/test_image.jpg",
+        width=1000,
+        height=700,
+        size=1024,
+        content_type="images/jpeg"
+    )
+
+
+@pytest.fixture
 def sample_picture_model(
     sample_image_file: SimpleUploadedFile, sample_content_type: ContentType, db: None
 ) -> PictureModel:
@@ -47,26 +59,3 @@ def sample_picture_model(
         picture_type="main",
         display_order=1,
     )
-
-
-@pytest.fixture
-def mock_picture_repository() -> MagicMock:
-    """Mock object of PictureRepository."""
-
-    mock_repository = MagicMock(spec=PictureRepository)
-    return mock_repository
-
-
-@pytest.fixture
-def mock_file_storage_service() -> MagicMock:
-    """Mock object of FileStorageService"""
-
-    mock_service = MagicMock(spec=FileStorageService)
-
-    mock_service.save_image.return_value = "images/test_image.jpg"
-    mock_service.delete_image.return_value = None
-
-    mock_service.save_file.return_value = "attachments/test_file.rar"
-    mock_service.delete_file.return_value = None
-
-    return mock_service

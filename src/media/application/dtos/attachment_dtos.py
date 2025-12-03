@@ -17,7 +17,7 @@ class AttachmentDTO:
     id: str
     file: FileFieldDTO
     title: str
-    content_type: int
+    content_type_id: int
     object_id: int | str
     created_at: datetime
     updated_at: datetime

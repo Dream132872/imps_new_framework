@@ -52,7 +52,7 @@ class BasePictureCommandHandler:
             picture_type=picture.picture_type,
             title=picture.title,
             alternative=picture.alternative,
-            content_type=picture.content_type,
+            content_type_id=picture.content_type_id,
             object_id=picture.object_id,
             created_at=picture.created_at,
             updated_at=picture.updated_at,

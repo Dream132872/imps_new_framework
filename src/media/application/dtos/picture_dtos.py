@@ -20,7 +20,7 @@ class PictureDTO:
     picture_type: str
     title: str
     alternative: str
-    content_type: int
+    content_type_id: int
     object_id: int | str
     created_at: datetime
     updated_at: datetime

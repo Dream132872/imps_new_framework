@@ -82,7 +82,7 @@ class UpdateAttachmentView(views.AdminGenericMixin, views.FormView):
         init = super().get_initial()
         attachment = self.get_attachment_data()
         init["attachment_id"] = attachment.id
-        init["content_type"] = attachment.content_type
+        init["content_type"] = attachment.content_type_id
         init["object_id"] = attachment.object_id
         init["title"] = attachment.title
         return init
