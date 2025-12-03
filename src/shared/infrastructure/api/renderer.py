@@ -18,4 +18,9 @@ class ORJSONRenderer(BaseRenderer):
     media_type = "application/json"
 
     def render(self, request: HttpRequest, data: Any, *, response_status: Any) -> bytes:
-        return orjson.dumps(data)
+        return orjson.dumps(
+            data,
+            option=orjson.OPT_SERIALIZE_NUMPY
+            | orjson.OPT_SERIALIZE_UUID
+            | orjson.OPT_NON_STR_KEYS,
+        )

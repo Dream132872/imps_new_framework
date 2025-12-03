@@ -42,6 +42,7 @@ django-ninja-jwt[crypto]
 # Performance testing
 aiohttp
 pytest
+pytest-asyncio
 pytest-django
 pytest-xdist
 pytest-cov

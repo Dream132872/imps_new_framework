@@ -310,8 +310,12 @@ REST_FRAMEWORK = {
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": config(
-            "CACHES_DEFAULT_REDIS_URL", default="redis://localhost:6379/0"
+        "LOCATION": (
+            config("CACHES_DEFAULT_REDIS_URL", default="redis://localhost:6379/0")
+            if not TESTING()
+            else config(
+                "TEST_CACHES_DEFAULT_REDIS_URL", default="redis://localhost:6379/10"
+            )
         ),
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",

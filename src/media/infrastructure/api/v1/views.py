@@ -2,7 +2,6 @@
 Media api views.
 """
 
-from dataclasses import asdict
 from typing import Any
 
 from django.http import HttpRequest
@@ -15,7 +14,6 @@ from ninja_extra import ControllerBase, api_controller, permissions, route, stat
 from identity.application.queries.user_queries import SearchUsersQuery
 from shared.application.cqrs import dispatch_query_async
 from shared.application.dtos import PaginatedResultDTO
-from . import schemas
 
 
 class HasRole(permissions.BasePermission):
@@ -27,7 +25,7 @@ class HasRole(permissions.BasePermission):
             controller.context.compute_route_parameters()
             print(controller.context.args, controller.context.kwargs)
 
-        return True
+        return controller.context.request.user.is_authenticated
 
 
 @api_controller(
@@ -36,6 +34,7 @@ class HasRole(permissions.BasePermission):
     urls_namespace="media",
 )
 class PictureController(ControllerBase):
+    """Picutre related api endpoints."""
 
     @route.get(
         "",
@@ -56,9 +55,8 @@ class PictureController(ControllerBase):
         return {"picture_id": "123"}
 
     @route.get("users/", response={200: Any}, summary=_("Submit"))
-    async def get_users(self):
+    async def get_users(self, page: int = 1, page_size: int = 1000):
         res: PaginatedResultDTO = await dispatch_query_async(
-            SearchUsersQuery(page=1, page_size=1000, paginated=True)
+            SearchUsersQuery(page=page, page_size=page_size, paginated=True)
         )
-        # users = [asdict(u) for u in res.items]
         return res

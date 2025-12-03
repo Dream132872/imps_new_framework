@@ -72,6 +72,14 @@ class Attachment(BaseModel):
         db_table = "attachments"
         verbose_name = _("Attachment")
         verbose_name_plural = _("Attachments")
+        indexes = [
+            models.Index(
+                fields=["content_type", "object_id"]
+            ),  # For generic relation lookups
+            models.Index(
+                fields=["display_order", "-created_at"]
+            ),  # For ordering queries
+        ]
         ordering = ["display_order", "-created_at"]
 
     def __str__(self) -> str:

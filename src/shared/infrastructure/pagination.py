@@ -171,3 +171,23 @@ class DjangoPaginatorFactory:
             entity_converter=entity_converter,
         )
 
+    @staticmethod
+    def create_domain_paginator_with_prefetch_related(
+    queryset: QuerySet,
+    page: int,
+    page_size: int,
+    entity_converter: Callable[[Any], T],
+    prefetch_related: list[str] | None = None,
+    ) -> DomainPaginator[T]:
+        """
+        Create a DomainPaginator with prefetch_related optimization for reverse FKs and M2M.
+        """
+        if prefetch_related:
+            queryset = queryset.prefetch_related(*prefetch_related)
+
+        return DjangoPaginatorFactory.create_domain_paginator(
+            queryset=queryset,
+            page=page,
+            page_size=page_size,
+            entity_converter=entity_converter,
+        )
