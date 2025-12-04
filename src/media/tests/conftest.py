@@ -8,6 +8,7 @@ import pytest
 from django.contrib.contenttypes.models import ContentType
 from django.core.files.uploadedfile import SimpleUploadedFile
 
+from media.domain.entities.picture_entities import Picture as PictureEntity
 from media.infrastructure.models import Picture as PictureModel
 from shared.domain.entities import FileField, FileType
 
@@ -32,7 +33,27 @@ def sample_image_field_fied() -> FileField:
         width=1000,
         height=700,
         size=1024,
-        content_type="images/jpeg"
+        content_type="images/jpeg",
+    )
+
+
+@pytest.fixture
+def sample_picture_entity(
+    db: None, sample_image_field_fied: FileField, sample_content_type: ContentType
+) -> PictureEntity:
+    """
+    Create a sample picture domain entity.
+
+    Returns a sample Picutre (Entity) instance with:
+    - image:
+    """
+    return PictureEntity(
+        image=sample_image_field_fied,
+        picture_type="main",
+        content_type_id=sample_content_type.id,
+        object_id=str(uuid.uuid4()),
+        title="Image title",
+        alternative="Image alternative",
     )
 
 

@@ -48,8 +48,15 @@ class Entity(ABC):
         return self._updated_at
 
     def update_timestamp(self) -> None:
-        """Update the updated_at timestamp."""
-        self._updated_at = timezone.now()
+        """
+        Update the updated_at timestamp.
+
+        sometimes updating the value of self._updated_at is too fast that there is no difference between
+        base updated_at and new updated_at datetime. so we manually add 1 microsecond to the timezone.now() value
+        to generate a different value from the base.
+        """
+
+        self._updated_at = timezone.now() + timezone.timedelta(microseconds=1)
 
     def __eq__(self, other: Any):
         """Check the equality of this object with another object."""
