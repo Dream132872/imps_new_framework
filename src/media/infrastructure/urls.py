@@ -9,7 +9,7 @@ from media.infrastructure.views import (
     UpdatePictureView,
     CreateChunkUploadView,
     UploadChunkView,
-    CompleteChunkUploadView,
+    CompletePictureChunkUploadView,
     CompleteAttachmentChunkUploadView,
     GetChunkUploadStatusView,
     CreateAttachmentView,
@@ -68,7 +68,7 @@ chunk_upload_urlpatterns = [
     ),
     path(
         "complete/",
-        CompleteChunkUploadView.as_view(),
+        CompletePictureChunkUploadView.as_view(),
         name="complete",
     ),
     path(

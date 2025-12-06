@@ -35,17 +35,6 @@ class PictureRepository(Repository[Picture]):
         """
 
     @abstractmethod
-    def is_valid_picture_type(self, picture_type: str) -> bool:
-        """Checks that the picture type is valid or not based on model picture type text choices.
-
-        Args:
-            picture_type (str): type of the picture (for main, avatar, etc.)
-
-        Returns:
-            bool: is it ok to use this picture type or not.
-        """
-
-    @abstractmethod
     def search_first_picture(
         self,
         content_type: int | None = None,

@@ -13,6 +13,7 @@ from django.utils.translation import gettext_lazy as _
 from injector import inject
 
 from media.domain.entities import ChunkUpload
+from media.domain.entities.chunk_upload_entities import ChunkUploadStatus
 from media.domain.exceptions import (
     ChunkUploadInvalidEntityError,
     ChunkUploadNotFoundError,
@@ -40,13 +41,13 @@ class DjangoChunkUploadService(ChunkUploadService):
                 _("Upload session {upload_id} not found").format(upload_id=upload_id)
             )
 
-        if chunk_upload.status == "completed":
+        if chunk_upload.status == ChunkUploadStatus.COMPLETED:
             return chunk_upload.uploaded_size
 
-        if chunk_upload.status == "failed":
+        if chunk_upload.status == ChunkUploadStatus.FAILED:
             raise ChunkUploadInvalidEntityError(_("Upload session has failed"))
 
-        chunk_upload.set_status("uploading")
+        chunk_upload.set_status(ChunkUploadStatus.UPLOADING)
 
         chunk_dir = f"chunks/{upload_id}"
         chunk_file_path = os.path.join(chunk_dir, f"chunk_{offset}.tmp")
@@ -76,9 +77,9 @@ class DjangoChunkUploadService(ChunkUploadService):
         chunk_upload.increment_chunk_count()
 
         if chunk_upload.uploaded_size >= chunk_upload.total_size:
-            chunk_upload.set_status("completed")
+            chunk_upload.set_status(ChunkUploadStatus.COMPLETED)
         else:
-            chunk_upload.set_status("uploading")
+            chunk_upload.set_status(ChunkUploadStatus.UPLOADING)
 
         chunk_upload = self.chunk_upload_repository.save(chunk_upload)
 
@@ -191,4 +192,3 @@ class DjangoChunkUploadService(ChunkUploadService):
                 pass
 
         self.chunk_upload_repository.delete(chunk_upload)
-

@@ -15,7 +15,7 @@ class ChunkUploadRepository(Repository[ChunkUpload]):
     """Chunk upload repository interface."""
 
     @abstractmethod
-    def get_by_upload_id(self, upload_id: str | UUID) -> ChunkUpload | None:
+    def get_by_upload_id(self, upload_id: str | UUID) -> ChunkUpload:
         """Get chunk upload by upload_id."""
         raise NotImplementedError
 

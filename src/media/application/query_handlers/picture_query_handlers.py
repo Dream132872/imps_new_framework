@@ -97,13 +97,6 @@ class GetPictureByIdQueryHandler(
     def handle(self, query: GetPictureByIdQuery) -> PictureDTO:
         try:
             picture = self.uow[PictureRepository].get_by_id(str(query.picture_id))
-            if not picture:
-                raise PictureNotFoundError(
-                    _("There is no picture with ID: {picture_id}").format(
-                        picture_id=query.picture_id
-                    )
-                )
-
             return self._to_dto(picture)
         except PictureNotFoundError as e:
             raise map_domain_exception_to_application(

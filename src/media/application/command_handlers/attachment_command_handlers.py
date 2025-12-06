@@ -21,7 +21,7 @@ from media.domain.services import FileStorageService
 from shared.application.cqrs import CommandHandler
 from shared.application.dtos import FileFieldDTO
 from shared.application.exception_mapper import map_domain_exception_to_application
-from shared.application.exceptions import ApplicationError
+from shared.application.exceptions import ApplicationError, ApplicationValidationError
 from shared.domain.exceptions import DomainEntityNotFoundError
 from shared.domain.factories import FileFieldFactory
 from shared.domain.repositories import UnitOfWork
@@ -65,10 +65,6 @@ class CreateAttachmentCommandHandler(
     def handle(self, command: CreateAttachmentCommand) -> AttachmentDTO:
         file_path = ""
         try:
-            # check the file is not empty
-            if not command.file:
-                raise AttachmentValidationError(_("You should pass the file"))
-
             with self.uow:
                 # save file using file_storage_service
                 file_name = self.file_storage_service.save_file(command.file)
@@ -79,7 +75,7 @@ class CreateAttachmentCommandHandler(
                 attachment = Attachment(
                     file=file_field,
                     content_type_id=command.content_type_id,
-                    object_id=command.object_id,
+                    object_id=str(command.object_id),
                     title=command.title,
                 )
 
@@ -104,25 +100,33 @@ class UpdateAttachmentCommandHandler(
         try:
             with self.uow:
                 # get attachment by it's id
-                attachment = self.uow[AttachmentRepository].get_by_id(str(command.attachment_id))
+                attachment = self.uow[AttachmentRepository].get_by_id(
+                    str(command.attachment_id)
+                )
+
+                # old file name
+                old_file_path = None
+
                 # save new file for attachment
                 if command.file:
+                    # save old file path
+                    old_file_path = attachment.file.path
                     # save new file in storage
                     new_file_name = self.file_storage_service.save_file(command.file)
-                    # remove previous file from storage
-                    self.file_storage_service.delete_file(attachment.file.name)
                     # add saved file name to the attachment
                     attachment.update_file(
                         FileFieldFactory.from_file_name(new_file_name)
                     )
 
                 # update attachment information
-                attachment.update_information(
-                    title=command.title
-                )
+                attachment.update_information(title=command.title)
 
                 # save the new
                 attachment = self.uow[AttachmentRepository].save(attachment)
+                # remove previous file from storage at last step to avoid any errors
+                if old_file_path:
+                    self.file_storage_service.delete_file(old_file_path)
+
                 return self._to_dto(attachment)
         except DomainEntityNotFoundError as e:
             raise map_domain_exception_to_application(
@@ -130,7 +134,9 @@ class UpdateAttachmentCommandHandler(
             ) from e
         except Exception as e:
             raise ApplicationError(
-                _("An error occurred during updating attachment: {msg}").format(msg=str(e))
+                _("An error occurred during updating attachment: {msg}").format(
+                    msg=str(e)
+                )
             ) from e
 
 
@@ -141,15 +147,11 @@ class DeleteAttachmentCommandHandler(
     def handle(self, command: DeleteAttachmentCommand) -> AttachmentDTO:
         try:
             with self.uow:
+                # get attachment by it's id
                 attachment = self.uow[AttachmentRepository].get_by_id(str(command.pk))
-                if not attachment:
-                    raise AttachmentNotFoundError(
-                        _("Attachment with ID {attachment_id} not found").format(
-                            attachment_id=command.pk
-                        )
-                    )
-
+                # delete attachment from db
                 self.uow[AttachmentRepository].delete(attachment)
+                # remove file from storage
                 self.file_storage_service.delete_file(attachment.file.path)
                 return self._to_dto(attachment)
         except AttachmentNotFoundError as e:
@@ -158,8 +160,8 @@ class DeleteAttachmentCommandHandler(
         except Exception as e:
             # Handle unexpected exceptions
             raise ApplicationError(
-                _("Failed to delete attachment with ID '{attachment_id}': {message}").format(
-                    attachment_id=command.pk, message=str(e)
-                ),
+                _(
+                    "Failed to delete attachment with ID '{attachment_id}': {message}"
+                ).format(attachment_id=command.pk, message=str(e)),
                 details={"attachment_id": command.pk},
             ) from e

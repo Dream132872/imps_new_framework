@@ -91,9 +91,6 @@ class DjangoPictureRepository(DjangoRepository[Picture], PictureRepository):
             for p in list(pictures.order_by("display_order", "created_at"))
         ]
 
-    def is_valid_picture_type(self, picture_type: str) -> bool:
-        return picture_type in self.model_class.PictureType.values
-
     def search_first_picture(
         self,
         content_type: int | None = None,

@@ -3,12 +3,48 @@ Chunk upload domain entity (moved from core bounded context).
 """
 
 from datetime import datetime
+from enum import Enum
 from typing import Any
 from uuid import UUID
 
+from django.utils.translation import gettext_lazy as _
+
+from media.domain.exceptions import ChunkUploadValidationError
 from shared.domain.entities import Entity
 
 __all__ = ("ChunkUpload",)
+
+
+class ChunkUploadStatus(Enum):
+    """Status values for chunk upload."""
+
+    PENDING = "pending"
+    UPLOADING = "uploading"
+    COMPLETED = "completed"
+    FAILED = "failed"
+    CANCELLED = "cancelled"
+
+    @classmethod
+    def from_string(cls, value: str) -> "ChunkUploadStatus":
+        """Create status from value.
+
+        Args:
+            value (str): status value as string
+
+        Returns:
+            ChunkUploadStatus: _description_
+        """
+        try:
+            return cls(value)
+        except:
+            raise ChunkUploadValidationError(
+                _(
+                    "Status '{status}' is not valid. Valid statuses are: {statuses}"
+                ).format(status=value, statuses=", ".join([s.value for s in cls]))
+            )
+
+    def __str__(self) -> str:
+        return self.value
 
 
 class ChunkUpload(Entity):
@@ -23,18 +59,23 @@ class ChunkUpload(Entity):
         uploaded_size: int = 0,
         chunk_count: int = 0,
         temp_file_path: str | None = None,
-        status: str = "pending",
+        status: str | ChunkUploadStatus = "pending",
         created_at: datetime | None = None,
         updated_at: datetime | None = None,
     ) -> None:
         super().__init__(id, created_at, updated_at)
+
+        if isinstance(status, str):
+            self._status = ChunkUploadStatus.from_string(status)
+        elif isinstance(status, ChunkUploadStatus):
+            self._status = status
+
         self._upload_id = str(upload_id) if isinstance(upload_id, UUID) else upload_id
         self._filename = filename
         self._total_size = total_size
         self._uploaded_size = uploaded_size
         self._chunk_count = chunk_count
         self._temp_file_path = temp_file_path
-        self._status = status
 
     @property
     def upload_id(self) -> str:
@@ -62,10 +103,38 @@ class ChunkUpload(Entity):
 
     @property
     def status(self) -> str:
-        return self._status
+        return self._status.value
+
+    def complete(self) -> None:
+        """Mark the upload as completed.
+
+        Validates that upload is actually complete before changing status.
+
+        Raises:
+            ChunkUploadValidationError: If upload is not actually complete
+        """
+        from django.utils.translation import gettext_lazy as _
+
+        from media.domain.exceptions import ChunkUploadValidationError
+
+        if self._uploaded_size < self._total_size:
+            raise ChunkUploadValidationError(
+                _(
+                    "Upload is not completed yet. {uploaded}/{total} bytes uploaded"
+                ).format(uploaded=self._uploaded_size, total=self._total_size)
+            )
+
+        if self._status == ChunkUploadStatus.COMPLETED:
+            return  # Already completed
+
+        self._status = ChunkUploadStatus.COMPLETED
+        self.update_timestamp()
 
     def is_complete(self) -> bool:
-        return self._uploaded_size >= self._total_size and self._status == "completed"
+        return (
+            self._uploaded_size >= self._total_size
+            and self._status == ChunkUploadStatus.COMPLETED
+        )
 
     def get_progress_percent(self) -> float:
         if self._total_size == 0:
@@ -80,7 +149,7 @@ class ChunkUpload(Entity):
         self._chunk_count += 1
         self.update_timestamp()
 
-    def set_status(self, status: str) -> None:
+    def set_status(self, status: ChunkUploadStatus) -> None:
         self._status = status
         self.update_timestamp()
 
@@ -110,4 +179,3 @@ class ChunkUpload(Entity):
             }
         )
         return base_dict
-

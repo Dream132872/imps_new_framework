@@ -276,7 +276,7 @@
                 },
                 error: function (xhr, status, error) {
                     const errorMessage =
-                        xhr.responseJSON?.message ||
+                        xhr.responseJSON?.error ||
                         xhr.responseText ||
                         gettext("An error occurred while deleting");
 

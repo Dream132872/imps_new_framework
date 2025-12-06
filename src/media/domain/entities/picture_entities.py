@@ -3,18 +3,55 @@ Picture related domain implementations.
 """
 
 from datetime import datetime
+from enum import Enum
 from typing import Any
 
+from django.utils.translation import gettext_lazy as _
+
+from media.domain.exceptions import PictureValidationError
 from shared.domain.entities import AggregateRoot, FileField
 
 __all__ = ("Picture",)
+
+
+class PictureType(Enum):
+    """Types values for picture."""
+
+    MAIN = "main"
+    GALLERY = "gallery"
+    AVATAR = "avatar"
+    BANNER = "banner"
+
+    @classmethod
+    def from_string(cls, value: str) -> "PictureType":
+        """Create PictureType from value.
+
+        Args:
+            value (str): picture type value as string
+
+        Returns:
+            PictureType: Valid picture type
+
+        Raises:
+            PictureValidationError: if value is invalid
+        """
+        try:
+            return cls(value)
+        except:
+            raise PictureValidationError(
+                _(
+                    "Picture type '{picture_type}' is not valid. Valid types are: {valid_types}"
+                ).format(
+                    picture_type=value, valid_types=", ".join([pt.value for pt in cls])
+                )
+            )
 
 
 class Picture(AggregateRoot):
     def __init__(
         self,
         image: FileField,
-        picture_type: str,
+        picture_type: str | PictureType,
         content_type_id: int,
         object_id: int | str,
         id: str | None = None,
@@ -24,8 +61,19 @@ class Picture(AggregateRoot):
         updated_at: datetime | None = None,
     ) -> None:
         super().__init__(id, created_at, updated_at)
+
+        if not image or (image.size is not None and image.size == 0):
+            raise PictureValidationError(_("Image cannot be None"))
+
+        if not content_type_id or not object_id:
+            raise PictureValidationError(_("Picture should have relation information"))
+
+        if isinstance(picture_type, str):
+            self._picture_type = PictureType.from_string(picture_type)
+        elif isinstance(picture_type, PictureType):
+            self._picture_type = picture_type
+
         self._image = image
-        self._picture_type = picture_type
         self._alternative = alternative or ""
         self._title = title or ""
         self._content_type_id = content_type_id
@@ -45,7 +93,7 @@ class Picture(AggregateRoot):
 
     @property
     def picture_type(self) -> str:
-        return self._picture_type
+        return self._picture_type.value
 
     @property
     def content_type_id(self) -> int:
@@ -61,7 +109,9 @@ class Picture(AggregateRoot):
         Args:
             new_image (str): new address of the image.
         """
-        # old_image = self.image
+        if not new_image or (new_image.size is not None and new_image.size == 0):
+            raise PictureValidationError(_("Image cannot be None"))
+
         self._image = new_image
         self.update_timestamp()
 

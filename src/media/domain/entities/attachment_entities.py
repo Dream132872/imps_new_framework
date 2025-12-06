@@ -5,6 +5,9 @@ Attachment related domain implementations.
 from datetime import datetime
 from typing import Any
 
+from django.utils.translation import gettext_lazy as _
+
+from media.domain.exceptions import AttachmentValidationError
 from shared.domain.entities import AggregateRoot, FileField
 
 __all__ = ("Attachment",)
@@ -22,6 +25,15 @@ class Attachment(AggregateRoot):
         updated_at: datetime | None = None,
     ) -> None:
         super().__init__(id, created_at, updated_at)
+
+        if not file or file.size == 0:
+            raise AttachmentValidationError(_("File cannot be None"))
+
+        if not content_type_id or not object_id:
+            raise AttachmentValidationError(
+                _("Attachment should have relation information")
+            )
+
         self._file = file
         self._title = title or ""
         self._content_type_id = content_type_id
@@ -49,6 +61,10 @@ class Attachment(AggregateRoot):
         Args:
             new_file (FileField): new file field.
         """
+
+        if not new_file or (new_file.size is not None and new_file.size == 0):
+            raise AttachmentValidationError(_("File cannot be None"))
+
         self._file = new_file
         self.update_timestamp()
 

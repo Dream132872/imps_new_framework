@@ -6,7 +6,7 @@ from .picture_views import (
 from .chunk_upload_views import (
     CreateChunkUploadView,
     UploadChunkView,
-    CompleteChunkUploadView,
+    CompletePictureChunkUploadView,
     CompleteAttachmentChunkUploadView,
     GetChunkUploadStatusView,
 )
@@ -22,7 +22,7 @@ __all__ = (
     "UpdatePictureView",
     "CreateChunkUploadView",
     "UploadChunkView",
-    "CompleteChunkUploadView",
+    "CompletePictureChunkUploadView",
     "CompleteAttachmentChunkUploadView",
     "GetChunkUploadStatusView",
     "CreateAttachmentView",

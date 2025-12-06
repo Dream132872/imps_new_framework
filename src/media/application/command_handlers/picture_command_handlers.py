@@ -65,19 +65,9 @@ class CreatePictureCommandHandler(
 ):
     def handle(self, command: CreatePictureCommand) -> PictureDTO:
         image_path = ""
+
         try:
-            # raise PictureValidationError("Test error")
-            # check the file is not empty
-            if not command.image:
-                raise PictureValidationError(_("You should pass the image file"))
-
             with self.uow:
-                # check the type of picture is valid or not
-                if not self.uow[PictureRepository].is_valid_picture_type(
-                    command.picture_type
-                ):
-                    raise PictureValidationError(_("Picture type is not valid"))
-
                 # save image using file_storage_service
                 image_name = self.file_storage_service.save_image(command.image)
 
@@ -88,7 +78,7 @@ class CreatePictureCommandHandler(
                     image=image_file,
                     picture_type=command.picture_type,
                     content_type_id=command.content_type_id,
-                    object_id=command.object_id,
+                    object_id=str(command.object_id),
                     title=command.title,
                     alternative=command.alternative,
                 )
@@ -115,20 +105,15 @@ class UpdatePictureCommandHandler(
             with self.uow:
                 # get picture by it's id
                 picture = self.uow[PictureRepository].get_by_id(str(command.picture_id))
-                # raise not found error if the picture does not exist
-                if not picture:
-                    raise PictureNotFoundError(
-                        _("There is no picture with ID: {picture_id}").format(
-                            picture_id=command.picture_id
-                        )
-                    )
+                # old image path
+                old_image_path = None
 
                 # save new image for picture
                 if command.image:
                     # save new image in storage
                     new_image_name = self.file_storage_service.save_image(command.image)
-                    # remove previouse image file from storage
-                    self.file_storage_service.delete_image(picture.image.name)
+                    # old image path
+                    old_image_path = picture.image.path
                     # add saved image name to the picture
                     picture.update_image(
                         FileFieldFactory.from_image_name(new_image_name)
@@ -141,6 +126,10 @@ class UpdatePictureCommandHandler(
 
                 # save the new
                 picture = self.uow[PictureRepository].save(picture)
+                # remove previouse image file from storage
+                if old_image_path:
+                    self.file_storage_service.delete_image(old_image_path)
+
                 return self._to_dto(picture)
         except PictureNotFoundError as e:
             raise map_domain_exception_to_application(
@@ -158,20 +147,20 @@ class DeletePictureCommandHandler(
 ):
     def handle(self, command: DeletePictureCommand) -> PictureDTO:
         try:
-            picture = self.uow[PictureRepository].get_by_id(str(command.pk))
-            if not picture:
-                raise PictureNotFoundError(
-                    _("Picture with ID {picture_id} not found").format(
-                        picture_id=command.pk
-                    )
-                )
-
-            self.uow[PictureRepository].delete(picture)
-            self.file_storage_service.delete_image(picture.image.path)
-            return self._to_dto(picture)
+            with self.uow:
+                # get picture by id
+                picture = self.uow[PictureRepository].get_by_id(str(command.pk))
+                # delete picture from db
+                self.uow[PictureRepository].delete(picture)
+                # remove image from storage
+                self.file_storage_service.delete_image(picture.image.path)
+                # return the deleted picture as a result
+                return self._to_dto(picture)
         except PictureNotFoundError as e:
             # Use the exception mapper for automatic transformation
-            raise map_domain_exception_to_application(e) from e
+            raise map_domain_exception_to_application(
+                e, message=_("Picture not found: {msg}").format(msg=str(e))
+            ) from e
         except Exception as e:
             # Handle unexpected exceptions
             raise ApplicationError(

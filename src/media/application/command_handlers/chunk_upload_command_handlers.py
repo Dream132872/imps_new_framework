@@ -10,6 +10,7 @@ from injector import inject
 
 from media.application import commands as chunk_upload_commands
 from media.domain.entities import ChunkUpload
+from media.domain.entities.chunk_upload_entities import ChunkUploadStatus
 from media.domain.exceptions import ChunkUploadNotFoundError, ChunkUploadValidationError
 from media.domain.repositories import ChunkUploadRepository
 from media.domain.services import ChunkUploadService, FileStorageService
@@ -33,6 +34,9 @@ class BaseChunkUploadCommandHandler:
         file_storage_service: FileStorageService,
         chunk_upload_service: ChunkUploadService,
     ) -> None:
+        if not chunk_upload_service:
+            raise ApplicationError(_("Chunk upload service not available"))
+
         self.uow = uow
         self.file_storage_service = file_storage_service
         self.chunk_upload_service = chunk_upload_service
@@ -50,13 +54,15 @@ class CreateChunkUploadCommandHandler(
                 upload_id=uuid.uuid4(),
                 filename=command.filename,
                 total_size=command.total_size,
-                status="pending",
+                status=ChunkUploadStatus.PENDING,
             )
             chunk_upload = self.uow[ChunkUploadRepository].save(chunk_upload)
             return {
                 "upload_id": chunk_upload.upload_id,
                 "offset": 0,
             }
+        except ChunkUploadValidationError as e:
+            raise map_domain_exception_to_application(e, str(e))
         except Exception as e:
             raise ApplicationError(
                 _("Failed to create chunk upload: {message}").format(message=str(e))
@@ -70,9 +76,6 @@ class UploadChunkCommandHandler(
     def handle(
         self, command: chunk_upload_commands.UploadChunkCommand
     ) -> dict[str, Any]:
-        if not self.chunk_upload_service:
-            raise ApplicationError(_("Chunk upload service not available"))
-
         try:
             uploaded_size = self.chunk_upload_service.append_chunk(
                 command.upload_id,
@@ -84,8 +87,6 @@ class UploadChunkCommandHandler(
             chunk_upload = self.uow[ChunkUploadRepository].get_by_upload_id(
                 command.upload_id
             )
-            if not chunk_upload:
-                raise ChunkUploadNotFoundError(_("Chunk upload not found"))
 
             return {
                 "upload_id": command.upload_id,
@@ -120,11 +121,10 @@ class CompleteChunkUploadCommandHandler(
             chunk_upload = self.uow[ChunkUploadRepository].get_by_upload_id(
                 command.upload_id
             )
-            if not chunk_upload:
-                raise ApplicationError(_("Chunk upload not found"))
 
-            if not chunk_upload.is_complete():
-                raise ChunkUploadValidationError(_("Upload is not completed yet"))
+            chunk_upload.complete()
+
+            self.uow[ChunkUploadRepository].save(chunk_upload)
 
             completed_file = self.chunk_upload_service.get_completed_file(
                 command.upload_id

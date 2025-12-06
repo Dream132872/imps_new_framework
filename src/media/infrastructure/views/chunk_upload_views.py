@@ -11,7 +11,11 @@ from django.utils.translation import gettext_lazy as _
 
 from media.application import commands as chunk_upload_commands
 from media.application import queries as chunk_upload_queries
-from media.application.commands import CreatePictureCommand, CreateAttachmentCommand, UpdateAttachmentCommand
+from media.application.commands import (
+    CreateAttachmentCommand,
+    CreatePictureCommand,
+    UpdateAttachmentCommand,
+)
 from shared.application.cqrs import dispatch_command, dispatch_query
 from shared.infrastructure import views
 
@@ -71,7 +75,18 @@ class UploadChunkView(views.AdminGenericMixin, views.View):
         return JsonResponse(result)
 
 
-class CompleteChunkUploadView(views.AdminGenericMixin, views.View):
+class GetChunkUploadStatusView(views.AdminGenericMixin, views.View):
+    permission_required = ["media_infrastructure.add_picture"]
+    return_exc_response_as_json = True
+
+    def get(self, request: HttpRequest, upload_id: str) -> JsonResponse:
+        result = dispatch_query(
+            chunk_upload_queries.GetChunkUploadStatusQuery(upload_id=upload_id)
+        )
+        return JsonResponse(result)
+
+
+class CompletePictureChunkUploadView(views.AdminGenericMixin, views.View):
     permission_required = [
         "media_infrastructure.add_picture",
         "media_infrastructure.change_picture",
@@ -168,21 +183,14 @@ class CompleteAttachmentChunkUploadView(views.AdminGenericMixin, views.View):
         return JsonResponse(
             {
                 "status": "success",
-                "message": _("Attachment has been created successfully") if not is_update else _("Attachment has been updated successfully"),
+                "message": (
+                    _("Attachment has been created successfully")
+                    if not is_update
+                    else _("Attachment has been updated successfully")
+                ),
                 "details": {
                     "attachment": asdict(attachment),
                     "is_update": is_update,
                 },
             }
         )
-
-
-class GetChunkUploadStatusView(views.AdminGenericMixin, views.View):
-    permission_required = ["media_infrastructure.add_picture"]
-    return_exc_response_as_json = True
-
-    def get(self, request: HttpRequest, upload_id: str) -> JsonResponse:
-        result = dispatch_query(
-            chunk_upload_queries.GetChunkUploadStatusQuery(upload_id=upload_id)
-        )
-        return JsonResponse(result)
