@@ -31,6 +31,7 @@ def change_default_cache_location(
     copied_sessions_cache["LOCATION"] = "redis://localhost:6379/11"
     settings.CACHES["sessions"] = copied_sessions_cache
     yield
+    # clear all caches from default and sessions
     cache.clear()
     caches["sessions"].clear()
 

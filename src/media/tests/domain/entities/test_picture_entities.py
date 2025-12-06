@@ -5,7 +5,6 @@ import uuid
 import pytest
 from django.contrib.contenttypes.models import ContentType
 
-from media.domain.entities import Picture
 from media.domain.entities.picture_entities import Picture as PictureEntity
 from shared.domain.entities import FileField, FileType
 
@@ -16,7 +15,7 @@ class TestPictureEntity:
     """Test suite for picture domain entity."""
 
     def test_picture_creation_with_required_fields(
-        self, sample_image_field_fied: FileField, sample_content_type: ContentType
+        self, sample_image_file_field: FileField, sample_content_type: ContentType
     ) -> None:
         """Test creating picture entity with required fields."""
 
@@ -25,7 +24,7 @@ class TestPictureEntity:
 
         # Act
         picture = PictureEntity(
-            image=sample_image_field_fied,
+            image=sample_image_file_field,
             picture_type="main",
             content_type_id=sample_content_type.id,
             object_id=object_id,
@@ -34,7 +33,7 @@ class TestPictureEntity:
         # Assert
         assert picture.id is not None, "picture id should not be None"
         assert (
-            picture.image == sample_image_field_fied
+            picture.image == sample_image_file_field
         ), "Picture image should be equal to sample_image_field"
         assert picture.picture_type == "main", "picture type should be eqaul to 'main'"
         assert (
@@ -52,7 +51,7 @@ class TestPictureEntity:
         ), "content_type_id foreign key should be equalt to sample_content_type.id"
 
     def test_create_picture_entity_with_optional_fields(
-        self, sample_image_field_fied: FileField, sample_content_type: ContentType
+        self, sample_image_file_field: FileField, sample_content_type: ContentType
     ) -> None:
         """Test creating picture entity with optional fields."""
 
@@ -63,7 +62,7 @@ class TestPictureEntity:
 
         # Act
         picture = PictureEntity(
-            image=sample_image_field_fied,
+            image=sample_image_file_field,
             picture_type="main",
             content_type_id=sample_content_type.id,
             object_id=object_id,
@@ -83,7 +82,7 @@ class TestPictureEntity:
         ), "picture alternative should be changed to 'Image alternative'"
 
     def test_create_picture_entity_with_custom_id(
-        self, sample_image_field_fied: FileField, sample_content_type: ContentType
+        self, sample_image_file_field: FileField, sample_content_type: ContentType
     ) -> None:
         """Test creating picture entity with custom id."""
         # Arrange
@@ -93,7 +92,7 @@ class TestPictureEntity:
         # Act
         picture = PictureEntity(
             id=custom_id,
-            image=sample_image_field_fied,
+            image=sample_image_file_field,
             picture_type="main",
             content_type_id=sample_content_type.id,
             object_id=object_id,
@@ -234,7 +233,7 @@ class TestPictureEntity:
         assert type(result["image"]) == dict
 
     def test_picture_equality(
-        self, sample_content_type: ContentType, sample_image_field_fied: FileField
+        self, sample_content_type: ContentType, sample_image_file_field: FileField
     ):
         """Test picture equality using ID."""
 
@@ -244,7 +243,7 @@ class TestPictureEntity:
 
         picture_1 = PictureEntity(
             id=picture_id,
-            image=sample_image_field_fied,
+            image=sample_image_file_field,
             content_type_id=sample_content_type.id,
             object_id=object_id,
             picture_type="main",
@@ -252,7 +251,7 @@ class TestPictureEntity:
 
         picture_2 = PictureEntity(
             id=picture_id,
-            image=sample_image_field_fied,
+            image=sample_image_file_field,
             content_type_id=sample_content_type.id,
             object_id=object_id,
             picture_type="main",
@@ -260,7 +259,7 @@ class TestPictureEntity:
 
         picture_3 = PictureEntity(
             id=str(uuid.uuid4()),
-            image=sample_image_field_fied,
+            image=sample_image_file_field,
             content_type_id=sample_content_type.id,
             object_id=object_id,
             picture_type="main",

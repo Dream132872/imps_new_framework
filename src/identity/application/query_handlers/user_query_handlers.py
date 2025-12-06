@@ -70,14 +70,13 @@ class GetUserByIdQueryHandler(
 
     def handle(self, query: GetUserByIdQuery) -> UserDTO:
         try:
-            with self.uow:
-                user = self.uow[UserRepository].get_by_id(query.user_id)
-                if user:
-                    return self._to_dto(user)
+            user = self.uow[UserRepository].get_by_id(query.user_id)
+            if user:
+                return self._to_dto(user)
 
-                raise UserNotFoundError(
-                    _("User with ID {user_id} not found").format(user_id=query.user_id)
-                )
+            raise UserNotFoundError(
+                _("User with ID {user_id} not found").format(user_id=query.user_id)
+            )
         except Exception as e:
             raise ApplicationValidationError(
                 _("Failed to get user with ID '{user_id}': {message}").format(
@@ -93,19 +92,18 @@ class SearchUsersQueryHandler(
 
     def handle(self, query: SearchUsersQuery) -> PaginatedResultDTO:
         try:
-            with self.uow:
-                paginated_users = self.uow[UserRepository].search_users(
-                    full_name=query.full_name,
-                    email=query.email,
-                    username=query.username,
-                    page=query.page,
-                    page_size=query.page_size,
-                )
+            paginated_users = self.uow[UserRepository].search_users(
+                full_name=query.full_name,
+                email=query.email,
+                username=query.username,
+                page=query.page,
+                page_size=query.page_size,
+            )
 
-                return convert_to_paginated_result_dto(
-                    paginated_object=paginated_users,
-                    items=[self._to_dto(u) for u in paginated_users.items],
-                )
+            return convert_to_paginated_result_dto(
+                paginated_object=paginated_users,
+                items=[self._to_dto(u) for u in paginated_users.items],
+            )
         except Exception as e:
             raise ApplicationError(
                 _("Failed to search users: {message}").format(message=str(e))

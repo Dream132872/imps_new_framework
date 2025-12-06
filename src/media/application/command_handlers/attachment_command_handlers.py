@@ -50,7 +50,7 @@ class BaseAttachmentCommandHandler:
             id=attachment.id,
             file=file,
             title=attachment.title,
-            content_type_id=attachment.content_type,
+            content_type_id=attachment.content_type_id,
             object_id=attachment.object_id,
             created_at=attachment.created_at,
             updated_at=attachment.updated_at,
@@ -147,17 +147,18 @@ class DeleteAttachmentCommandHandler(
 ):
     def handle(self, command: DeleteAttachmentCommand) -> AttachmentDTO:
         try:
-            attachment = self.uow[AttachmentRepository].get_by_id(str(command.pk))
-            if not attachment:
-                raise AttachmentNotFoundError(
-                    _("Attachment with ID {attachment_id} not found").format(
-                        attachment_id=command.pk
+            with self.uow:
+                attachment = self.uow[AttachmentRepository].get_by_id(str(command.pk))
+                if not attachment:
+                    raise AttachmentNotFoundError(
+                        _("Attachment with ID {attachment_id} not found").format(
+                            attachment_id=command.pk
+                        )
                     )
-                )
 
-            self.uow[AttachmentRepository].delete(attachment)
-            self.file_storage_service.delete_file(attachment.file.path)
-            return self._to_dto(attachment)
+                self.uow[AttachmentRepository].delete(attachment)
+                self.file_storage_service.delete_file(attachment.file.path)
+                return self._to_dto(attachment)
         except AttachmentNotFoundError as e:
             # Use the exception mapper for automatic transformation
             raise map_domain_exception_to_application(e) from e
@@ -169,4 +170,3 @@ class DeleteAttachmentCommandHandler(
                 ),
                 details={"attachment_id": command.pk},
             ) from e
-

@@ -65,14 +65,13 @@ class SearchPicturesQueryHandler(
     """Searches between all pictures based on query inputs."""
 
     def handle(self, query: SearchPicturesQuery) -> list[PictureDTO]:
-        with self.uow:
-            pictures = self.uow[PictureRepository].search_pictures(
-                content_type=query.content_type_id,
-                object_id=query.object_id,
-                picture_type=query.picture_type,
-            )
+        pictures = self.uow[PictureRepository].search_pictures(
+            content_type=query.content_type_id,
+            object_id=query.object_id,
+            picture_type=query.picture_type,
+        )
 
-            return [self._to_dto(p) for p in pictures]
+        return [self._to_dto(p) for p in pictures]
 
 
 class SearchFirstPictureQueryHandler(
@@ -81,17 +80,14 @@ class SearchFirstPictureQueryHandler(
 ):
     """Finds the first picture based on query inputs."""
 
-    def handle(
-        self, query: SearchFirstPictureQuery
-    ) -> PictureDTO | None:
-        with self.uow:
-            picture = self.uow[PictureRepository].search_first_picture(
-                content_type=query.content_type_id,
-                object_id=query.object_id,
-                picture_type=query.picture_type,
-            )
+    def handle(self, query: SearchFirstPictureQuery) -> PictureDTO | None:
+        picture = self.uow[PictureRepository].search_first_picture(
+            content_type=query.content_type_id,
+            object_id=query.object_id,
+            picture_type=query.picture_type,
+        )
 
-            return self._to_dto(picture) if picture else None
+        return self._to_dto(picture) if picture else None
 
 
 class GetPictureByIdQueryHandler(
@@ -100,16 +96,15 @@ class GetPictureByIdQueryHandler(
 ):
     def handle(self, query: GetPictureByIdQuery) -> PictureDTO:
         try:
-            with self.uow:
-                picture = self.uow[PictureRepository].get_by_id(str(query.picture_id))
-                if not picture:
-                    raise PictureNotFoundError(
-                        _("There is no picture with ID: {picture_id}").format(
-                            picture_id=query.picture_id
-                        )
+            picture = self.uow[PictureRepository].get_by_id(str(query.picture_id))
+            if not picture:
+                raise PictureNotFoundError(
+                    _("There is no picture with ID: {picture_id}").format(
+                        picture_id=query.picture_id
                     )
+                )
 
-                return self._to_dto(picture)
+            return self._to_dto(picture)
         except PictureNotFoundError as e:
             raise map_domain_exception_to_application(
                 e, message=_("Picture not found: {msg}").format(msg=str(e))
@@ -120,4 +115,3 @@ class GetPictureByIdQueryHandler(
                     picture_id=query.picture_id
                 )
             ) from e
-

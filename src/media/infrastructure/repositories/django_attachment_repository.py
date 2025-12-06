@@ -37,7 +37,7 @@ class DjangoAttachmentRepository(DjangoRepository[Attachment], AttachmentReposit
             defaults={
                 "file": entity.file.name,
                 "title": entity.title,
-                "content_type_id": entity.content_type,
+                "content_type_id": entity.content_type_id,
                 "object_id": entity.object_id,
             },
         )
@@ -46,7 +46,7 @@ class DjangoAttachmentRepository(DjangoRepository[Attachment], AttachmentReposit
         if not created:
             model.file = entity.file.name  # type: ignore
             model.title = entity.title
-            model.content_type_id = entity.content_type
+            model.content_type_id = entity.content_type_id
             model.object_id = entity.object_id if entity.object_id else None  # type: ignore
 
         return model

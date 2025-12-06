@@ -1,14 +1,14 @@
 """Test picture model."""
 
 import uuid
-from unittest.mock import MagicMock, call, patch
 
 import pytest
 from django.contrib.contenttypes.models import ContentType
 from django.core.files.uploadedfile import SimpleUploadedFile
+from pytest_mock import MockerFixture
 
 from media.infrastructure.models.picture import Picture as PictureModel
-
+from media.infrastructure.repositories import DjangoPictureRepository
 
 # @pytest.mark.infrastructure
 # @pytest.mark.slow
@@ -19,9 +19,27 @@ from media.infrastructure.models.picture import Picture as PictureModel
 #     assert sample_picture_model.title == "title"
 
 
+class Calculator:
+    def sum(self, a: int | float, b: int | float):
+        return a + b
+
+
 @pytest.mark.unit
-def test_mocking():
-    mock = MagicMock()
+def test_calculator(mocker: MockerFixture):
+    calculator = Calculator()
+
+    spy = mocker.spy(calculator, "sum")
+
+    result = calculator.sum(1, 2)
+
+    assert result == 3
+    spy.assert_called_with(1, 2)
+    assert spy.call_count == 1
+
+
+@pytest.mark.unit
+def test_mocking(mocker: MockerFixture):
+    mock = mocker.MagicMock()
 
     mock.method("first")
     mock.method("second")
@@ -32,13 +50,13 @@ def test_mocking():
 
     # Check all calls
     assert mock.method.call_args_list == [
-        call("first"),
-        call("second"),
-        call("third"),
+        mocker.call("first"),
+        mocker.call("second"),
+        mocker.call("third"),
     ]
 
     # Check last call
-    assert mock.method.call_args == call("third")
+    assert mock.method.call_args == mocker.call("third")
 
 
 @pytest.mark.integration

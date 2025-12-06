@@ -36,7 +36,7 @@ class Attachment(AggregateRoot):
         return self._title
 
     @property
-    def content_type(self) -> int:
+    def content_type_id(self) -> int:
         return self._content_type_id
 
     @property
@@ -52,9 +52,7 @@ class Attachment(AggregateRoot):
         self._file = new_file
         self.update_timestamp()
 
-    def update_information(
-        self, title: str | None = None
-    ) -> None:
+    def update_information(self, title: str | None = None) -> None:
         """Update attachment information.
 
         Args:
@@ -80,4 +78,3 @@ class Attachment(AggregateRoot):
             }
         )
         return base_dict
-

@@ -3,6 +3,7 @@ Media related fixtures.
 """
 
 import uuid
+from typing import Callable
 
 import pytest
 from django.contrib.contenttypes.models import ContentType
@@ -24,37 +25,60 @@ def sample_image_file() -> SimpleUploadedFile:
 
 
 @pytest.fixture
-def sample_image_field_fied() -> FileField:
-    return FileField(
-        file_type=FileType.IMAGE,
-        name="test_image.jpg",
-        path="/media/test_image.jpg",
-        url="/media/test_image.jpg",
-        width=1000,
-        height=700,
-        size=1024,
-        content_type="images/jpeg",
-    )
+def image_file_field_factory(db: None):
+    """Image file field factory."""
+
+    def _create_file_field(**kwargs):  # type: ignore
+        return FileField(
+            file_type=FileType.IMAGE,
+            name=kwargs.get("image_name", "test_image.jpg"),
+            path=kwargs.get("image_path", "/media/test_image.jpg"),
+            url=kwargs.get("image_url", "/media/test_image.jpg"),
+            width=int(kwargs.get("image_width", 1000)),
+            height=int(kwargs.get("image_height", 700)),
+            size=int(kwargs.get("image_size", 1024)),
+            content_type=kwargs.get("image_content_type", "images/jpeg"),
+        )
+
+    return _create_file_field
+
+
+@pytest.fixture
+def sample_image_file_field(
+    image_file_field_factory: Callable[..., FileField],
+) -> FileField:
+    """Creating a sample FileField."""
+
+    return image_file_field_factory()
+
+
+@pytest.fixture
+def picture_entity_factory(
+    db: None, sample_image_file_field: FileField, sample_content_type: ContentType
+):
+    """Picture entity factory."""
+
+    def _create_picture_entity(**kwargs):  # type: ignore
+        return PictureEntity(
+            id=kwargs.get("picture_id", None),
+            image=sample_image_file_field,
+            picture_type=kwargs.get("picture_type", "main"),
+            content_type_id=sample_content_type.id,
+            object_id=kwargs.get("picture_object_id", str(uuid.uuid4())),
+            title=kwargs.get("picture_title", "Image title"),
+            alternative=kwargs.get("picture_alternative", "Image alternative"),
+        )
+
+    return _create_picture_entity
 
 
 @pytest.fixture
 def sample_picture_entity(
-    db: None, sample_image_field_fied: FileField, sample_content_type: ContentType
+    db: None, picture_entity_factory: Callable[..., PictureEntity]
 ) -> PictureEntity:
-    """
-    Create a sample picture domain entity.
+    """Create a sample picture domain entity."""
 
-    Returns a sample Picutre (Entity) instance with:
-    - image:
-    """
-    return PictureEntity(
-        image=sample_image_field_fied,
-        picture_type="main",
-        content_type_id=sample_content_type.id,
-        object_id=str(uuid.uuid4()),
-        title="Image title",
-        alternative="Image alternative",
-    )
+    return picture_entity_factory()
 
 
 @pytest.fixture
@@ -80,3 +104,44 @@ def sample_picture_model(
         picture_type="main",
         display_order=1,
     )
+
+
+@pytest.fixture
+def sample_attachment_file() -> SimpleUploadedFile:
+    """Creating a sample file file for testing."""
+
+    image_file = b"fake file content"
+
+    return SimpleUploadedFile(
+        name="test_file.rar",
+        content=image_file,
+        content_type="application/x-rar-compressed",
+    )
+
+
+@pytest.fixture
+def attachment_file_field_factory(db: None) -> Callable[..., FileField]:
+    """Attachment file field factory."""
+
+    def _create_file_field(**kwargs):  # type: ignore
+        return FileField(
+            file_type=FileType.FILE,
+            name=kwargs.get("file_name", "test_file.rar"),
+            path=kwargs.get("file_path", "/media/test_file.rar"),
+            url=kwargs.get("file_url", "/media/test_file.rar"),
+            size=int(kwargs.get("file_size", 1024)),
+            content_type=kwargs.get(
+                "file_content_type", "application/x-rar-compressed"
+            ),
+        )
+
+    return _create_file_field
+
+
+@pytest.fixture
+def sample_attachment_file_field(
+    attachment_file_field_factory: Callable[..., FileField],
+) -> FileField:
+    """Creating a sample Attachment FileField."""
+
+    return attachment_file_field_factory()
