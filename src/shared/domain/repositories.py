@@ -23,7 +23,7 @@ class Repository(ABC, Generic[T]):
         raise NotImplementedError
 
     @abstractmethod
-    def get_by_id(self, id: str) -> T | None:
+    def get_by_id(self, id: str) -> T:
         """Gets an entity by it's ID."""
         raise NotImplementedError
 

@@ -30,12 +30,14 @@ class DjangoRepository(Repository[T], Generic[T]):
         model_instance.save()
         return self._model_to_entity(model_instance)
 
-    def get_by_id(self, id: str) -> T | None:
+    def get_by_id(self, id: str) -> T:
         try:
             model_instance = self.model_class.objects.get(pk=id)
             return self._model_to_entity(model_instance)
         except self.model_class.DoesNotExist:
-            return None
+            raise DomainEntityNotFoundError(
+                _("Entity with id {entity_id} not found").format(entity_id=id)
+            )
 
     def get_all(self) -> list[T]:
         return [self._model_to_entity(e) for e in self.model_class.objects.all()]

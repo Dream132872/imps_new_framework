@@ -94,12 +94,6 @@ class GetAttachmentByIdQueryHandler(
             attachment = self.uow[AttachmentRepository].get_by_id(
                 str(query.attachment_id)
             )
-            if not attachment:
-                raise AttachmentNotFoundError(
-                    _("There is no attachment with ID: {attachment_id}").format(
-                        attachment_id=query.attachment_id
-                    )
-                )
 
             return self._to_dto(attachment)
         except AttachmentNotFoundError as e:

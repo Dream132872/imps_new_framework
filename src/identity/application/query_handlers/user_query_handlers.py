@@ -22,6 +22,7 @@ from shared.application.pagination import (
     PaginatedResultDTO,
     convert_to_paginated_result_dto,
 )
+from shared.domain.exceptions import DomainEntityNotFoundError
 from shared.domain.repositories import UnitOfWork
 
 __all__ = (
@@ -71,18 +72,18 @@ class GetUserByIdQueryHandler(
     def handle(self, query: GetUserByIdQuery) -> UserDTO:
         try:
             user = self.uow[UserRepository].get_by_id(query.user_id)
-            if user:
-                return self._to_dto(user)
+            return self._to_dto(user)
 
-            raise UserNotFoundError(
-                _("User with ID {user_id} not found").format(user_id=query.user_id)
+        except UserNotFoundError as e:
+            raise map_domain_exception_to_application(
+                e, _("User with ID {user_id} not found").format(user_id=query.user_id)
             )
         except Exception as e:
             raise ApplicationValidationError(
                 _("Failed to get user with ID '{user_id}': {message}").format(
                     user_id=query.user_id, message=str(e)
                 )
-            )
+            ) from e
 
 
 class SearchUsersQueryHandler(

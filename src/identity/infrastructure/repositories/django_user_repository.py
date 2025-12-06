@@ -7,9 +7,12 @@ from typing import Any
 from django.contrib.auth import get_user_model
 from django.db.models import F, Value
 from django.db.models.functions import Concat
+from django.utils.translation import gettext_lazy as _
 
 from identity.domain.entities import User
+from identity.domain.exceptions import UserNotFoundError
 from identity.domain.repositories import UserRepository
+from shared.domain.exceptions import DomainEntityNotFoundError
 from shared.domain.pagination import DomainPaginator
 from shared.infrastructure.pagination import DjangoPaginatorFactory
 from shared.infrastructure.repositories import DjangoRepository
@@ -68,6 +71,14 @@ class DjangoUserRepository(DjangoRepository[User], UserRepository):
             user.is_active = entity.is_active
 
         return user
+
+    def get_by_id(self, id: str) -> User:
+        try:
+            return super().get_by_id(id)
+        except DomainEntityNotFoundError as e:
+            raise UserNotFoundError(
+                _("There is no user with ID: {user_id}").format(user_id=id)
+            )
 
     def search_users(
         self,

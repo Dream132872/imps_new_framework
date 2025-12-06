@@ -2,9 +2,13 @@
 Django repository implementation for attachment.
 """
 
+from django.utils.translation import gettext_lazy as _
+
 from media.domain.entities import Attachment
+from media.domain.exceptions import AttachmentNotFoundError
 from media.domain.repositories import AttachmentRepository
 from media.infrastructure.models import Attachment as AttachmentModel
+from shared.domain.exceptions import DomainEntityNotFoundError
 from shared.domain.factories import FileFieldFactory
 from shared.infrastructure.repositories import DjangoRepository
 
@@ -51,6 +55,16 @@ class DjangoAttachmentRepository(DjangoRepository[Attachment], AttachmentReposit
 
         return model
 
+    def get_by_id(self, id: str) -> Attachment:
+        try:
+            return super().get_by_id(id)
+        except DomainEntityNotFoundError as e:
+            raise AttachmentNotFoundError(
+                _("There is no attachment with ID: {attachment_id}").format(
+                    attachment_id=id
+                )
+            ) from e
+
     def search_attachments(
         self,
         content_type: int | None = None,
@@ -84,4 +98,3 @@ class DjangoAttachmentRepository(DjangoRepository[Attachment], AttachmentReposit
 
         first_attachment = attachments.order_by("display_order", "created_at").first()
         return self._model_to_entity(first_attachment) if first_attachment else None
-

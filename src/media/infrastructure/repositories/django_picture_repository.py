@@ -2,11 +2,13 @@
 Django repository implementation for picture.
 """
 
-import uuid
+from django.utils.translation import gettext_lazy as _
 
 from media.domain.entities import Picture
+from media.domain.exceptions import PictureNotFoundError
 from media.domain.repositories import PictureRepository
 from media.infrastructure.models import Picture as PictureModel
+from shared.domain.exceptions import DomainEntityNotFoundError
 from shared.domain.factories import FileFieldFactory
 from shared.infrastructure.repositories import DjangoRepository
 
@@ -58,6 +60,14 @@ class DjangoPictureRepository(DjangoRepository[Picture], PictureRepository):
             model.object_id = entity.object_id if entity.object_id else None  # type: ignore
 
         return model
+
+    def get_by_id(self, id: str) -> Picture:
+        try:
+            return super().get_by_id(id)
+        except DomainEntityNotFoundError as e:
+            raise PictureNotFoundError(
+                _("There is no picture with ID: {picture_id}").format(picture_id=id)
+            )
 
     def search_pictures(
         self,

@@ -22,6 +22,7 @@ from shared.application.cqrs import CommandHandler
 from shared.application.dtos import FileFieldDTO
 from shared.application.exception_mapper import map_domain_exception_to_application
 from shared.application.exceptions import ApplicationError
+from shared.domain.exceptions import DomainEntityNotFoundError
 from shared.domain.factories import FileFieldFactory
 from shared.domain.repositories import UnitOfWork
 
@@ -104,14 +105,6 @@ class UpdateAttachmentCommandHandler(
             with self.uow:
                 # get attachment by it's id
                 attachment = self.uow[AttachmentRepository].get_by_id(str(command.attachment_id))
-                # raise not found error if the attachment does not exist
-                if not attachment:
-                    raise AttachmentNotFoundError(
-                        _("There is no attachment with ID: {attachment_id}").format(
-                            attachment_id=command.attachment_id
-                        )
-                    )
-
                 # save new file for attachment
                 if command.file:
                     # save new file in storage
@@ -131,7 +124,7 @@ class UpdateAttachmentCommandHandler(
                 # save the new
                 attachment = self.uow[AttachmentRepository].save(attachment)
                 return self._to_dto(attachment)
-        except AttachmentNotFoundError as e:
+        except DomainEntityNotFoundError as e:
             raise map_domain_exception_to_application(
                 e, _("Attachment not found: {msg}").format(msg=str(e))
             ) from e
