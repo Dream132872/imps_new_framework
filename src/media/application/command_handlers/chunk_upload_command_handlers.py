@@ -124,7 +124,7 @@ class CompleteChunkUploadCommandHandler(
 
             chunk_upload.complete()
 
-            self.uow[ChunkUploadRepository].save(chunk_upload)
+            chunk_upload = self.uow[ChunkUploadRepository].save(chunk_upload)
 
             completed_file = self.chunk_upload_service.get_completed_file(
                 command.upload_id

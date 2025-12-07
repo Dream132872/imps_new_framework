@@ -15,6 +15,7 @@ from media.application.commands import (
     CreateAttachmentCommand,
     CreatePictureCommand,
     UpdateAttachmentCommand,
+    UpdatePictureCommand,
 )
 from shared.application.cqrs import dispatch_command, dispatch_query
 from shared.infrastructure import views
@@ -100,6 +101,7 @@ class CompletePictureChunkUploadView(views.AdminGenericMixin, views.View):
         picture_type = request.POST.get("picture_type")
         title = request.POST.get("title", "")
         alternative = request.POST.get("alternative", "")
+        picture_id = request.POST.get("picture_id")
 
         if not upload_id or not content_type_id or not object_id or not picture_type:
             return JsonResponse({"error": _("Missing required fields")}, status=400)
@@ -110,24 +112,45 @@ class CompletePictureChunkUploadView(views.AdminGenericMixin, views.View):
             )
         )
 
-        picture = dispatch_command(
-            CreatePictureCommand(
-                content_type_id=int(content_type_id),
-                object_id=uuid.UUID(object_id),
-                picture_type=picture_type,
-                image=completed_file,
-                title=title,
-                alternative=alternative,
+        if picture_id:
+            # Update existing picture
+            picture = dispatch_command(
+                UpdatePictureCommand(
+                    picture_id=uuid.UUID(picture_id),
+                    content_type_id=int(content_type_id),
+                    object_id=uuid.UUID(object_id),
+                    picture_type=picture_type,
+                    image=completed_file,
+                    title=title,
+                    alternative=alternative,
+                )
             )
-        )
+            is_update = True
+        else:
+            # Create new picture
+            picture = dispatch_command(
+                CreatePictureCommand(
+                    content_type_id=int(content_type_id),
+                    object_id=uuid.UUID(object_id),
+                    picture_type=picture_type,
+                    image=completed_file,
+                    title=title,
+                    alternative=alternative,
+                )
+            )
+            is_update = False
 
         return JsonResponse(
             {
                 "status": "success",
-                "message": _("Picture has been created successfully"),
+                "message": (
+                    _("Picture has been created successfully")
+                    if not is_update
+                    else _("Picture has been updated successfully")
+                ),
                 "details": {
                     "picture": asdict(picture),
-                    "is_update": False,
+                    "is_update": is_update,
                 },
             }
         )
