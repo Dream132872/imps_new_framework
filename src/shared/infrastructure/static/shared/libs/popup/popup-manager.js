@@ -146,15 +146,33 @@
             window.addEventListener("message", function (event) {
                 const msg = event.data;
                 if (!msg || msg.type !== MESSAGE_TYPE_REPLY) return;
-                // Invoke local hook and optionally bubble upstream if requested
+
+                // Try to find handler function by popupId first
                 let handlerResult;
-                if (typeof window.PopupManager_onReply === "function") {
+                const popupId = msg.popupId;
+
+                if (popupId) {
+                    // Look up handler function name from storage
+                    const handlerName = getStorage(STORAGE_PREFIX + popupId + ":handler");
+                    if (handlerName && typeof window[handlerName] === "function") {
+                        // Call the specified handler function
+                        try {
+                            handlerResult = window[handlerName](msg.payload);
+                        } catch (e) {
+                            console.error("Error in popup handler function '" + handlerName + "':", e);
+                        }
+                    }
+                }
+
+                // Fallback to global handler for backward compatibility
+                if (!handlerResult && typeof window.PopupManager_onReply === "function") {
                     try {
                         handlerResult = window.PopupManager_onReply(
                             msg.payload
                         );
                     } catch (e) {}
                 }
+
                 if (handlerResult && handlerResult.bubble) {
                     const nextPayload =
                         handlerResult.payload !== undefined
@@ -163,6 +181,7 @@
                     const forward = {
                         type: MESSAGE_TYPE_REPLY,
                         payload: nextPayload,
+                        popupId: popupId,
                     };
                     try {
                         if (window.opener && !window.opener.closed) {
@@ -230,6 +249,12 @@
             // Persist payload scoped to popupId
             setStorage(STORAGE_PREFIX + popupId + ":data", payload);
 
+            // Store handler function name if specified via data-popup-handler attribute
+            const handlerName = ($el.attr("data-popup-handler") || "").trim();
+            if (handlerName !== "") {
+                setStorage(STORAGE_PREFIX + popupId + ":handler", handlerName);
+            }
+
             // Open the popup with ids in query
             const sep = url.indexOf("?") === -1 ? "?" : "&";
             const finalUrl =
@@ -239,10 +264,12 @@
             // Watch for popup close and cleanup storage only then
             try {
                 const storageKey = STORAGE_PREFIX + popupId + ":data";
+                const handlerKey = STORAGE_PREFIX + popupId + ":handler";
                 const closeWatcher = setInterval(function () {
                     if (!win || win.closed) {
                         clearInterval(closeWatcher);
                         delStorage(storageKey);
+                        delStorage(handlerKey);
                     }
                 }, 700);
             } catch (_) {}
@@ -256,7 +283,12 @@
         },
 
         reply: function (payload) {
-            const message = { type: MESSAGE_TYPE_REPLY, payload: payload };
+            // Include popupId in the reply so the opener can route to the correct handler
+            const message = {
+                type: MESSAGE_TYPE_REPLY,
+                payload: payload,
+                popupId: this.currentPopupId // Include popupId so opener knows which popup this is from
+            };
             try {
                 if (window.opener && !window.opener.closed) {
                     window.opener.postMessage(message, "*");

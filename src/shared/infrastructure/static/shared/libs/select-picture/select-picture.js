@@ -79,7 +79,7 @@ function getPictureElement(picture, popupData) {
                 }" data-popup-name="picture_preview_popup" data-popup-features="width=${
         picture.image.width
     },height=${picture.image.height}"><i class="bi bi-eye"></i></a>
-                <a class="action-button cursor-pointer d-flex justify-content-center align-items-center" data-popup-open="${updatePictureUrl}" data-popup-name="select_picture_popup" data-popup-data="${JSON.stringify(
+                <a class="action-button cursor-pointer d-flex justify-content-center align-items-center" data-popup-open="${updatePictureUrl}" data-popup-name="select_picture_popup" data-popup-handler="handlePicturePopupReply" data-popup-data="${JSON.stringify(
         popupData
     )}"><i class="bi bi-pen"></i></a>
                 <a class="action-button cursor-pointer d-flex justify-content-center align-items-center" data-delete-url="${deletePictureUrl}" ${deleteScenario}><i class="bi bi-trash"></i></a>
@@ -153,7 +153,7 @@ function singlePictureRemovalCallback(el, res) {
     <div class="me-3 mb-3">
         <div class="image-box add-image rounded-3 cursor-pointer">
           <img src="/static/shared/images/defaults/dummy_150x150.jpg" width="150" height="150" alt="Add new image" />
-          <div class="overlay d-flex flex-column justify-content-end align-items-center w-100 h-100" data-popup-open="${createPictureUrl}" data-popup-name="select_picture_popup" data-popup-data="${JSON.stringify(
+          <div class="overlay d-flex flex-column justify-content-end align-items-center w-100 h-100" data-popup-open="${createPictureUrl}" data-popup-name="select_picture_popup" data-popup-handler="handlePicturePopupReply" data-popup-data="${JSON.stringify(
         picturePopupData
     )}">
             <div class="actions d-flex justify-content-evenly align-items-center w-100 mb-3">
@@ -167,9 +167,11 @@ function singlePictureRemovalCallback(el, res) {
     $("#" + res.details.id).replaceWith(selectPictureEl);
 }
 
-// manage response of the select picture popup
-window.PopupManager_onReply = function (res) {
-    debugger;
+// Handler function for select picture popup replies
+// This function is called by PopupManager when a popup with data-popup-handler="handlePicturePopupReply" replies
+function handlePicturePopupReply(res) {
+    console.log("select-picture", res);
+
     if (res.popupData.many) {
         if (res.res.is_update) {
             replaceUpdatedPicture(res);
@@ -183,4 +185,4 @@ window.PopupManager_onReply = function (res) {
             updateSinglePicture(res);
         }
     }
-};
+}

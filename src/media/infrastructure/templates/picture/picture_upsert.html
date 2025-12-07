@@ -255,6 +255,7 @@
 
     function pictureHasBeenManaged(res) {
       showToast('{% translate "Notification" %}', res.message, 'success')
+      debugger
 
       setTimeout(() => {
         window.PopupManager.reply({
@@ -265,10 +266,13 @@
       }, 1000)
     }
 
-    function pictureFormAjaxCompleted() {
+    function pictureFormAjaxCompleted(res) {
+      console.log(res)
       setFormSubmitting(false)
       if (typeof defaultAjaxFormCompleted === 'function') {
         defaultAjaxFormCompleted()
+      } else {
+        pictureHasBeenManaged(res)
       }
     }
 
@@ -278,4 +282,3 @@
     }
   </script>
 {% endblock %}
-

@@ -65,7 +65,9 @@ function getAttachmentElement(attachment, popupData) {
         deleteScenario = `data-delete-callback="singleAttachmentRemovalCallback"`;
     }
 
-    const fileName = attachment.file.name ? attachment.file.name.split('/').pop() : 'file';
+    const fileName = attachment.file.name
+        ? attachment.file.name.split("/").pop()
+        : "file";
 
     return $(`
         <div class="me-3 mb-3" id="${attachment.id}">
@@ -76,8 +78,10 @@ function getAttachmentElement(attachment, popupData) {
             <div class="attachment-name">${fileName}</div>
             <div class="overlay d-flex flex-column justify-content-end align-items-center w-100 h-100">
               <div class="actions d-flex justify-content-evenly align-items-center w-100 mb-3">
-                <a class="action-button cursor-pointer d-flex justify-content-center align-items-center" href="${attachment.file.url}" target="_blank"><i class="bi bi-eye"></i></a>
-                <a class="action-button cursor-pointer d-flex justify-content-center align-items-center" data-popup-open="${updateAttachmentUrl}" data-popup-name="select_attachment_popup" data-popup-data="${JSON.stringify(
+                <a class="action-button cursor-pointer d-flex justify-content-center align-items-center" href="${
+                    attachment.file.url
+                }" target="_blank"><i class="bi bi-eye"></i></a>
+                <a class="action-button cursor-pointer d-flex justify-content-center align-items-center" data-popup-open="${updateAttachmentUrl}" data-popup-name="select_attachment_popup" data-popup-handler="handleAttachmentPopupReply" data-popup-data="${JSON.stringify(
         popupData
     )}"><i class="bi bi-pen"></i></a>
                 <a class="action-button cursor-pointer d-flex justify-content-center align-items-center" data-delete-url="${deleteAttachmentUrl}" ${deleteScenario}><i class="bi bi-trash"></i></a>
@@ -118,7 +122,9 @@ function addAttachmentBox(res) {
 function updateSingleAttachment(res) {
     const attachment = res?.res?.attachment;
     let attachmentEl = getAttachmentElement(attachment, res.popupData);
-    $(`[single-attachment-box="${res.popupData.attachment_box_id}"]`).html(attachmentEl);
+    $(`[single-attachment-box="${res.popupData.attachment_box_id}"]`).html(
+        attachmentEl
+    );
 }
 
 // replace the attachment box with new uploaded one
@@ -151,7 +157,7 @@ function singleAttachmentRemovalCallback(el, res) {
           <div class="attachment-icon d-flex justify-content-center align-items-center">
             <i class="bi bi-file-earmark-plus"></i>
           </div>
-          <div class="overlay d-flex flex-column justify-content-end align-items-center w-100 h-100" data-popup-open="${createAttachmentUrl}" data-popup-name="select_attachment_popup" data-popup-data="${JSON.stringify(
+          <div class="overlay d-flex flex-column justify-content-end align-items-center w-100 h-100" data-popup-open="${createAttachmentUrl}" data-popup-name="select_attachment_popup" data-popup-handler="handleAttachmentPopupReply" data-popup-data="${JSON.stringify(
         attachmentPopupData
     )}">
             <div class="actions d-flex justify-content-evenly align-items-center w-100 mb-3">
@@ -165,8 +171,11 @@ function singleAttachmentRemovalCallback(el, res) {
     $("#" + res.details.id).replaceWith(selectAttachmentEl);
 }
 
-// manage response of the select attachment popup
-window.PopupManager_onReply = function (res) {
+// Handler function for select attachment popup replies
+// This function is called by PopupManager when a popup with data-popup-handler="handleAttachmentPopupReply" replies
+function handleAttachmentPopupReply(res) {
+    console.log("select-attachment: ", res);
+
     if (res.popupData && res.popupData.attachment_box_id) {
         if (res.popupData.many) {
             if (res.res.is_update) {
@@ -182,5 +191,4 @@ window.PopupManager_onReply = function (res) {
             }
         }
     }
-};
-
+}
