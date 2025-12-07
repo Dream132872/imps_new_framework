@@ -51,7 +51,6 @@ function getPicturesBox(pictureBoxId) {
 
 // get picture html element
 function getPictureElement(picture, popupData) {
-    debugger;
     let updatePictureUrl = DjangoUrls["media:picture:update"]({
         picture_id: picture.id,
     });
@@ -170,8 +169,6 @@ function singlePictureRemovalCallback(el, res) {
 // Handler function for select picture popup replies
 // This function is called by PopupManager when a popup with data-popup-handler="handlePicturePopupReply" replies
 function handlePicturePopupReply(res) {
-    console.log("select-picture", res);
-
     if (res.popupData.many) {
         if (res.res.is_update) {
             replaceUpdatedPicture(res);

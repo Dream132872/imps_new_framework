@@ -174,8 +174,6 @@ function singleAttachmentRemovalCallback(el, res) {
 // Handler function for select attachment popup replies
 // This function is called by PopupManager when a popup with data-popup-handler="handleAttachmentPopupReply" replies
 function handleAttachmentPopupReply(res) {
-    console.log("select-attachment: ", res);
-
     if (res.popupData && res.popupData.attachment_box_id) {
         if (res.popupData.many) {
             if (res.res.is_update) {

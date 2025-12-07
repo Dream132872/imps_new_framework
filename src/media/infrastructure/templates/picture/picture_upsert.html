@@ -255,8 +255,6 @@
 
     function pictureHasBeenManaged(res) {
       showToast('{% translate "Notification" %}', res.message, 'success')
-      debugger
-
       setTimeout(() => {
         window.PopupManager.reply({
           res: res.details,
