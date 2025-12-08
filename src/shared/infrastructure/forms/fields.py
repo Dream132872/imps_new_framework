@@ -336,6 +336,7 @@ class AttachmentField(Field):
         object_id_field: str,
         app_label: str | None = None,
         model_name: str | None = None,
+        attachment_type: str = "",
         many: bool = False,
         *args,  # type: ignore
         **kwargs,  # type: ignore
@@ -345,6 +346,8 @@ class AttachmentField(Field):
         self.object_id = None
         # should manage multiple attachments or not
         self.many = many
+        # type of the attachment (contains all attachment types)
+        self.attachment_type = attachment_type
         # app_label and model_name to get right ContentType instance
         self.app_label = app_label
         self.model_name = model_name
@@ -367,12 +370,14 @@ class AttachmentField(Field):
         bound_field.attachment = self.attachment
         bound_field.attachments = self.attachments
         bound_field.many = self.many
+        bound_field.attachment_type = self.attachment_type
         unique_identifier = str(uuid.uuid4())
         bound_field.bound_field_uuid = unique_identifier
         self.object_id = form[getattr(self, "object_id_field")].initial
         bound_field.popup_data = {
             "attachment_box_id": unique_identifier,
             "many": self.many,
+            "attachment_type": self.attachment_type,
             "object_id": str(self.object_id),
         }
         return bound_field
@@ -392,6 +397,7 @@ class AttachmentField(Field):
 
         return dispatch_query(
             SearchFirstAttachmentQuery(
+                attachment_type=self.attachment_type,
                 content_type_id=content_type.id if content_type else None,
                 object_id=self.object_id,
             )
@@ -403,6 +409,7 @@ class AttachmentField(Field):
 
         return dispatch_query(
             SearchAttachmentsQuery(
+                attachment_type=self.attachment_type,
                 content_type_id=content_type.id if content_type else None,
                 object_id=self.object_id,
             )

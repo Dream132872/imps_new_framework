@@ -133,9 +133,10 @@ function replaceUpdatedPicture(res) {
 function singlePictureRemovalCallback(el, res) {
     let createPictureUrl = DjangoUrls["media:picture:create"]({
         picture_type: res.details.picture_type,
-        content_type: res.details.content_type,
+        content_type: res.details.content_type_id,
         object_id: res.details.object_id,
     });
+    console.log(createPictureUrl);
 
     let pictureBoxId = $("#" + res.details.id)
         .parent()

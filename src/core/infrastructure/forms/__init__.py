@@ -60,6 +60,7 @@ class TestWidgetsForm(Form):
         app_label="identity_infrastructure",
         model_name="user",
         many=True,
+        attachment_type="documents",
         help_text="document attachments",
         label="User documents",
     )
@@ -69,6 +70,7 @@ class TestWidgetsForm(Form):
         app_label="identity_infrastructure",
         model_name="user",
         many=False,
+        attachment_type="resume",
         help_text="resume file",
         label="User resume",
     )

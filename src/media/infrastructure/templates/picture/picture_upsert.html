@@ -41,6 +41,7 @@
     function setFormSubmitting(submitting) {
       isSubmitting = submitting
       const submitButton = $('form button[type="submit"]')
+
       if (submitting) {
         submitButton.prop('disabled', true)
         submitButton.data('original-text', submitButton.html())
@@ -266,9 +267,9 @@
 
     function pictureFormAjaxCompleted(res) {
       console.log(res)
-      setFormSubmitting(false)
+      setFormSubmitting(true)
       if (typeof defaultAjaxFormCompleted === 'function') {
-        defaultAjaxFormCompleted()
+        defaultAjaxFormCompleted(res)
       } else {
         pictureHasBeenManaged(res)
       }

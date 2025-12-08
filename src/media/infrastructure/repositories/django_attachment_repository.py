@@ -31,6 +31,7 @@ class DjangoAttachmentRepository(DjangoRepository[Attachment], AttachmentReposit
             updated_at=model.updated_at,
             file=file,
             title=model.title,
+            attachment_type=model.attachment_type,
             content_type_id=model.content_type_id,
             object_id=model.object_id,  # type: ignore
         )
@@ -41,6 +42,7 @@ class DjangoAttachmentRepository(DjangoRepository[Attachment], AttachmentReposit
             defaults={
                 "file": entity.file.name,
                 "title": entity.title,
+                "attachment_type": entity.attachment_type,
                 "content_type_id": entity.content_type_id,
                 "object_id": entity.object_id,
             },
@@ -50,6 +52,7 @@ class DjangoAttachmentRepository(DjangoRepository[Attachment], AttachmentReposit
         if not created:
             model.file = entity.file.name  # type: ignore
             model.title = entity.title
+            model.attachment_type = entity.attachment_type
             model.content_type_id = entity.content_type_id
             model.object_id = entity.object_id if entity.object_id else None  # type: ignore
 
@@ -69,14 +72,18 @@ class DjangoAttachmentRepository(DjangoRepository[Attachment], AttachmentReposit
         self,
         content_type: int | None = None,
         object_id: int | str | None = None,
+        attachment_type: str = "",
     ) -> list[Attachment]:
-        attachments = self.model_class.objects.all()
+        attachments = self.model_class.objects.select_related("content_type").all()
 
         if content_type and content_type is not None:
             attachments = attachments.filter(content_type_id=content_type)
 
         if object_id and object_id is not None:
             attachments = attachments.filter(object_id=object_id)
+
+        if attachment_type and attachment_type is not None:
+            attachments = attachments.filter(attachment_type__iexact=attachment_type)
 
         return [
             self._model_to_entity(a)
@@ -87,14 +94,18 @@ class DjangoAttachmentRepository(DjangoRepository[Attachment], AttachmentReposit
         self,
         content_type: int | None = None,
         object_id: int | str | None = None,
+        attachment_type: str = "",
     ) -> Attachment | None:
-        attachments = self.model_class.objects.all()
+        attachments = self.model_class.objects.select_related("content_type").all()
 
         if content_type and content_type is not None:
             attachments = attachments.filter(content_type_id=content_type)
 
         if object_id and object_id is not None:
             attachments = attachments.filter(object_id=object_id)
+
+        if attachment_type and attachment_type is not None:
+            attachments = attachments.filter(attachment_type__iexact=attachment_type)
 
         first_attachment = attachments.order_by("display_order", "created_at").first()
         return self._model_to_entity(first_attachment) if first_attachment else None

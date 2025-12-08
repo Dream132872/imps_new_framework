@@ -47,6 +47,7 @@ class BaseAttachmentQueryHandler:
         return AttachmentDTO(
             id=attachment.id,
             file=file,
+            attachment_type=attachment.attachment_type,
             title=attachment.title,
             content_type_id=attachment.content_type_id,
             object_id=attachment.object_id,
@@ -65,6 +66,7 @@ class SearchAttachmentsQueryHandler(
         attachments = self.uow[AttachmentRepository].search_attachments(
             content_type=query.content_type_id,
             object_id=query.object_id,
+            attachment_type=query.attachment_type,
         )
 
         return [self._to_dto(a) for a in attachments]
@@ -80,6 +82,7 @@ class SearchFirstAttachmentQueryHandler(
         attachment = self.uow[AttachmentRepository].search_first_attachment(
             content_type=query.content_type_id,
             object_id=query.object_id,
+            attachment_type=query.attachment_type,
         )
 
         return self._to_dto(attachment) if attachment else None

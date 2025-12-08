@@ -65,9 +65,7 @@ function getAttachmentElement(attachment, popupData) {
         deleteScenario = `data-delete-callback="singleAttachmentRemovalCallback"`;
     }
 
-    const fileName = attachment.file.name
-        ? attachment.file.name.split("/").pop()
-        : "file";
+    const fileName = attachment.file.name ? attachment.file.name : "file";
 
     return $(`
         <div class="me-3 mb-3" id="${attachment.id}">
@@ -136,8 +134,11 @@ function replaceUpdatedAttachment(res) {
 
 // callback method name that should be called after singular attachment is removed
 function singleAttachmentRemovalCallback(el, res) {
+    console.log(res);
+
     let createAttachmentUrl = DjangoUrls["media:attachment:create"]({
-        content_type: res.details.content_type,
+        attachment_type: res.details.attachment_type,
+        content_type: res.details.content_type_id,
         object_id: res.details.object_id,
     });
 
@@ -148,6 +149,7 @@ function singleAttachmentRemovalCallback(el, res) {
     let attachmentPopupData = {
         attachment_box_id: attachmentBoxId,
         many: false,
+        attachment_type: res.details.attachment_type,
         object_id: res.details.object_id,
     };
 

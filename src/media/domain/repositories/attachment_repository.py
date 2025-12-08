@@ -20,12 +20,14 @@ class AttachmentRepository(Repository[Attachment]):
         self,
         content_type: int | None = None,
         object_id: int | str | None = None,
+        attachment_type: str = "",
     ) -> list[Attachment]:
         """Search attachments based on inputs.
 
         Args:
             content_type (int | None, optional): django app content_type. Defaults to None.
             object_id (int | str | None, optional): id of the object in related item. Defaults to None.
+            attachment_type (str, optional): type of the attachment. Defaults to "".
 
         Returns:
             list[Attachment]: list of attachments
@@ -36,12 +38,14 @@ class AttachmentRepository(Repository[Attachment]):
         self,
         content_type: int | None = None,
         object_id: int | str | None = None,
+        attachment_type: str = "",
     ) -> Attachment | None:
         """Search attachments based on inputs and return the first item.
 
         Args:
             content_type (int | None, optional): django app content_type. Defaults to None.
             object_id (int | str | None, optional): id of the object in related item. Defaults to None.
+            attachment_type (str, optional): type of the attachment. Defaults to "".
 
         Returns:
             Attachment | None: an instance of Attachment entity.

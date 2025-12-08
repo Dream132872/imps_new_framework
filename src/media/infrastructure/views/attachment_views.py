@@ -19,7 +19,7 @@ from media.application.commands import (
 )
 from media.application.dtos import AttachmentDTO
 from media.application.queries import GetAttachmentByIdQuery
-from media.infrastructure.forms import UpsertAttachmentForm
+from media.infrastructure.forms import AttachmentUpsertForm
 from shared.application.cqrs import dispatch_command, dispatch_query
 from shared.infrastructure import views
 
@@ -27,7 +27,7 @@ logger = logging.getLogger(__file__)
 
 
 class CreateAttachmentView(views.AdminGenericMixin, views.FormView):
-    form_class = UpsertAttachmentForm
+    form_class = AttachmentUpsertForm
     template_name = "attachment/attachment_upsert.html"
     permission_required = ["media_infrastructure.add_attachment"]
     return_exc_response_as_json = True
@@ -36,9 +36,10 @@ class CreateAttachmentView(views.AdminGenericMixin, views.FormView):
         init = super().get_initial()
         init["content_type"] = self.kwargs["content_type"]
         init["object_id"] = self.kwargs["object_id"]
+        init["attachment_type"] = self.kwargs["attachment_type"]
         return init
 
-    def form_valid(self, form: UpsertAttachmentForm) -> JsonResponse:
+    def form_valid(self, form: AttachmentUpsertForm) -> JsonResponse:
         # get form data
         data = form.get_form_data()
         # get form files
@@ -48,6 +49,7 @@ class CreateAttachmentView(views.AdminGenericMixin, views.FormView):
             CreateAttachmentCommand(
                 content_type_id=data["content_type"],
                 object_id=data["object_id"],
+                attachment_type=data["attachment_type"],
                 file=files["file"],  # type: ignore
                 title=data["title"],
             )
@@ -65,7 +67,7 @@ class CreateAttachmentView(views.AdminGenericMixin, views.FormView):
 
 
 class UpdateAttachmentView(views.AdminGenericMixin, views.FormView):
-    form_class = UpsertAttachmentForm
+    form_class = AttachmentUpsertForm
     template_name = "attachment/attachment_upsert.html"
     permission_required = ["media_infrastructure.change_attachment"]
     return_exc_response_as_json = True
@@ -84,6 +86,7 @@ class UpdateAttachmentView(views.AdminGenericMixin, views.FormView):
         init["attachment_id"] = attachment.id
         init["content_type"] = attachment.content_type_id
         init["object_id"] = attachment.object_id
+        init["attachment_type"] = attachment.attachment_type
         init["title"] = attachment.title
         return init
 
@@ -92,7 +95,7 @@ class UpdateAttachmentView(views.AdminGenericMixin, views.FormView):
         form.attachment_data = self.get_attachment_data()
         return form
 
-    def form_valid(self, form: UpsertAttachmentForm) -> JsonResponse:
+    def form_valid(self, form: AttachmentUpsertForm) -> JsonResponse:
         # get form data
         data = form.get_form_data()
         # get form files
@@ -102,6 +105,7 @@ class UpdateAttachmentView(views.AdminGenericMixin, views.FormView):
             UpdateAttachmentCommand(
                 attachment_id=data["attachment_id"],
                 content_type_id=data["content_type"],
+                attachment_type=data["attachment_type"],
                 title=data["title"],
                 file=files.get("file", None),  # type: ignore
                 object_id=data["object_id"],

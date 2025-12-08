@@ -7,7 +7,7 @@ from django.utils.translation import gettext_lazy as _
 from shared.infrastructure import forms
 
 
-class UpsertAttachmentForm(forms.Form):
+class AttachmentUpsertForm(forms.Form):
     is_ajax_form = True
     ajax_success_callbacK_method_name = "attachmentHasBeenManaged"
     ajax_error_callback_method_name = "attachmentManagerHasError"
@@ -33,6 +33,12 @@ class UpsertAttachmentForm(forms.Form):
 
     # object id (this id is generated at the first place)
     object_id = forms.CharField(
+        required=True,
+        widget=forms.HiddenInput(),
+    )
+
+    # attachment type system name
+    attachment_type = forms.CharField(
         required=True,
         widget=forms.HiddenInput(),
     )

@@ -21,6 +21,7 @@ class Attachment(AggregateRoot):
         object_id: int | str,
         id: str | None = None,
         title: str | None = None,
+        attachment_type: str = "",
         created_at: datetime | None = None,
         updated_at: datetime | None = None,
     ) -> None:
@@ -34,8 +35,14 @@ class Attachment(AggregateRoot):
                 _("Attachment should have relation information")
             )
 
+        if not attachment_type or attachment_type == "":
+            raise AttachmentValidationError(
+                _("Attachment should have a type to identify it")
+            )
+
         self._file = file
         self._title = title or ""
+        self._attachment_type = attachment_type or ""
         self._content_type_id = content_type_id
         self._object_id = object_id
 
@@ -46,6 +53,10 @@ class Attachment(AggregateRoot):
     @property
     def title(self) -> str:
         return self._title
+
+    @property
+    def attachment_type(self) -> str:
+        return self._attachment_type
 
     @property
     def content_type_id(self) -> int:
@@ -68,14 +79,19 @@ class Attachment(AggregateRoot):
         self._file = new_file
         self.update_timestamp()
 
-    def update_information(self, title: str | None = None) -> None:
+    def update_information(
+        self, title: str | None = None, attachment_type: str | None = None
+    ) -> None:
         """Update attachment information.
 
         Args:
             title (str | None, optional): title of the file. Defaults to None.
+            attachment_type (str | None, optional): type of the attachment. Defaults to None.
         """
-        if title:
+        if title is not None:
             self._title = title
+        if attachment_type is not None:
+            self._attachment_type = attachment_type
 
         self.update_timestamp()
 
@@ -91,6 +107,7 @@ class Attachment(AggregateRoot):
             {
                 "file": self.file.to_dict(),
                 "title": self.title,
+                "attachment_type": self.attachment_type,
             }
         )
         return base_dict

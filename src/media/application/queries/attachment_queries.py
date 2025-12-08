@@ -20,6 +20,8 @@ class SearchAttachmentsQuery(Query):
     content_type_id: int | None = None
     # object id of related model
     object_id: str | int | None = None
+    # attachment type
+    attachment_type: str = ""
 
 
 @dataclass

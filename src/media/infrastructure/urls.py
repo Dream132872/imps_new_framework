@@ -39,7 +39,7 @@ picture_urlpatterns = [
 
 attachment_urlpatterns = [
     path(
-        "create/<str:content_type>/<str:object_id>/",
+        "create/<str:attachment_type>/<str:content_type>/<str:object_id>/",
         CreateAttachmentView.as_view(),
         name="create",
     ),

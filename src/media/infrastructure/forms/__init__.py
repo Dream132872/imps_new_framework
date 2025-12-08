@@ -1,5 +1,5 @@
 from .picture_forms import UpsertPictureForm
-from .attachment_forms import UpsertAttachmentForm
+from .attachment_forms import AttachmentUpsertForm
 
-__all__ = ("UpsertPictureForm", "UpsertAttachmentForm")
+__all__ = ("UpsertPictureForm", "AttachmentUpsertForm")
 

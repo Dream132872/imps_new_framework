@@ -68,14 +68,26 @@ class Attachment(BaseModel):
     # content object
     content_object = GenericForeignKey("content_type", "object_id")
 
+    # Attachment type/context
+    attachment_type = models.CharField(
+        max_length=50,
+        default="",
+        blank=True,
+        verbose_name=_("Attachment Type"),
+        help_text=_("Type of the attachment to manage"),
+    )
+
     class Meta:
         db_table = "attachments"
         verbose_name = _("Attachment")
         verbose_name_plural = _("Attachments")
         indexes = [
             models.Index(
-                fields=["content_type", "object_id"]
+                fields=["content_type", "object_id", "attachment_type"]
             ),  # For generic relation lookups
+            models.Index(
+                fields=["attachment_type"]
+            ),  # For attachment type lookups
             models.Index(
                 fields=["display_order", "-created_at"]
             ),  # For ordering queries
@@ -88,4 +100,4 @@ class Attachment(BaseModel):
 
     def __repr__(self) -> str:
         """Debug representation of the attachment."""
-        return f"<Attachment pk={self.id} name={self.file} />"
+        return f"<Attachment pk={self.id} name={self.file} type={self.attachment_type}/>"

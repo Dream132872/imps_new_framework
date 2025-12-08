@@ -50,6 +50,7 @@ class BaseAttachmentCommandHandler:
         return AttachmentDTO(
             id=attachment.id,
             file=file,
+            attachment_type=attachment.attachment_type,
             title=attachment.title,
             content_type_id=attachment.content_type_id,
             object_id=attachment.object_id,
@@ -76,6 +77,7 @@ class CreateAttachmentCommandHandler(
                     file=file_field,
                     content_type_id=command.content_type_id,
                     object_id=str(command.object_id),
+                    attachment_type=command.attachment_type,
                     title=command.title,
                 )
 
@@ -119,7 +121,10 @@ class UpdateAttachmentCommandHandler(
                     )
 
                 # update attachment information
-                attachment.update_information(title=command.title)
+                attachment.update_information(
+                    title=command.title,
+                    attachment_type=command.attachment_type
+                )
 
                 # save the new
                 attachment = self.uow[AttachmentRepository].save(attachment)

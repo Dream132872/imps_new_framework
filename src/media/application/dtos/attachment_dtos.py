@@ -16,6 +16,7 @@ class AttachmentDTO:
 
     id: str
     file: FileFieldDTO
+    attachment_type: str
     title: str
     content_type_id: int
     object_id: int | str

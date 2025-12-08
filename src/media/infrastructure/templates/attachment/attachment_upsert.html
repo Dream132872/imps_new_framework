@@ -17,6 +17,7 @@
 {% endblock %}
 
 {% block content %}
+  {{ request }}
   <div id="fileupload-progress" class="fileupload-progress">
     <div class="progress-text text-center"></div>
     <div class="progress">
@@ -220,6 +221,8 @@
       formData.append('content_type_id', $('#id_content_type').val())
       formData.append('object_id', $('#id_object_id').val())
       formData.append('title', $('#id_title').val())
+      formData.append('attachment_type', $('#id_attachment_type').val())
+
       if ($('#id_attachment_id').val()) {
         formData.append('attachment_id', $('#id_attachment_id').val())
       }
@@ -263,10 +266,12 @@
       }, 1000)
     }
 
-    function attachmentFormAjaxCompleted() {
-      setFormSubmitting(false)
+    function attachmentFormAjaxCompleted(res) {
+      setFormSubmitting(true)
       if (typeof defaultAjaxFormCompleted === 'function') {
-        defaultAjaxFormCompleted()
+        defaultAjaxFormCompleted(res)
+      } else {
+        attachmentHasBeenManaged(res)
       }
     }
 

@@ -167,6 +167,7 @@ class CompleteAttachmentChunkUploadView(views.AdminGenericMixin, views.View):
         upload_id = request.POST.get("upload_id")
         content_type_id = request.POST.get("content_type_id")
         object_id = request.POST.get("object_id")
+        attachment_type = request.POST.get("attachment_type", "")
         title = request.POST.get("title", "")
         attachment_id = request.POST.get("attachment_id")
 
@@ -186,6 +187,7 @@ class CompleteAttachmentChunkUploadView(views.AdminGenericMixin, views.View):
                     attachment_id=uuid.UUID(attachment_id),
                     content_type_id=int(content_type_id),
                     object_id=uuid.UUID(object_id),
+                    attachment_type=attachment_type,
                     file=completed_file,
                     title=title,
                 )
@@ -197,6 +199,7 @@ class CompleteAttachmentChunkUploadView(views.AdminGenericMixin, views.View):
                 CreateAttachmentCommand(
                     content_type_id=int(content_type_id),
                     object_id=uuid.UUID(object_id),
+                    attachment_type=attachment_type,
                     file=completed_file,
                     title=title,
                 )

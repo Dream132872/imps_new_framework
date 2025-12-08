@@ -14,6 +14,7 @@ from shared.application.cqrs import Command
 class CreateAttachmentCommand(Command):
     content_type_id: int
     object_id: uuid.UUID
+    attachment_type: str
     file: BinaryIO
     title: str
 
@@ -23,6 +24,7 @@ class UpdateAttachmentCommand(Command):
     attachment_id: uuid.UUID
     content_type_id: int
     object_id: uuid.UUID
+    attachment_type: str
     file: BinaryIO | None
     title: str
 
