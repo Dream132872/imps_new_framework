@@ -27,6 +27,11 @@ class Attachment(AggregateRoot):
     ) -> None:
         super().__init__(id, created_at, updated_at)
 
+        if not isinstance(file, FileField):
+            raise AttachmentValidationError(
+                _("File should be an instance of FileField")
+            )
+
         if not file or file.size == 0:
             raise AttachmentValidationError(_("File cannot be None"))
 
@@ -72,6 +77,11 @@ class Attachment(AggregateRoot):
         Args:
             new_file (FileField): new file field.
         """
+
+        if not isinstance(new_file, FileField):
+            raise AttachmentValidationError(
+                _("File should be an instance of FileField")
+            )
 
         if not new_file or (new_file.size is not None and new_file.size == 0):
             raise AttachmentValidationError(_("File cannot be None"))

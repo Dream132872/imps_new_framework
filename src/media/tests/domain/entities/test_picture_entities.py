@@ -216,7 +216,7 @@ class TestPictureEntity:
             sample_picture_entity.alternative == origianl_alternative
         ), "alternative value should not be changed"
 
-    def test_picture_to_dict(self, sample_picture_entity: PictureEntity):
+    def test_picture_to_dict(self, sample_picture_entity: PictureEntity) -> None:
         """Test converting Picture entity to dictionary."""
         # Act
         result = sample_picture_entity.to_dict()
@@ -270,7 +270,7 @@ class TestPictureEntity:
         assert picture_1 != picture_3
         assert picture_2 != picture_3
 
-    def test_picture_repr_representation(self, sample_picture_entity: PictureEntity):
+    def test_picture_repr_representation(self, sample_picture_entity: PictureEntity) -> None:
         """Test picture representation."""
         # Arrange
         picture_repr = repr(sample_picture_entity)

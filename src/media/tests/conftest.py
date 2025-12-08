@@ -9,6 +9,7 @@ import pytest
 from django.contrib.contenttypes.models import ContentType
 from django.core.files.uploadedfile import SimpleUploadedFile
 
+from media.domain.entities.attachment_entities import Attachment as AttachmentEntity
 from media.domain.entities.picture_entities import Picture as PictureEntity
 from media.infrastructure.models import Picture as PictureModel
 from shared.domain.entities import FileField, FileType
@@ -145,3 +146,29 @@ def sample_attachment_file_field(
     """Creating a sample Attachment FileField."""
 
     return attachment_file_field_factory()
+
+
+@pytest.fixture
+def attachment_entity_factory(
+    sample_content_type: ContentType, sample_attachment_file_field: FileField
+) -> Callable[..., AttachmentEntity]:
+    def _create_attachment(**kwargs) -> AttachmentEntity:  # type: ignore
+        return AttachmentEntity(
+            id=kwargs.get("attachment_id", None),
+            file=kwargs.get("file", sample_attachment_file_field),
+            attachment_type=kwargs.get("attachment_type", "document"),
+            content_type_id=kwargs.get("content_type_id", sample_content_type.id),
+            object_id=kwargs.get("object_id", str(uuid.uuid4())),
+            title=kwargs.get("title", ""),
+        )
+
+    return _create_attachment
+
+
+@pytest.fixture
+def sample_attachment_entity(
+    attachment_entity_factory: Callable[..., AttachmentEntity],
+) -> AttachmentEntity:
+    """Creates a sample of AttachmentEntity"""
+
+    return attachment_entity_factory(title="Title of the attachment")
