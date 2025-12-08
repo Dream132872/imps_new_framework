@@ -59,7 +59,7 @@ class ChunkUpload(Entity):
         uploaded_size: int = 0,
         chunk_count: int = 0,
         temp_file_path: str | None = None,
-        status: str | ChunkUploadStatus = "pending",
+        status: str | ChunkUploadStatus = ChunkUploadStatus.PENDING,
         created_at: datetime | None = None,
         updated_at: datetime | None = None,
     ) -> None:
@@ -69,6 +69,10 @@ class ChunkUpload(Entity):
             self._status = ChunkUploadStatus.from_string(status)
         elif isinstance(status, ChunkUploadStatus):
             self._status = status
+        else:
+            raise ChunkUploadValidationError(
+                _("Status should be one of string or ChunkUploadStatus type")
+            )
 
         self._upload_id = str(upload_id) if isinstance(upload_id, UUID) else upload_id
         self._filename = filename
@@ -115,10 +119,10 @@ class ChunkUpload(Entity):
         """
         from django.utils.translation import gettext_lazy as _
 
-        from media.domain.exceptions import ChunkUploadValidationError
+        from media.domain.exceptions import ChunkUploadInvalidEntityError
 
         if self._uploaded_size < self._total_size:
-            raise ChunkUploadValidationError(
+            raise ChunkUploadInvalidEntityError(
                 _(
                     "Upload is not completed yet. {uploaded}/{total} bytes uploaded"
                 ).format(uploaded=self._uploaded_size, total=self._total_size)

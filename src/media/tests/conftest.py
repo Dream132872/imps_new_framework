@@ -10,6 +10,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 from media.domain.entities.attachment_entities import Attachment as AttachmentEntity
+from media.domain.entities.chunk_upload_entities import ChunkUpload as ChunkUploadEntity
+from media.domain.entities.chunk_upload_entities import ChunkUploadStatus
 from media.domain.entities.picture_entities import Picture as PictureEntity
 from media.infrastructure.models import Picture as PictureModel
 from shared.domain.entities import FileField, FileType
@@ -172,3 +174,29 @@ def sample_attachment_entity(
     """Creates a sample of AttachmentEntity"""
 
     return attachment_entity_factory(title="Title of the attachment")
+
+
+@pytest.fixture
+def chunk_upload_entity_factory() -> Callable[..., ChunkUploadEntity]:
+    """Creates chunk upload entity with desigred fields"""
+
+    def _create_chunk_upload(**kwargs) -> ChunkUploadEntity:  # type: ignore
+        return ChunkUploadEntity(
+            id=kwargs.get("id", None),
+            upload_id=kwargs.get("upload_id", str(uuid.uuid4())),
+            filename=kwargs.get("filename", str(uuid.uuid4()) + ".rar"),
+            total_size=kwargs.get("total_size", 2048),
+            uploaded_size=kwargs.get("uploaded_size", 0),
+            chunk_count=kwargs.get("chunk_count", 0),
+            temp_file_path=kwargs.get("temp_file_path", None),
+            status=kwargs.get("status", ChunkUploadStatus.PENDING),
+        )
+
+    return _create_chunk_upload
+
+
+@pytest.fixture
+def sample_chunk_upload_entity(
+    chunk_upload_entity_factory: Callable[..., ChunkUploadEntity],
+) -> ChunkUploadEntity:
+    return chunk_upload_entity_factory()
