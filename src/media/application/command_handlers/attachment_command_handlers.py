@@ -3,8 +3,6 @@ Attachment Command Handlers for CQRS implementations.
 Handlers execute business logic for commands.
 """
 
-from typing import Any
-
 from django.utils.translation import gettext_lazy as _
 from injector import inject
 
@@ -14,14 +12,14 @@ from media.application.commands import (
     UpdateAttachmentCommand,
 )
 from media.application.dtos import AttachmentDTO
+from media.application.mappers import AttachmentDTOMapper
 from media.domain.entities import Attachment
 from media.domain.exceptions import AttachmentNotFoundError, AttachmentValidationError
 from media.domain.repositories import AttachmentRepository
 from media.domain.services import FileStorageService
 from shared.application.cqrs import CommandHandler
-from shared.application.dtos import FileFieldDTO
 from shared.application.exception_mapper import map_domain_exception_to_application
-from shared.application.exceptions import ApplicationError, ApplicationValidationError
+from shared.application.exceptions import ApplicationError
 from shared.domain.exceptions import DomainEntityNotFoundError
 from shared.domain.factories import FileFieldFactory
 from shared.domain.repositories import UnitOfWork
@@ -36,27 +34,6 @@ class BaseAttachmentCommandHandler:
     ) -> None:
         self.uow = uow
         self.file_storage_service = file_storage_service
-
-    def _to_dto(self, attachment: Attachment) -> AttachmentDTO:
-        file = FileFieldDTO(
-            file_type="file",
-            url=attachment.file.url,
-            name=attachment.file.name,
-            size=attachment.file.size,
-            width=None,
-            height=None,
-            content_type=attachment.file.content_type,
-        )
-        return AttachmentDTO(
-            id=attachment.id,
-            file=file,
-            attachment_type=attachment.attachment_type,
-            title=attachment.title,
-            content_type_id=attachment.content_type_id,
-            object_id=attachment.object_id,
-            created_at=attachment.created_at,
-            updated_at=attachment.updated_at,
-        )
 
 
 class CreateAttachmentCommandHandler(
@@ -83,7 +60,7 @@ class CreateAttachmentCommandHandler(
 
                 # save attachment in db
                 attachment = self.uow[AttachmentRepository].save(attachment)
-                return self._to_dto(attachment)
+                return AttachmentDTOMapper.to_dto(attachment)
         except AttachmentValidationError as e:
             self.file_storage_service.delete_file(file_path)
             raise map_domain_exception_to_application(e) from e
@@ -122,8 +99,7 @@ class UpdateAttachmentCommandHandler(
 
                 # update attachment information
                 attachment.update_information(
-                    title=command.title,
-                    attachment_type=command.attachment_type
+                    title=command.title, attachment_type=command.attachment_type
                 )
 
                 # save the new
@@ -132,7 +108,7 @@ class UpdateAttachmentCommandHandler(
                 if old_file_path:
                     self.file_storage_service.delete_file(old_file_path)
 
-                return self._to_dto(attachment)
+                return AttachmentDTOMapper.to_dto(attachment)
         except DomainEntityNotFoundError as e:
             raise map_domain_exception_to_application(
                 e, _("Attachment not found: {msg}").format(msg=str(e))
@@ -158,7 +134,7 @@ class DeleteAttachmentCommandHandler(
                 self.uow[AttachmentRepository].delete(attachment)
                 # remove file from storage
                 self.file_storage_service.delete_file(attachment.file.path)
-                return self._to_dto(attachment)
+                return AttachmentDTOMapper.to_dto(attachment)
         except AttachmentNotFoundError as e:
             # Use the exception mapper for automatic transformation
             raise map_domain_exception_to_application(e) from e

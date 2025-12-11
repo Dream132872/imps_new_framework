@@ -10,10 +10,10 @@ from django.utils.translation import gettext_lazy as _
 from injector import inject
 
 from identity.application.dtos.user_dtos import UserDTO
+from identity.application.mappers import UserDTOMapper
 from identity.application.queries.user_queries import GetUserByIdQuery, SearchUsersQuery
 from identity.domain.entities import User
 from identity.domain.exceptions import UserNotFoundError
-from identity.domain.exceptions.user import UserInvalidError
 from identity.domain.repositories import UserRepository
 from shared.application.cqrs import QueryHandler
 from shared.application.exception_mapper import map_domain_exception_to_application
@@ -22,7 +22,6 @@ from shared.application.pagination import (
     PaginatedResultDTO,
     convert_to_paginated_result_dto,
 )
-from shared.domain.exceptions import DomainEntityNotFoundError
 from shared.domain.repositories import UnitOfWork
 
 __all__ = (
@@ -41,28 +40,6 @@ class BaseUserQueryHandler:
     def __init__(self, uow: UnitOfWork) -> None:
         self.uow = uow
 
-    def _to_dto(self, user: User) -> UserDTO:
-        """Map the UserEntity to UserDTO
-
-        Args:
-            user (User): an instance of User entity.
-
-        Returns:
-            UserDTO: an instance of UserDTO
-        """
-        return UserDTO(
-            id=str(user.id),
-            username=user.username,
-            email=user.email.value if user.email else "",
-            first_name=user.first_name,
-            last_name=user.last_name,
-            is_active=user.is_active,
-            is_staff=user.is_staff,
-            is_superuser=user.is_superuser,
-            created_at=user.created_at,
-            updated_at=user.updated_at,
-        )
-
 
 class GetUserByIdQueryHandler(
     QueryHandler[GetUserByIdQuery, UserDTO], BaseUserQueryHandler
@@ -72,7 +49,7 @@ class GetUserByIdQueryHandler(
     def handle(self, query: GetUserByIdQuery) -> UserDTO:
         try:
             user = self.uow[UserRepository].get_by_id(query.user_id)
-            return self._to_dto(user)
+            return UserDTOMapper.to_dto(user)
 
         except UserNotFoundError as e:
             raise map_domain_exception_to_application(
@@ -103,7 +80,7 @@ class SearchUsersQueryHandler(
 
             return convert_to_paginated_result_dto(
                 paginated_object=paginated_users,
-                items=[self._to_dto(u) for u in paginated_users.items],
+                items=UserDTOMapper.list_to_dto(paginated_users.items),
             )
         except Exception as e:
             raise ApplicationError(

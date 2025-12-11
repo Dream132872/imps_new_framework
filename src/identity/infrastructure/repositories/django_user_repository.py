@@ -12,6 +12,7 @@ from django.utils.translation import gettext_lazy as _
 from identity.domain.entities import User
 from identity.domain.exceptions import UserNotFoundError
 from identity.domain.repositories import UserRepository
+from identity.infrastructure.mappers import UserMapper
 from shared.domain.exceptions import DomainEntityNotFoundError
 from shared.domain.pagination import DomainPaginator
 from shared.infrastructure.pagination import DjangoPaginatorFactory
@@ -31,46 +32,10 @@ class DjangoUserRepository(DjangoRepository[User], UserRepository):
         super().__init__(UserModel, User)
 
     def _model_to_entity(self, model: Any) -> User:
-        return User(
-            id=model.id,
-            username=model.username,
-            email=model.email,
-            is_active=model.is_active,
-            first_name=model.first_name,
-            last_name=model.last_name,
-            is_staff=model.is_staff,
-            is_superuser=model.is_superuser,
-            password=model.password,
-            created_at=model.created_at,
-            updated_at=model.updated_at,
-        )
+        return UserMapper.model_to_entity(model)
 
     def _entity_to_model(self, entity: User) -> UserModel:  # type: ignore
-        user, created = self.model_class.objects.get_or_create(
-            pk=entity.id,
-            defaults={
-                "username": entity.username,
-                "password": entity.password,
-                "first_name": entity.first_name,
-                "last_name": entity.last_name,
-                "email": entity.email.value if entity.email else "",
-                "is_staff": entity.is_staff,
-                "is_superuser": entity.is_superuser,
-                "is_active": entity.is_active,
-            },
-        )
-
-        if not created:
-            user.username = entity.username
-            user.password = entity.password
-            user.first_name = entity.first_name
-            user.last_name = entity.last_name
-            user.email = entity.email
-            user.is_staff = entity.is_staff
-            user.is_superuser = entity.is_superuser
-            user.is_active = entity.is_active
-
-        return user
+        return UserMapper.entity_to_model(entity)
 
     def get_by_id(self, id: str) -> User:
         try:

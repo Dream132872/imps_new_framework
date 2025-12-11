@@ -48,6 +48,8 @@ class PictureType(Enum):
 
 
 class Picture(AggregateRoot):
+    """Domain entity definition for picture"""
+
     def __init__(
         self,
         image: FileField,

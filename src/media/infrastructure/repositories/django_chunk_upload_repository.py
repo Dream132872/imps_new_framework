@@ -9,6 +9,7 @@ from django.utils.translation import gettext_lazy as _
 from media.domain.entities import ChunkUpload
 from media.domain.exceptions import ChunkUploadNotFoundError
 from media.domain.repositories import ChunkUploadRepository
+from media.infrastructure.mappers import ChunkUploadMapper
 from media.infrastructure.models import ChunkUpload as ChunkUploadModel
 from shared.infrastructure.repositories import DjangoRepository
 
@@ -22,43 +23,10 @@ class DjangoChunkUploadRepository(DjangoRepository[ChunkUpload], ChunkUploadRepo
         super().__init__(ChunkUploadModel, ChunkUpload)
 
     def _model_to_entity(self, model: ChunkUploadModel) -> ChunkUpload:
-        return ChunkUpload(
-            id=str(model.id),
-            created_at=model.created_at,
-            updated_at=model.updated_at,
-            upload_id=model.upload_id,
-            filename=model.filename,
-            total_size=model.total_size,
-            uploaded_size=model.uploaded_size,
-            chunk_count=model.chunk_count,
-            temp_file_path=model.temp_file_path,
-            status=model.status,
-        )
+        return ChunkUploadMapper.model_to_entity(model)
 
     def _entity_to_model(self, entity: ChunkUpload) -> ChunkUploadModel:
-        model, created = ChunkUploadModel.objects.get_or_create(
-            id=entity.id,
-            defaults={
-                "upload_id": entity.upload_id,
-                "filename": entity.filename,
-                "total_size": entity.total_size,
-                "uploaded_size": entity.uploaded_size,
-                "chunk_count": entity.chunk_count,
-                "temp_file_path": entity.temp_file_path,
-                "status": entity.status,
-            },
-        )
-
-        if not created:
-            model.upload_id = entity.upload_id
-            model.filename = entity.filename
-            model.total_size = entity.total_size
-            model.uploaded_size = entity.uploaded_size
-            model.chunk_count = entity.chunk_count
-            model.temp_file_path = entity.temp_file_path
-            model.status = entity.status
-
-        return model
+        return ChunkUploadMapper.entity_to_model(entity)
 
     def get_by_id(self, id: str) -> ChunkUpload:
         return super().get_by_id(id)

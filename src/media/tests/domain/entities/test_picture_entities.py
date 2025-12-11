@@ -1,11 +1,13 @@
 """Test picture entity."""
 
 import uuid
+from typing import Callable
 
 import pytest
 from django.contrib.contenttypes.models import ContentType
 
 from media.domain.entities.picture_entities import Picture as PictureEntity
+from media.domain.exceptions import PictureValidationError
 from shared.domain.entities import FileField, FileType
 
 
@@ -102,6 +104,18 @@ class TestPictureEntity:
         assert (
             picture.id == custom_id
         ), "id of the picture should be set to custom value"
+
+    def test_create_picture_with_invalid_type(
+        self, picture_entity_factory: Callable[..., PictureEntity]
+    ) -> None:
+        """Test creating picture with invalid type"""
+
+        # Arrange
+        invalid_type = "inalid_type"
+
+        # Assert
+        with pytest.raises(PictureValidationError) as e:
+            picture_entity_factory(picture_type=invalid_type)
 
     def test_picture_update_image(
         self, sample_picture_entity: PictureEntity, sample_content_type: ContentType
@@ -270,7 +284,9 @@ class TestPictureEntity:
         assert picture_1 != picture_3
         assert picture_2 != picture_3
 
-    def test_picture_repr_representation(self, sample_picture_entity: PictureEntity) -> None:
+    def test_picture_repr_representation(
+        self, sample_picture_entity: PictureEntity
+    ) -> None:
         """Test picture representation."""
         # Arrange
         picture_repr = repr(sample_picture_entity)

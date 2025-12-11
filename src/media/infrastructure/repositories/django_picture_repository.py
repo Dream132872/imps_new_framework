@@ -7,6 +7,7 @@ from django.utils.translation import gettext_lazy as _
 from media.domain.entities import Picture
 from media.domain.exceptions import PictureNotFoundError
 from media.domain.repositories import PictureRepository
+from media.infrastructure.mappers import PictureMapper
 from media.infrastructure.models import Picture as PictureModel
 from shared.domain.exceptions import DomainEntityNotFoundError
 from shared.domain.factories import FileFieldFactory
@@ -24,42 +25,10 @@ class DjangoPictureRepository(DjangoRepository[Picture], PictureRepository):
         super().__init__(PictureModel, Picture)
 
     def _model_to_entity(self, model: PictureModel) -> Picture:
-        image = FileFieldFactory.from_image_field(model.image)
-        return Picture(
-            id=str(model.id),
-            created_at=model.created_at,
-            updated_at=model.updated_at,
-            image=image,
-            title=model.title,
-            alternative=model.alternative,
-            picture_type=model.picture_type,
-            content_type_id=model.content_type_id,
-            object_id=model.object_id,  # type: ignore
-        )
+        return PictureMapper.model_to_entity(model)
 
     def _entity_to_model(self, entity: Picture) -> PictureModel:
-        model, created = PictureModel.objects.get_or_create(
-            id=entity.id,
-            defaults={
-                "image": entity.image.name,
-                "alternative": entity.alternative,
-                "title": entity.title,
-                "picture_type": entity.picture_type,
-                "content_type_id": entity.content_type_id,
-                "object_id": entity.object_id,
-            },
-        )
-
-        # If the model already existed, update its fields
-        if not created:
-            model.image = entity.image.name  # type: ignore
-            model.alternative = entity.alternative
-            model.title = entity.title
-            model.picture_type = entity.picture_type
-            model.content_type_id = entity.content_type_id
-            model.object_id = entity.object_id if entity.object_id else None  # type: ignore
-
-        return model
+        return PictureMapper.entity_to_model(entity)
 
     def get_by_id(self, id: str) -> Picture:
         try:

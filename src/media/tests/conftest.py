@@ -4,6 +4,7 @@ Media related fixtures.
 
 import uuid
 from typing import Callable
+from unittest.mock import MagicMock
 
 import pytest
 from django.contrib.contenttypes.models import ContentType
@@ -13,8 +14,15 @@ from media.domain.entities.attachment_entities import Attachment as AttachmentEn
 from media.domain.entities.chunk_upload_entities import ChunkUpload as ChunkUploadEntity
 from media.domain.entities.chunk_upload_entities import ChunkUploadStatus
 from media.domain.entities.picture_entities import Picture as PictureEntity
+from media.domain.repositories import (
+    AttachmentRepository,
+    ChunkUploadRepository,
+    PictureRepository,
+)
+from media.domain.services import FileStorageService
 from media.infrastructure.models import Picture as PictureModel
 from shared.domain.entities import FileField, FileType
+from shared.infrastructure.ioc import UnitOfWork
 
 
 @pytest.fixture
@@ -58,7 +66,7 @@ def sample_image_file_field(
 @pytest.fixture
 def picture_entity_factory(
     db: None, sample_image_file_field: FileField, sample_content_type: ContentType
-):
+) -> Callable[..., PictureEntity]:
     """Picture entity factory."""
 
     def _create_picture_entity(**kwargs):  # type: ignore
@@ -154,6 +162,8 @@ def sample_attachment_file_field(
 def attachment_entity_factory(
     sample_content_type: ContentType, sample_attachment_file_field: FileField
 ) -> Callable[..., AttachmentEntity]:
+    """Factory of attachment entity"""
+
     def _create_attachment(**kwargs) -> AttachmentEntity:  # type: ignore
         return AttachmentEntity(
             id=kwargs.get("attachment_id", None),
@@ -199,4 +209,55 @@ def chunk_upload_entity_factory() -> Callable[..., ChunkUploadEntity]:
 def sample_chunk_upload_entity(
     chunk_upload_entity_factory: Callable[..., ChunkUploadEntity],
 ) -> ChunkUploadEntity:
+    """Creates a sample of chunk upload entity"""
+
     return chunk_upload_entity_factory()
+
+
+@pytest.fixture
+def mock_picture_repository() -> MagicMock:
+    """Creates a MagicMock object of picture repository"""
+
+    return MagicMock(spec=PictureRepository)
+
+
+@pytest.fixture
+def mock_attachment_repository() -> MagicMock:
+    """Creates a MagicMock object of attachment repository"""
+
+    return MagicMock(spec=AttachmentRepository)
+
+
+@pytest.fixture
+def mock_chunk_upload_repository() -> MagicMock:
+    """Creates a MagicMock object from chunk upload repository"""
+
+    return MagicMock(spec=ChunkUploadRepository)
+
+
+@pytest.fixture
+def mock_unit_of_work(
+    mock_picture_repository: MagicMock,
+    mock_attachment_repository: MagicMock,
+    mock_chunk_upload_repository: MagicMock,
+) -> MagicMock:
+    """Created a MagicMock object of unit of work"""
+
+    mock_uow = MagicMock(spec=UnitOfWork)
+
+    mock_uow.__get_item__ = MagicMock(
+        side_effect=lambda key: {
+            PictureRepository: mock_picture_repository,
+            AttachmentRepository: mock_attachment_repository,
+            ChunkUploadRepository: mock_chunk_upload_repository,
+        }.get(key)
+    )
+
+    return mock_uow
+
+
+@pytest.fixture
+def mock_file_storage_service() -> MagicMock:
+    """Created MagicMock object of file storage service"""
+
+    return MagicMock(spec=FileStorageService)

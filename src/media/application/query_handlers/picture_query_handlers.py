@@ -11,16 +11,15 @@ from django.utils.translation import gettext_lazy as _
 from injector import inject
 
 from media.application.dtos import PictureDTO
+from media.application.mappers import PictureDTOMapper
 from media.application.queries import (
     GetPictureByIdQuery,
     SearchFirstPictureQuery,
     SearchPicturesQuery,
 )
-from media.domain.entities import Picture
 from media.domain.exceptions import PictureNotFoundError
 from media.domain.repositories import PictureRepository
 from shared.application.cqrs import QueryHandler
-from shared.application.dtos import FileFieldDTO
 from shared.application.exception_mapper import map_domain_exception_to_application
 from shared.application.exceptions import ApplicationError
 from shared.domain.repositories import UnitOfWork
@@ -34,28 +33,6 @@ class BasePictureQueryHandler:
     @inject
     def __init__(self, uow: UnitOfWork) -> None:
         self.uow = uow
-
-    def _to_dto(self, picture: Picture) -> PictureDTO:
-        image = FileFieldDTO(
-            file_type="image",
-            url=picture.image.url,
-            name=picture.image.name,
-            size=picture.image.size,
-            width=picture.image.width,
-            height=picture.image.height,
-            content_type=picture.image.content_type,
-        )
-        return PictureDTO(
-            id=picture.id,
-            image=image,
-            picture_type=picture.picture_type,
-            title=picture.title,
-            alternative=picture.alternative,
-            content_type_id=picture.content_type_id,
-            object_id=picture.object_id,
-            created_at=picture.created_at,
-            updated_at=picture.updated_at,
-        )
 
 
 class SearchPicturesQueryHandler(
@@ -71,7 +48,7 @@ class SearchPicturesQueryHandler(
             picture_type=query.picture_type,
         )
 
-        return [self._to_dto(p) for p in pictures]
+        return PictureDTOMapper.list_to_dto(pictures)
 
 
 class SearchFirstPictureQueryHandler(
@@ -87,7 +64,7 @@ class SearchFirstPictureQueryHandler(
             picture_type=query.picture_type,
         )
 
-        return self._to_dto(picture) if picture else None
+        return PictureDTOMapper.to_dto(picture) if picture else None
 
 
 class GetPictureByIdQueryHandler(
@@ -97,7 +74,7 @@ class GetPictureByIdQueryHandler(
     def handle(self, query: GetPictureByIdQuery) -> PictureDTO:
         try:
             picture = self.uow[PictureRepository].get_by_id(str(query.picture_id))
-            return self._to_dto(picture)
+            return PictureDTOMapper.to_dto(picture)
         except PictureNotFoundError as e:
             raise map_domain_exception_to_application(
                 e, message=_("Picture not found: {msg}").format(msg=str(e))
