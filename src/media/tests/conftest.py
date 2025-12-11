@@ -21,7 +21,7 @@ from media.domain.repositories import (
 )
 from media.domain.services import FileStorageService
 from media.infrastructure.models import Picture as PictureModel
-from shared.domain.entities import FileField, FileType
+from shared.domain.entities import FileField, FileFieldType
 from shared.infrastructure.ioc import UnitOfWork
 
 
@@ -41,7 +41,7 @@ def image_file_field_factory(db: None):
 
     def _create_file_field(**kwargs):  # type: ignore
         return FileField(
-            file_type=FileType.IMAGE,
+            file_type=FileFieldType.IMAGE,
             name=kwargs.get("image_name", "test_image.jpg"),
             path=kwargs.get("image_path", "/media/test_image.jpg"),
             url=kwargs.get("image_url", "/media/test_image.jpg"),
@@ -136,7 +136,7 @@ def attachment_file_field_factory(db: None) -> Callable[..., FileField]:
 
     def _create_file_field(**kwargs):  # type: ignore
         return FileField(
-            file_type=FileType.FILE,
+            file_type=FileFieldType.FILE,
             name=kwargs.get("file_name", "test_file.rar"),
             path=kwargs.get("file_path", "/media/test_file.rar"),
             url=kwargs.get("file_url", "/media/test_file.rar"),

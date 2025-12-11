@@ -8,7 +8,7 @@ from django.contrib.contenttypes.models import ContentType
 
 from media.domain.entities.picture_entities import Picture as PictureEntity
 from media.domain.exceptions import PictureValidationError
-from shared.domain.entities import FileField, FileType
+from shared.domain.entities import FileField, FileFieldType
 
 
 @pytest.mark.unit
@@ -124,7 +124,7 @@ class TestPictureEntity:
         # Arragne
         original_updated_at = sample_picture_entity.updated_at
         new_file_field = FileField(
-            file_type=FileType.IMAGE,
+            file_type=FileFieldType.IMAGE,
             content_type="images/jpeg",
             name="images/new_image.jpg",
             url="/media/images/new_image.jpg",

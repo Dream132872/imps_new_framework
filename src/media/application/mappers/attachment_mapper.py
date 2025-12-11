@@ -3,6 +3,7 @@
 from media.application.dtos import AttachmentDTO
 from media.domain.entities import Attachment as AttachmentEntity
 from shared.application.mappers import FileFieldDTOMapper
+from shared.domain.entities import FileFieldType
 
 
 class AttachmentDTOMapper:
@@ -14,7 +15,7 @@ class AttachmentDTOMapper:
 
         return AttachmentDTO(
             id=attachment.id,
-            file=FileFieldDTOMapper.entity_to_dto(attachment.file, "file"),
+            file=FileFieldDTOMapper.to_dto(attachment.file, FileFieldType.FILE),
             attachment_type=attachment.attachment_type,
             title=attachment.title,
             content_type_id=attachment.content_type_id,

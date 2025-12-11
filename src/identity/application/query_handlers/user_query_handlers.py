@@ -26,7 +26,6 @@ from shared.domain.repositories import UnitOfWork
 
 __all__ = (
     "GetUserByIdQueryHandler",
-    "GetUserByIdQueryHandler",
     "SearchUsersQueryHandler",
 )
 

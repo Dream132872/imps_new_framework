@@ -8,12 +8,12 @@ from typing import Any
 from .base import *
 
 __all__ = (
-    "FileType",
+    "FileFieldType",
     "FileField",
 )
 
 
-class FileType(Enum):
+class FileFieldType(Enum):
     IMAGE = "image"
     FILE = "file"
     NONE = "none"
@@ -22,7 +22,7 @@ class FileType(Enum):
 class FileField(ValueObject):
     def __init__(
         self,
-        file_type: FileType,
+        file_type: FileFieldType,
         name: str,
         path: str,
         url: str | None = None,
@@ -41,7 +41,7 @@ class FileField(ValueObject):
         self._content_type = content_type
 
     @property
-    def file_type(self) -> FileType:
+    def file_type(self) -> FileFieldType:
         return self._file_type
 
     @property
@@ -73,7 +73,7 @@ class FileField(ValueObject):
         return self._content_type
 
     def is_image(self) -> bool:
-        return self.file_type.value == FileType.IMAGE.value
+        return self.file_type.value == FileFieldType.IMAGE.value
 
     def has_dimensions(self) -> bool:
         return self._width is not None and self._height is not None

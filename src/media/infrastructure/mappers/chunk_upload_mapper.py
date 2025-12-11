@@ -11,29 +11,18 @@ class ChunkUploadMapper:
     def entity_to_model(entity: ChunkUploadEntity) -> ChunkUploadModel:
         """Converts chunk upload entity to model instance"""
 
-        model, created = ChunkUploadModel.objects.get_or_create(
+        return ChunkUploadModel(
             id=entity.id,
-            defaults={
-                "upload_id": entity.upload_id,
-                "filename": entity.filename,
-                "total_size": entity.total_size,
-                "uploaded_size": entity.uploaded_size,
-                "chunk_count": entity.chunk_count,
-                "temp_file_path": entity.temp_file_path,
-                "status": entity.status,
-            },
+            created_at=entity.created_at,
+            updated_at=entity.updated_at,
+            uploaded_id=entity.upload_id,
+            filename=entity.filename,
+            total_size=entity.total_size,
+            uploaded_size=entity.uploaded_size,
+            chunk_count=entity.chunk_count,
+            temp_file_path=entity.temp_file_path,
+            status=entity.status,
         )
-
-        if not created:
-            model.upload_id = entity.upload_id
-            model.filename = entity.filename
-            model.total_size = entity.total_size
-            model.uploaded_size = entity.uploaded_size
-            model.chunk_count = entity.chunk_count
-            model.temp_file_path = entity.temp_file_path
-            model.status = entity.status
-
-        return model
 
     @staticmethod
     def model_to_entity(model: ChunkUploadModel) -> ChunkUploadEntity:

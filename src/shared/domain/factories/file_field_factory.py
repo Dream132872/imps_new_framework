@@ -10,7 +10,7 @@ from django.conf import settings
 from django.core.files.storage import default_storage
 from PIL import Image
 
-from shared.domain.entities import FileField, FileType
+from shared.domain.entities import FileField, FileFieldType
 
 __all__ = ("FileFieldFactory",)
 
@@ -20,7 +20,7 @@ class FileFieldFactory:
     def from_image_field(image_field: Any) -> FileField:
         if not image_field or not default_storage.exists(image_field.name):
             return FileField(
-                file_type=FileType.NONE,
+                file_type=FileFieldType.NONE,
                 path="",
                 url=None,
                 name=None,
@@ -31,7 +31,7 @@ class FileFieldFactory:
             )
 
         return FileField(
-            file_type=FileType.IMAGE,
+            file_type=FileFieldType.IMAGE,
             path=image_field.path,
             url=image_field.url,
             name=image_field.name,
@@ -45,7 +45,7 @@ class FileFieldFactory:
     def from_file_field(file_field: Any) -> FileField:
         if not file_field:
             return FileField(
-                file_type=FileType.FILE,
+                file_type=FileFieldType.FILE,
                 path="",
                 url=None,
                 name=None,
@@ -54,7 +54,7 @@ class FileFieldFactory:
             )
 
         return FileField(
-            file_type=FileType.FILE,
+            file_type=FileFieldType.FILE,
             path=file_field.path,
             url=file_field.url,
             name=file_field.name,
@@ -74,7 +74,7 @@ class FileFieldFactory:
         """
         if not image_name or not default_storage.exists(image_name):
             return FileField(
-                file_type=FileType.NONE,
+                file_type=FileFieldType.NONE,
                 path="",
                 url=None,
                 name=None,
@@ -119,7 +119,7 @@ class FileFieldFactory:
                 is_image = False
 
         return FileField(
-            file_type=FileType.IMAGE if is_image else FileType.FILE,
+            file_type=FileFieldType.IMAGE if is_image else FileFieldType.FILE,
             path=absolute_path,
             url=file_url,
             name=relative_name,
@@ -141,7 +141,7 @@ class FileFieldFactory:
         """
         if not file_name or not default_storage.exists(file_name):
             return FileField(
-                file_type=FileType.NONE,
+                file_type=FileFieldType.NONE,
                 path="",
                 url=None,
                 name=None,
@@ -168,7 +168,7 @@ class FileFieldFactory:
         content_type, _ = mimetypes.guess_type(file_name)
 
         return FileField(
-            file_type=FileType.FILE,
+            file_type=FileFieldType.FILE,
             path=absolute_path,
             url=file_url,
             name=relative_name,

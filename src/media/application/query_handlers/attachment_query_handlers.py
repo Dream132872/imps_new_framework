@@ -10,6 +10,7 @@ from django.utils.translation import gettext_lazy as _
 from injector import inject
 
 from media.application.dtos import AttachmentDTO
+from media.application.mappers import AttachmentDTOMapper
 from media.application.queries import (
     GetAttachmentByIdQuery,
     SearchAttachmentsQuery,
@@ -34,27 +35,6 @@ class BaseAttachmentQueryHandler:
     def __init__(self, uow: UnitOfWork) -> None:
         self.uow = uow
 
-    def _to_dto(self, attachment: Attachment) -> AttachmentDTO:
-        file = FileFieldDTO(
-            file_type="file",
-            url=attachment.file.url,
-            name=attachment.file.name,
-            size=attachment.file.size,
-            width=None,
-            height=None,
-            content_type=attachment.file.content_type,
-        )
-        return AttachmentDTO(
-            id=attachment.id,
-            file=file,
-            attachment_type=attachment.attachment_type,
-            title=attachment.title,
-            content_type_id=attachment.content_type_id,
-            object_id=attachment.object_id,
-            created_at=attachment.created_at,
-            updated_at=attachment.updated_at,
-        )
-
 
 class SearchAttachmentsQueryHandler(
     QueryHandler[SearchAttachmentsQuery, list[AttachmentDTO]],
@@ -69,7 +49,7 @@ class SearchAttachmentsQueryHandler(
             attachment_type=query.attachment_type,
         )
 
-        return [self._to_dto(a) for a in attachments]
+        return AttachmentDTOMapper.list_to_dto(attachments)
 
 
 class SearchFirstAttachmentQueryHandler(
@@ -85,7 +65,7 @@ class SearchFirstAttachmentQueryHandler(
             attachment_type=query.attachment_type,
         )
 
-        return self._to_dto(attachment) if attachment else None
+        return AttachmentDTOMapper.to_dto(attachment) if attachment else None
 
 
 class GetAttachmentByIdQueryHandler(
@@ -98,7 +78,7 @@ class GetAttachmentByIdQueryHandler(
                 str(query.attachment_id)
             )
 
-            return self._to_dto(attachment)
+            return AttachmentDTOMapper.to_dto(attachment)
         except AttachmentNotFoundError as e:
             raise map_domain_exception_to_application(
                 e, message=_("Attachment not found: {msg}").format(msg=str(e))

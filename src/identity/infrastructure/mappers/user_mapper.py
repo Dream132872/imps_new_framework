@@ -29,28 +29,16 @@ class UserMapper:
     def entity_to_model(entity: UserEntity) -> UserModel:
         """Converts user entity instance to user model instance"""
 
-        user, created = UserModel.objects.get_or_create(
-            pk=entity.id,
-            defaults={
-                "username": entity.username,
-                "password": entity.password,
-                "first_name": entity.first_name,
-                "last_name": entity.last_name,
-                "email": entity.email.value if entity.email else "",
-                "is_staff": entity.is_staff,
-                "is_superuser": entity.is_superuser,
-                "is_active": entity.is_active,
-            },
+        return UserModel(
+            id=entity.id,
+            created_at=entity.created_at,
+            updated_at=entity.updated_at,
+            username=entity.username,
+            password=entity.password,
+            first_name=entity.first_name,
+            last_name=entity.last_name,
+            email=entity.email,
+            is_staff=entity.is_staff,
+            is_superuser=entity.is_superuser,
+            is_active=entity.is_active,
         )
-
-        if not created:
-            user.username = entity.username
-            user.password = entity.password
-            user.first_name = entity.first_name
-            user.last_name = entity.last_name
-            user.email = entity.email
-            user.is_staff = entity.is_staff
-            user.is_superuser = entity.is_superuser
-            user.is_active = entity.is_active
-
-        return user

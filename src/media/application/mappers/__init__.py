@@ -1,7 +1,7 @@
 """Media application dto mappers"""
 
-from .attachment_mappers import AttachmentDTOMapper
-from .picture_mappers import PictureDTOMapper
+from .attachment_mapper import AttachmentDTOMapper
+from .picture_mapper import PictureDTOMapper
 
 __all__ = (
     "PictureDTOMapper",

@@ -3,6 +3,7 @@
 from media.application.dtos import PictureDTO
 from media.domain.entities import Picture as PictureEntity
 from shared.application.mappers import FileFieldDTOMapper
+from shared.domain.entities import FileFieldType
 
 
 class PictureDTOMapper:
@@ -14,7 +15,7 @@ class PictureDTOMapper:
 
         return PictureDTO(
             id=picture.id,
-            image=FileFieldDTOMapper.entity_to_dto(picture.image, "image"),
+            image=FileFieldDTOMapper.to_dto(picture.image, FileFieldType.IMAGE),
             picture_type=picture.picture_type,
             title=picture.title,
             alternative=picture.alternative,

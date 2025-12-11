@@ -27,7 +27,7 @@ class DjangoRepository(Repository[T], Generic[T]):
 
     def save(self, entity: T) -> T:
         model_instance = self._entity_to_model(entity)
-        model_instance.save()
+        model_instance.save(force_update=self.exists_by_id(entity.id))
         return self._model_to_entity(model_instance)
 
     def get_by_id(self, id: str) -> T:
