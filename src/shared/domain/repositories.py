@@ -24,7 +24,16 @@ class Repository(ABC, Generic[T]):
 
     @abstractmethod
     def get_by_id(self, id: str) -> T:
-        """Gets an entity by it's ID."""
+        """
+        Gets an entity by it's ID.
+        you should override this method in the implemented repository for specific Domain Entity.
+
+        Raises:
+            DomainEntityNotFoundError: when the entity does not exists by provided ID.
+
+        Returns:
+            AggregateRoot: an instance of the received entity.
+        """
         raise NotImplementedError
 
     @abstractmethod
