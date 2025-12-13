@@ -26,20 +26,33 @@ from shared.infrastructure.ioc import UnitOfWork
 
 
 @pytest.fixture
-def sample_image_file() -> SimpleUploadedFile:
-    """Creating a sample image file for testing."""
+def image_file_factory() -> Callable[..., SimpleUploadedFile]:
+    """Created a factory for SimpleUploadedFile"""
 
-    image_file = b"fake image content"
-    return SimpleUploadedFile(
-        name="test_image.jpg", content=image_file, content_type="image/jpeg"
-    )
+    def _create_factory(**kwargs) -> SimpleUploadedFile:  # type: ignore
+        return SimpleUploadedFile(
+            name=kwargs.get("name", "test_image.jpg"),
+            content=kwargs.get("content", b"fake image content"),
+            content_type=kwargs.get("content_type", "images/jpeg"),
+        )
+
+    return _create_factory
 
 
 @pytest.fixture
-def image_file_field_factory(db: None):
+def sample_image_file(
+    image_file_factory: Callable[..., SimpleUploadedFile],
+) -> SimpleUploadedFile:
+    """Creating a sample image file for testing."""
+
+    return image_file_factory()
+
+
+@pytest.fixture
+def image_file_field_factory(db: None) -> Callable[..., FileField]:
     """Image file field factory."""
 
-    def _create_file_field(**kwargs):  # type: ignore
+    def _create_file_field(**kwargs) -> FileField:  # type: ignore
         return FileField(
             file_type=FileFieldType.IMAGE,
             name=kwargs.get("image_name", "test_image.jpg"),
@@ -69,10 +82,10 @@ def picture_entity_factory(
 ) -> Callable[..., PictureEntity]:
     """Picture entity factory."""
 
-    def _create_picture_entity(**kwargs):  # type: ignore
+    def _create_picture_entity(**kwargs) -> PictureEntity:  # type: ignore
         return PictureEntity(
             id=kwargs.get("picture_id", None),
-            image=sample_image_file_field,
+            image=kwargs.get("image", sample_image_file_field),
             picture_type=kwargs.get("picture_type", "main"),
             content_type_id=sample_content_type.id,
             object_id=kwargs.get("picture_object_id", str(uuid.uuid4())),
@@ -252,6 +265,8 @@ def mock_unit_of_work(
             ChunkUploadRepository: mock_chunk_upload_repository,
         }.get(key)
     )
+
+    mock_uow.__enter__.return_value = mock_uow
 
     return mock_uow
 

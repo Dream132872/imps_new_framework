@@ -47,6 +47,9 @@ class CreatePictureCommandHandler(
                 # save image using file_storage_service
                 image_name = self.file_storage_service.save_image(command.image)
 
+                if not image_name:
+                    raise PictureValidationError(_("You should pass the image file"))
+
                 # create picture entity
                 image_file = FileFieldFactory.from_image_name(image_name)
                 image_path = image_file.path

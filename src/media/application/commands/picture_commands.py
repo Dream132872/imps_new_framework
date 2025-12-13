@@ -24,7 +24,7 @@ class CreatePictureCommand(Command):
 class UpdatePictureCommand(Command):
     picture_id: uuid.UUID
     content_type_id: int
-    object_id: uuid.UUID
+    object_id: uuid.UUID | int
     picture_type: str
     image: BinaryIO | None
     title: str
@@ -34,4 +34,3 @@ class UpdatePictureCommand(Command):
 @dataclass
 class DeletePictureCommand(Command):
     pk: uuid.UUID
-

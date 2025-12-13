@@ -15,7 +15,7 @@ class ChunkUploadMapper:
             id=entity.id,
             created_at=entity.created_at,
             updated_at=entity.updated_at,
-            uploaded_id=entity.upload_id,
+            upload_id=entity.upload_id,
             filename=entity.filename,
             total_size=entity.total_size,
             uploaded_size=entity.uploaded_size,

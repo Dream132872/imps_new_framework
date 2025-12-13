@@ -5,6 +5,8 @@ Implementation of FileField aggregate roots.
 from enum import Enum
 from typing import Any
 
+from django.utils.translation import gettext_lazy as _
+
 from .base import *
 
 __all__ = (
@@ -22,7 +24,7 @@ class FileFieldType(Enum):
 class FileField(ValueObject):
     def __init__(
         self,
-        file_type: FileFieldType,
+        file_type: FileFieldType | str,
         name: str,
         path: str,
         url: str | None = None,
@@ -31,7 +33,18 @@ class FileField(ValueObject):
         height: int | None = None,
         content_type: str | None = None,
     ) -> None:
-        self._file_type = file_type
+
+        if isinstance(file_type, FileFieldType):
+            self._file_type = file_type
+        elif isinstance(file_type, str):
+            self._file_type = FileFieldType(file_type)
+        else:
+            raise ValueError(
+                _("Invalid value. valid types are: {types}").format(
+                    types=", ".join([a.value for a in FileFieldType])
+                )
+            )
+
         self._path = path
         self._url = url
         self._name = name

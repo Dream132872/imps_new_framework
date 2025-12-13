@@ -26,8 +26,31 @@ class DjangoRepository(Repository[T], Generic[T]):
         self.entity_class = entity_class
 
     def save(self, entity: T) -> T:
-        model_instance = self._entity_to_model(entity)
-        model_instance.save(force_update=self.exists_by_id(entity.id))
+        if entity.id:
+            try:
+                # Try to get existing instance (single query)
+                model_instance = self.model_class.objects.get(pk=entity.id)
+                # Update existing instance
+                updated_model = self._entity_to_model(entity)
+                for field in model_instance._meta.fields:
+                    field_name = field.name
+                    if field_name in ("id", "created_at", "updated_at"):
+                        continue
+                    if hasattr(updated_model, field_name):
+                        setattr(
+                            model_instance,
+                            field_name,
+                            getattr(updated_model, field_name),
+                        )
+                model_instance.save()
+            except self.model_class.DoesNotExist:
+                # Entity doesn't exist, create new
+                model_instance = self._entity_to_model(entity)
+                model_instance.save()
+        else:
+            # No ID, create new
+            model_instance = self._entity_to_model(entity)
+            model_instance.save()
         return self._model_to_entity(model_instance)
 
     def get_by_id(self, id: str) -> T:

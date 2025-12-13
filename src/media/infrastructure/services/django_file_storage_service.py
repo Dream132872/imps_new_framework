@@ -7,6 +7,7 @@ import uuid
 from typing import BinaryIO
 
 from django.core.files.storage import default_storage
+from django.utils.translation import gettext_lazy as _
 
 from media.domain.services import FileStorageService
 
@@ -16,6 +17,9 @@ __all__ = ("DjangoFileStorageService",)
 class DjangoFileStorageService(FileStorageService):
 
     def save_image(self, file_content: BinaryIO, image_name: str | None = None) -> str:
+        if not file_content:
+            return ""
+
         # Ensure file is at the start
         if hasattr(file_content, "seek"):
             file_content.seek(0)
@@ -56,4 +60,3 @@ class DjangoFileStorageService(FileStorageService):
 
     def file_exists(self, file_path: str) -> bool:
         return bool(file_path and default_storage.exists(file_path))
-
