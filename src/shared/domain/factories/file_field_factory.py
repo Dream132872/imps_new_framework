@@ -43,7 +43,7 @@ class FileFieldFactory:
 
     @staticmethod
     def from_file_field(file_field: Any) -> FileField:
-        if not file_field:
+        if not file_field or not default_storage.exists(file_field.name):
             return FileField(
                 file_type=FileFieldType.FILE,
                 path="",

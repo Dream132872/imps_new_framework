@@ -10,7 +10,6 @@ from media.domain.repositories import AttachmentRepository
 from media.infrastructure.mappers import AttachmentMapper
 from media.infrastructure.models import Attachment as AttachmentModel
 from shared.domain.exceptions import DomainEntityNotFoundError
-from shared.domain.factories import FileFieldFactory
 from shared.infrastructure.repositories import DjangoRepository
 
 __all__ = ("DjangoAttachmentRepository",)
