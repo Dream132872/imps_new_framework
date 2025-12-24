@@ -1,29 +1,18 @@
-# Use lightweight Python slim image
-FROM python:3.12-slim
+# Use custom base image with system dependencies pre-installed
+# Build base image first: docker build -f Dockerfile.base -t imps-framework-base:latest .
+# Or run: ./build-base.sh (Linux/Mac) or .\build-base.ps1 (Windows)
+FROM imps-framework-base:latest
 
 # Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
-    DEBIAN_FRONTEND=noninteractive \
-    PYTHONPATH=/app/src \
+ENV PYTHONPATH=/app/src \
     DJANGO_SETTINGS_MODULE=config.settings
-
-# Set work directory
-WORKDIR /app
-
-# Install system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    postgresql-client \
-    gcc \
-    libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first for better caching
 COPY requirements.txt .
 
-# Install Python dependencies
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+# Install Python dependencies using uv (much faster than pip)
+# uv sync is faster and uses better caching than pip
+RUN uv pip install --system --no-cache -r requirements.txt
 
 # Copy the entire project (will be overridden by volume mount in development)
 COPY . .

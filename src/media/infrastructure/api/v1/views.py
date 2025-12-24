@@ -52,8 +52,11 @@ class PictureController(ControllerBase):
 
         return {"picture_id": "123"}
 
-    @route.get("users/", response={200: Any}, summary=_("Submit"))
-    async def get_users(self, page: int = 1, page_size: int = 20):
+    @route.get("users/", response={200: PaginatedResultDTO}, summary=_("Submit"))
+    async def get_users(self, page: int = 1, page_size: int = 20) -> PaginatedResultDTO:
+        return await dispatch_query_async(
+            SearchUsersQuery(page=page, page_size=page_size, paginated=True)
+        )
         cached_data = await cache.aget("cached_users")
         if not cached_data:
             res: PaginatedResultDTO = await dispatch_query_async(
