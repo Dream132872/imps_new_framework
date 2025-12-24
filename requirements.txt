@@ -1,4 +1,4 @@
-Django==5.2.5
+Django
 django-modeltranslation
 django-rosetta
 django-parsley
