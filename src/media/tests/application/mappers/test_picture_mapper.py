@@ -4,13 +4,14 @@ import uuid
 from datetime import datetime
 from typing import Callable
 
-from django.contrib.contenttypes.models import ContentType
 import pytest
+from django.contrib.contenttypes.models import ContentType
 
 from media.application.dtos import PictureDTO
 from media.application.mappers import PictureDTOMapper
 from media.domain.entities.picture_entities import Picture as PictureEntity
 from media.domain.entities.picture_entities import PictureType
+from media.domain.exceptions import PictureValidationError
 from shared.domain.entities import FileField, FileFieldType
 
 
@@ -105,17 +106,10 @@ class TestPictureDTOMapper:
             image_size=0,
             image_content_type=None,
         )
-        picture = picture_entity_factory(image=image_field)
-
-        # Act
-        result = PictureDTOMapper.to_dto(picture)
 
         # Assert
-        assert result.image is not None
-        assert result.image.width is None
-        assert result.image.height is None
-        assert result.image.size is None
-        assert result.image.content_type is None
+        with pytest.raises(PictureValidationError) as e:
+            picture = picture_entity_factory(image=image_field)
 
     def test_to_dto_preserves_timestamps(
         self,
@@ -205,8 +199,7 @@ class TestPictureDTOMapper:
 
         # Arrange
         pictures = [
-            picture_entity_factory(picture_title=f"Picture {i}")
-            for i in range(5)
+            picture_entity_factory(picture_title=f"Picture {i}") for i in range(5)
         ]
 
         # Act
@@ -255,4 +248,3 @@ class TestPictureDTOMapper:
         assert result.image.width == 5000
         assert result.image.height == 3000
         assert result.image.size == 5000000
-
