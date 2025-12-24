@@ -11,7 +11,11 @@ from injector import inject
 from media.application import commands as chunk_upload_commands
 from media.domain.entities import ChunkUpload
 from media.domain.entities.chunk_upload_entities import ChunkUploadStatus
-from media.domain.exceptions import ChunkUploadNotFoundError, ChunkUploadValidationError
+from media.domain.exceptions import (
+    ChunkUploadInvalidEntityError,
+    ChunkUploadNotFoundError,
+    ChunkUploadValidationError,
+)
 from media.domain.repositories import ChunkUploadRepository
 from media.domain.services import ChunkUploadService, FileStorageService
 from shared.application.cqrs import CommandHandler
@@ -50,17 +54,18 @@ class CreateChunkUploadCommandHandler(
         self, command: chunk_upload_commands.CreateChunkUploadCommand
     ) -> dict[str, Any]:
         try:
-            chunk_upload = ChunkUpload(
-                upload_id=uuid.uuid4(),
-                filename=command.filename,
-                total_size=command.total_size,
-                status=ChunkUploadStatus.PENDING,
-            )
-            chunk_upload = self.uow[ChunkUploadRepository].save(chunk_upload)
-            return {
-                "upload_id": chunk_upload.upload_id,
-                "offset": 0,
-            }
+            with self.uow:
+                chunk_upload = ChunkUpload(
+                    upload_id=uuid.uuid4(),
+                    filename=command.filename,
+                    total_size=command.total_size,
+                    status=ChunkUploadStatus.PENDING,
+                )
+                chunk_upload = self.uow[ChunkUploadRepository].save(chunk_upload)
+                return {
+                    "upload_id": chunk_upload.upload_id,
+                    "offset": 0,
+                }
         except ChunkUploadValidationError as e:
             raise map_domain_exception_to_application(e, str(e))
         except Exception as e:
@@ -77,23 +82,24 @@ class UploadChunkCommandHandler(
         self, command: chunk_upload_commands.UploadChunkCommand
     ) -> dict[str, Any]:
         try:
-            uploaded_size = self.chunk_upload_service.append_chunk(
-                command.upload_id,
-                command.chunk,
-                command.offset,
-                command.chunk_size,
-            )
+            with self.uow:
+                uploaded_size = self.chunk_upload_service.append_chunk(
+                    command.upload_id,
+                    command.chunk,
+                    command.offset,
+                    command.chunk_size,
+                )
 
-            chunk_upload = self.uow[ChunkUploadRepository].get_by_upload_id(
-                command.upload_id
-            )
+                chunk_upload = self.uow[ChunkUploadRepository].get_by_upload_id(
+                    command.upload_id
+                )
 
-            return {
-                "upload_id": command.upload_id,
-                "offset": uploaded_size,
-                "progress": chunk_upload.get_progress_percent(),
-                "completed": chunk_upload.is_complete(),
-            }
+                return {
+                    "upload_id": command.upload_id,
+                    "offset": uploaded_size,
+                    "progress": chunk_upload.get_progress_percent(),
+                    "completed": chunk_upload.is_complete(),
+                }
         except ValueError as e:
             raise ApplicationError(str(e)) from e
         except ChunkUploadNotFoundError as e:
@@ -118,20 +124,23 @@ class CompleteChunkUploadCommandHandler(
             raise ApplicationError(_("Chunk upload service not available"))
 
         try:
-            chunk_upload = self.uow[ChunkUploadRepository].get_by_upload_id(
-                command.upload_id
-            )
+            with self.uow:
+                chunk_upload = self.uow[ChunkUploadRepository].get_by_upload_id(
+                    command.upload_id
+                )
 
-            chunk_upload.complete()
+                chunk_upload.complete()
 
-            chunk_upload = self.uow[ChunkUploadRepository].save(chunk_upload)
+                chunk_upload = self.uow[ChunkUploadRepository].save(chunk_upload)
 
-            completed_file = self.chunk_upload_service.get_completed_file(
-                command.upload_id
-            )
-            self.chunk_upload_service.cleanup_upload(command.upload_id)
-            return completed_file
+                completed_file = self.chunk_upload_service.get_completed_file(
+                    command.upload_id
+                )
+                self.chunk_upload_service.cleanup_upload(command.upload_id)
+                return completed_file
         except ChunkUploadValidationError as e:
+            raise map_domain_exception_to_application(e) from e
+        except ChunkUploadInvalidEntityError as e:
             raise map_domain_exception_to_application(e) from e
         except ValueError as e:
             raise ApplicationError(str(e)) from e

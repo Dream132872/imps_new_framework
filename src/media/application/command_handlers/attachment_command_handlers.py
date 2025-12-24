@@ -47,6 +47,9 @@ class CreateAttachmentCommandHandler(
                 # save file using file_storage_service
                 file_name = self.file_storage_service.save_file(command.file)
 
+                if not file_name:
+                    raise AttachmentValidationError(_("Invalid file"))
+
                 # create attachment entity
                 file_field = FileFieldFactory.from_file_name(file_name)
                 file_path = file_field.path
@@ -109,9 +112,13 @@ class UpdateAttachmentCommandHandler(
                     self.file_storage_service.delete_file(old_file_path)
 
                 return AttachmentDTOMapper.to_dto(attachment)
-        except DomainEntityNotFoundError as e:
+        except AttachmentNotFoundError as e:
             raise map_domain_exception_to_application(
                 e, _("Attachment not found: {msg}").format(msg=str(e))
+            ) from e
+        except AttachmentValidationError as e:
+            raise map_domain_exception_to_application(
+                e, _("Invalid attachment: {msg}").format(msg=str(e))
             ) from e
         except Exception as e:
             raise ApplicationError(

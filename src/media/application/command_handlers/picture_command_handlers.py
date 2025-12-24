@@ -114,6 +114,10 @@ class UpdatePictureCommandHandler(
             raise map_domain_exception_to_application(
                 e, _("Picture not found: {msg}").format(msg=str(e))
             ) from e
+        except PictureValidationError as e:
+            raise map_domain_exception_to_application(
+                e, _("Picture has validation error: {msg}").format(msg=str(e))
+            ) from e
         except Exception as e:
             raise ApplicationError(
                 _("An error occurred during updating picture: {msg}").format(msg=str(e))

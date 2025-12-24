@@ -20,7 +20,7 @@ from media.application.commands import (
 )
 from media.domain.entities.picture_entities import Picture as PictureEntity
 from media.domain.entities.picture_entities import PictureType
-from media.domain.exceptions import PictureNotFoundError
+from media.domain.exceptions import PictureNotFoundError, PictureValidationError
 from media.domain.repositories import PictureRepository
 from media.tests.conftest import sample_picture_entity
 from shared.application.exceptions import (
@@ -154,8 +154,13 @@ class TestCreatePictureCommandHandler:
         mock_unit_of_work.__exit__.assert_called_once()
 
         # Verify that cleanup method calls
-        mock_file_storage_service.delete_image.assert_called_once_with(image_path)
+        # The handler deletes image_path which is set to image_file.path
+        mock_file_storage_service.delete_image.assert_called_once_with(
+            sample_image_file_field.path
+        )
         mock_from_image_name.assert_called_once_with(image_path)
+        mock_file_storage_service.save_image.assert_called_once()
+        mock_unit_of_work[PictureRepository].save.assert_not_called()
 
     @patch(
         "media.application.command_handlers.picture_command_handlers.FileFieldFactory.from_image_name"
@@ -239,6 +244,193 @@ class TestCreatePictureCommandHandler:
         mock_from_image_name.assert_called_once_with("images/test_image.jpg")
 
         mock_unit_of_work[PictureRepository].save.assert_called_once()
+        mock_unit_of_work.__enter__.assert_called_once()
+        mock_unit_of_work.__exit__.assert_called_once()
+
+    @patch(
+        "media.application.command_handlers.picture_command_handlers.FileFieldFactory.from_image_name"
+    )
+    def test_handle_create_picture_when_file_field_factory_raises_error(
+        self,
+        mock_from_image_name: MagicMock,
+        mock_unit_of_work: MagicMock,
+        mock_file_storage_service: MagicMock,
+        sample_image_file: SimpleUploadedFile,
+        sample_content_type: ContentType,
+    ) -> None:
+        """Test creating picture when FileFieldFactory raises error"""
+
+        image_path = "images/test_image.jpg"
+        mock_file_storage_service.save_image.return_value = image_path
+        mock_from_image_name.side_effect = Exception("FileFieldFactory error")
+
+        # Arrange
+        object_id = uuid.uuid4()
+        command = CreatePictureCommand(
+            content_type_id=sample_content_type.id,
+            object_id=object_id,
+            image=sample_image_file,  # type: ignore
+            picture_type=PictureType.MAIN.value,
+            title="Title of the image",
+            alternative="Alternative of the image",
+        )
+
+        handler = CreatePictureCommandHandler(
+            uow=mock_unit_of_work,
+            file_storage_service=mock_file_storage_service,
+        )
+
+        # Act
+        with pytest.raises(ApplicationError):
+            handler.handle(command)
+
+        # Assert
+        mock_file_storage_service.save_image.assert_called_with(sample_image_file)
+        mock_from_image_name.assert_called_once_with(image_path)
+        mock_file_storage_service.delete_image.assert_called_once_with("")
+        mock_unit_of_work[PictureRepository].save.assert_not_called()
+        mock_unit_of_work.__enter__.assert_called_once()
+        mock_unit_of_work.__exit__.assert_called_once()
+
+    @patch(
+        "media.application.command_handlers.picture_command_handlers.FileFieldFactory.from_image_name"
+    )
+    def test_handle_create_picture_when_repository_save_raises_validation_error(
+        self,
+        mock_from_image_name: MagicMock,
+        mock_unit_of_work: MagicMock,
+        mock_file_storage_service: MagicMock,
+        sample_image_file: SimpleUploadedFile,
+        sample_image_file_field: FileField,
+        sample_content_type: ContentType,
+    ) -> None:
+        """Test creating picture when repository save raises PictureValidationError"""
+
+        image_path = "images/test_image.jpg"
+        mock_file_storage_service.save_image.return_value = image_path
+        mock_from_image_name.return_value = sample_image_file_field
+        mock_unit_of_work[PictureRepository].save.side_effect = PictureValidationError(
+            "Invalid picture data"
+        )
+
+        # Arrange
+        object_id = uuid.uuid4()
+        command = CreatePictureCommand(
+            content_type_id=sample_content_type.id,
+            object_id=object_id,
+            image=sample_image_file,  # type: ignore
+            picture_type=PictureType.MAIN.value,
+            title="Title of the image",
+            alternative="Alternative of the image",
+        )
+
+        handler = CreatePictureCommandHandler(
+            uow=mock_unit_of_work,
+            file_storage_service=mock_file_storage_service,
+        )
+
+        # Act
+        with pytest.raises(ApplicationValidationError):
+            handler.handle(command)
+
+        # Assert
+        mock_file_storage_service.save_image.assert_called_with(sample_image_file)
+        mock_from_image_name.assert_called_once_with(image_path)
+        mock_file_storage_service.delete_image.assert_called_once_with(
+            sample_image_file_field.path
+        )
+        mock_unit_of_work[PictureRepository].save.assert_called_once()
+        mock_unit_of_work.__enter__.assert_called_once()
+        mock_unit_of_work.__exit__.assert_called_once()
+
+    @patch(
+        "media.application.command_handlers.picture_command_handlers.FileFieldFactory.from_image_name"
+    )
+    def test_handle_create_picture_when_save_image_returns_empty_string(
+        self,
+        mock_from_image_name: MagicMock,
+        mock_unit_of_work: MagicMock,
+        mock_file_storage_service: MagicMock,
+        sample_image_file: SimpleUploadedFile,
+        sample_content_type: ContentType,
+    ) -> None:
+        """Test creating picture when save_image returns empty string"""
+
+        mock_file_storage_service.save_image.return_value = ""
+
+        # Arrange
+        object_id = uuid.uuid4()
+        command = CreatePictureCommand(
+            content_type_id=sample_content_type.id,
+            object_id=object_id,
+            image=sample_image_file,  # type: ignore
+            picture_type=PictureType.MAIN.value,
+            title="Title of the image",
+            alternative="Alternative of the image",
+        )
+
+        handler = CreatePictureCommandHandler(
+            uow=mock_unit_of_work,
+            file_storage_service=mock_file_storage_service,
+        )
+
+        # Act
+        with pytest.raises(ApplicationValidationError):
+            handler.handle(command)
+
+        # Assert
+        mock_file_storage_service.save_image.assert_called_with(sample_image_file)
+        mock_from_image_name.assert_not_called()
+        mock_file_storage_service.delete_image.assert_called_once_with("")
+        mock_unit_of_work[PictureRepository].save.assert_not_called()
+        mock_unit_of_work.__enter__.assert_called_once()
+        mock_unit_of_work.__exit__.assert_called_once()
+
+    @patch(
+        "media.application.command_handlers.picture_command_handlers.FileFieldFactory.from_image_name"
+    )
+    def test_handle_create_picture_with_invalid_picture_type(
+        self,
+        mock_from_image_name: MagicMock,
+        mock_unit_of_work: MagicMock,
+        mock_file_storage_service: MagicMock,
+        sample_image_file: SimpleUploadedFile,
+        sample_image_file_field: FileField,
+        sample_content_type: ContentType,
+    ) -> None:
+        """Test creating picture with invalid picture_type"""
+
+        image_path = "images/test_image.jpg"
+        mock_file_storage_service.save_image.return_value = image_path
+        mock_from_image_name.return_value = sample_image_file_field
+
+        # Arrange
+        object_id = uuid.uuid4()
+        command = CreatePictureCommand(
+            content_type_id=sample_content_type.id,
+            object_id=object_id,
+            image=sample_image_file,  # type: ignore
+            picture_type="invalid_type",  # Invalid picture type
+            title="Title of the image",
+            alternative="Alternative of the image",
+        )
+
+        handler = CreatePictureCommandHandler(
+            uow=mock_unit_of_work,
+            file_storage_service=mock_file_storage_service,
+        )
+
+        # Act
+        with pytest.raises(ApplicationValidationError):
+            handler.handle(command)
+
+        # Assert
+        mock_file_storage_service.save_image.assert_called_with(sample_image_file)
+        mock_from_image_name.assert_called_once_with(image_path)
+        mock_file_storage_service.delete_image.assert_called_once_with(
+            sample_image_file_field.path
+        )
+        mock_unit_of_work[PictureRepository].save.assert_not_called()
         mock_unit_of_work.__enter__.assert_called_once()
         mock_unit_of_work.__exit__.assert_called_once()
 
@@ -503,6 +695,309 @@ class TestUpdatePictureCommandHandler:
         mock_unit_of_work.__enter__.assert_called_once()
         mock_unit_of_work.__exit__.assert_called_once()
 
+    @patch(
+        "media.application.command_handlers.picture_command_handlers.FileFieldFactory.from_image_name"
+    )
+    def test_handle_update_picture_when_save_image_fails(
+        self,
+        mock_from_image_name: MagicMock,
+        mock_unit_of_work: MagicMock,
+        mock_file_storage_service: MagicMock,
+        image_file_factory: Callable[..., SimpleUploadedFile],
+        sample_picture_entity: PictureEntity,
+    ) -> None:
+        """Test updating picture when save_image fails"""
+
+        # Arrange
+        new_image = image_file_factory(name="new_image.jpg", content=b"new fake image")
+
+        command = UpdatePictureCommand(
+            picture_id=uuid.UUID(sample_picture_entity.id),
+            content_type_id=sample_picture_entity.content_type_id,
+            title="New title",
+            alternative="New alternative",
+            object_id=sample_picture_entity.object_id,
+            picture_type=PictureType.MAIN.value,
+            image=new_image,
+        )
+
+        handler = UpdatePictureCommandHandler(
+            uow=mock_unit_of_work, file_storage_service=mock_file_storage_service
+        )
+
+        mock_unit_of_work[PictureRepository].get_by_id.return_value = (
+            sample_picture_entity
+        )
+        mock_file_storage_service.save_image.side_effect = Exception(
+            "Storage service error"
+        )
+
+        # Act
+        with pytest.raises(ApplicationError):
+            handler.handle(command=command)
+
+        # Assert
+        mock_unit_of_work[PictureRepository].get_by_id.assert_called_once_with(
+            sample_picture_entity.id
+        )
+        mock_file_storage_service.save_image.assert_called_once_with(new_image)
+        mock_from_image_name.assert_not_called()
+        mock_unit_of_work[PictureRepository].save.assert_not_called()
+        mock_file_storage_service.delete_image.assert_not_called()
+        mock_unit_of_work.__enter__.assert_called_once()
+        mock_unit_of_work.__exit__.assert_called_once()
+
+    @patch(
+        "media.application.command_handlers.picture_command_handlers.FileFieldFactory.from_image_name"
+    )
+    def test_handle_update_picture_when_file_field_factory_raises_error(
+        self,
+        mock_from_image_name: MagicMock,
+        mock_unit_of_work: MagicMock,
+        mock_file_storage_service: MagicMock,
+        image_file_factory: Callable[..., SimpleUploadedFile],
+        sample_picture_entity: PictureEntity,
+    ) -> None:
+        """Test updating picture when FileFieldFactory raises error"""
+
+        # Arrange
+        new_image = image_file_factory(name="new_image.jpg", content=b"new fake image")
+        new_image_name = "new_image.jpg"
+
+        command = UpdatePictureCommand(
+            picture_id=uuid.UUID(sample_picture_entity.id),
+            content_type_id=sample_picture_entity.content_type_id,
+            title="New title",
+            alternative="New alternative",
+            object_id=sample_picture_entity.object_id,
+            picture_type=PictureType.MAIN.value,
+            image=new_image,
+        )
+
+        handler = UpdatePictureCommandHandler(
+            uow=mock_unit_of_work, file_storage_service=mock_file_storage_service
+        )
+
+        mock_unit_of_work[PictureRepository].get_by_id.return_value = (
+            sample_picture_entity
+        )
+        mock_file_storage_service.save_image.return_value = new_image_name
+        mock_from_image_name.side_effect = Exception("FileFieldFactory error")
+
+        # Act
+        with pytest.raises(ApplicationError):
+            handler.handle(command=command)
+
+        # Assert
+        mock_unit_of_work[PictureRepository].get_by_id.assert_called_once_with(
+            sample_picture_entity.id
+        )
+        mock_file_storage_service.save_image.assert_called_once_with(new_image)
+        mock_from_image_name.assert_called_once_with(new_image_name)
+        mock_unit_of_work[PictureRepository].save.assert_not_called()
+        mock_file_storage_service.delete_image.assert_not_called()
+        mock_unit_of_work.__enter__.assert_called_once()
+        mock_unit_of_work.__exit__.assert_called_once()
+
+    @patch(
+        "media.application.command_handlers.picture_command_handlers.FileFieldFactory.from_image_name"
+    )
+    def test_handle_update_picture_when_update_image_raises_validation_error(
+        self,
+        mock_from_image_name: MagicMock,
+        mock_unit_of_work: MagicMock,
+        mock_file_storage_service: MagicMock,
+        image_file_factory: Callable[..., SimpleUploadedFile],
+        sample_picture_entity: PictureEntity,
+        image_file_field_factory: Callable[..., FileField],
+    ) -> None:
+        """Test updating picture when update_image raises PictureValidationError"""
+
+        # Arrange
+        new_image = image_file_factory(name="new_image.jpg", content=b"new fake image")
+        new_image_name = "new_image.jpg"
+        # Create invalid image field (size=0)
+        invalid_image_file_field = image_file_field_factory(
+            image_name=new_image_name,
+            image_path="images/" + new_image_name,
+            image_url="images/" + new_image_name,
+            image_size=0,  # Invalid size
+        )
+
+        command = UpdatePictureCommand(
+            picture_id=uuid.UUID(sample_picture_entity.id),
+            content_type_id=sample_picture_entity.content_type_id,
+            title="New title",
+            alternative="New alternative",
+            object_id=sample_picture_entity.object_id,
+            picture_type=PictureType.MAIN.value,
+            image=new_image,
+        )
+
+        handler = UpdatePictureCommandHandler(
+            uow=mock_unit_of_work, file_storage_service=mock_file_storage_service
+        )
+
+        mock_unit_of_work[PictureRepository].get_by_id.return_value = (
+            sample_picture_entity
+        )
+        mock_file_storage_service.save_image.return_value = new_image_name
+        mock_from_image_name.return_value = invalid_image_file_field
+
+        # Act
+        with pytest.raises(ApplicationValidationError):
+            handler.handle(command=command)
+
+        # Assert
+        mock_unit_of_work[PictureRepository].get_by_id.assert_called_once_with(
+            sample_picture_entity.id
+        )
+        mock_file_storage_service.save_image.assert_called_once_with(new_image)
+        mock_from_image_name.assert_called_once_with(new_image_name)
+        mock_unit_of_work[PictureRepository].save.assert_not_called()
+        mock_file_storage_service.delete_image.assert_not_called()
+        mock_unit_of_work.__enter__.assert_called_once()
+        mock_unit_of_work.__exit__.assert_called_once()
+
+    @patch(
+        "media.application.command_handlers.picture_command_handlers.FileFieldFactory.from_image_name"
+    )
+    def test_handle_update_picture_when_repository_save_raises_validation_error(
+        self,
+        mock_from_image_name: MagicMock,
+        mock_unit_of_work: MagicMock,
+        mock_file_storage_service: MagicMock,
+        image_file_factory: Callable[..., SimpleUploadedFile],
+        sample_picture_entity: PictureEntity,
+        image_file_field_factory: Callable[..., FileField],
+    ) -> None:
+        """Test updating picture when repository save raises PictureValidationError"""
+
+        # Arrange
+        new_image = image_file_factory(name="new_image.jpg", content=b"new fake image")
+        new_image_name = "new_image.jpg"
+        new_image_file_field = image_file_field_factory(
+            image_name=new_image_name,
+            image_path="images/" + new_image_name,
+            image_url="images/" + new_image_name,
+        )
+
+        command = UpdatePictureCommand(
+            picture_id=uuid.UUID(sample_picture_entity.id),
+            content_type_id=sample_picture_entity.content_type_id,
+            title="New title",
+            alternative="New alternative",
+            object_id=sample_picture_entity.object_id,
+            picture_type=PictureType.MAIN.value,
+            image=new_image,
+        )
+
+        handler = UpdatePictureCommandHandler(
+            uow=mock_unit_of_work, file_storage_service=mock_file_storage_service
+        )
+
+        mock_unit_of_work[PictureRepository].get_by_id.return_value = (
+            sample_picture_entity
+        )
+        mock_file_storage_service.save_image.return_value = new_image_name
+        mock_from_image_name.return_value = new_image_file_field
+        mock_unit_of_work[PictureRepository].save.side_effect = PictureValidationError(
+            "Invalid picture data"
+        )
+
+        # Act
+        with pytest.raises(ApplicationValidationError):
+            handler.handle(command=command)
+
+        # Assert
+        mock_unit_of_work[PictureRepository].get_by_id.assert_called_once_with(
+            sample_picture_entity.id
+        )
+        mock_file_storage_service.save_image.assert_called_once_with(new_image)
+        mock_from_image_name.assert_called_once_with(new_image_name)
+        mock_unit_of_work[PictureRepository].save.assert_called_once()
+        # Old image should not be deleted if save fails
+        mock_file_storage_service.delete_image.assert_not_called()
+        mock_unit_of_work.__enter__.assert_called_once()
+        mock_unit_of_work.__exit__.assert_called_once()
+
+    @patch(
+        "media.application.command_handlers.picture_command_handlers.FileFieldFactory.from_image_name"
+    )
+    def test_handle_update_picture_when_delete_image_fails_but_update_succeeds(
+        self,
+        mock_from_image_name: MagicMock,
+        mock_unit_of_work: MagicMock,
+        mock_file_storage_service: MagicMock,
+        image_file_factory: Callable[..., SimpleUploadedFile],
+        sample_picture_entity: PictureEntity,
+        image_file_field_factory: Callable[..., FileField],
+        picture_entity_factory: Callable[..., PictureEntity],
+    ) -> None:
+        """Test updating picture when delete_image fails but update succeeds"""
+
+        # Arrange
+        new_image = image_file_factory(name="new_image.jpg", content=b"new fake image")
+        new_image_name = "new_image.jpg"
+        new_title = "New title for picture"
+        new_alternative = "New alternative for picture"
+        new_image_file_field = image_file_field_factory(
+            image_name=new_image_name,
+            image_path="images/" + new_image_name,
+            image_url="images/" + new_image_name,
+        )
+        original_image_path = sample_picture_entity.image.path
+
+        updated_picture = picture_entity_factory(
+            id=sample_picture_entity.id,
+            image=new_image_file_field,
+            picture_type=sample_picture_entity.picture_type,
+            picture_object_id=sample_picture_entity.object_id,
+            picture_title=new_title,
+            picture_alternative=new_alternative,
+        )
+
+        command = UpdatePictureCommand(
+            picture_id=uuid.UUID(sample_picture_entity.id),
+            content_type_id=sample_picture_entity.content_type_id,
+            title=new_title,
+            alternative=new_alternative,
+            object_id=sample_picture_entity.object_id,
+            picture_type=PictureType.MAIN.value,
+            image=new_image,
+        )
+
+        handler = UpdatePictureCommandHandler(
+            uow=mock_unit_of_work, file_storage_service=mock_file_storage_service
+        )
+
+        mock_file_storage_service.save_image.return_value = new_image_name
+        mock_from_image_name.return_value = new_image_file_field
+        mock_unit_of_work[PictureRepository].get_by_id.return_value = (
+            sample_picture_entity
+        )
+        mock_unit_of_work[PictureRepository].save.return_value = updated_picture
+        mock_file_storage_service.delete_image.side_effect = Exception(
+            "File deletion error"
+        )
+
+        # Act
+        with pytest.raises(ApplicationError):
+            handler.handle(command=command)
+
+        # Assert
+        mock_unit_of_work[PictureRepository].get_by_id.assert_called_once_with(
+            sample_picture_entity.id
+        )
+        mock_file_storage_service.save_image.assert_called_once_with(new_image)
+        mock_from_image_name.assert_called_once_with(new_image_name)
+        mock_unit_of_work[PictureRepository].save.assert_called_once()
+        mock_file_storage_service.delete_image.assert_called_once_with(
+            original_image_path
+        )
+        mock_unit_of_work.__enter__.assert_called_once()
+        mock_unit_of_work.__exit__.assert_called_once()
+
 
 @pytest.mark.application
 @pytest.mark.unit
@@ -577,7 +1072,7 @@ class TestDeletePictureCommandHandler:
         mock_unit_of_work: MagicMock,
         mock_file_storage_service: MagicMock,
     ) -> None:
-        """Tests the complete deletion scenario"""
+        """Tests deletion when repository raises generic error"""
 
         # Arrange
         command = DeletePictureCommand(pk=uuid.UUID(sample_picture_entity.id))
@@ -589,15 +1084,52 @@ class TestDeletePictureCommandHandler:
         mock_unit_of_work[PictureRepository].get_by_id.return_value = (
             sample_picture_entity
         )
+        mock_unit_of_work[PictureRepository].delete.side_effect = Exception(
+            "Database error"
+        )
 
         # Act
-        result = handler.handle(command=command)
+        with pytest.raises(ApplicationError):
+            handler.handle(command=command)
 
         # Assert
-        assert result is not None
-        assert result.id == sample_picture_entity.id
-        assert result.image.name == sample_picture_entity.image.name
+        mock_unit_of_work[PictureRepository].get_by_id.assert_called_once_with(
+            sample_picture_entity.id
+        )
+        mock_unit_of_work[PictureRepository].delete.assert_called_once_with(
+            sample_picture_entity
+        )
+        mock_file_storage_service.delete_image.assert_not_called()
+        mock_unit_of_work.__enter__.assert_called_once()
+        mock_unit_of_work.__exit__.assert_called_once()
 
+    def test_delete_picture_when_file_deletion_fails(
+        self,
+        sample_picture_entity: PictureEntity,
+        mock_unit_of_work: MagicMock,
+        mock_file_storage_service: MagicMock,
+    ) -> None:
+        """Tests deletion when file deletion fails but picture is deleted from DB"""
+
+        # Arrange
+        command = DeletePictureCommand(pk=uuid.UUID(sample_picture_entity.id))
+
+        handler = DeletePictureCommandHandler(
+            uow=mock_unit_of_work, file_storage_service=mock_file_storage_service
+        )
+
+        mock_unit_of_work[PictureRepository].get_by_id.return_value = (
+            sample_picture_entity
+        )
+        mock_file_storage_service.delete_image.side_effect = Exception(
+            "File deletion error"
+        )
+
+        # Act
+        with pytest.raises(ApplicationError):
+            handler.handle(command=command)
+
+        # Assert
         mock_unit_of_work[PictureRepository].get_by_id.assert_called_once_with(
             sample_picture_entity.id
         )
@@ -607,3 +1139,5 @@ class TestDeletePictureCommandHandler:
         mock_file_storage_service.delete_image.assert_called_once_with(
             sample_picture_entity.image.path
         )
+        mock_unit_of_work.__enter__.assert_called_once()
+        mock_unit_of_work.__exit__.assert_called_once()
