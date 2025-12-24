@@ -16,7 +16,7 @@ from media.application.mappers import AttachmentDTOMapper
 from media.domain.entities import Attachment
 from media.domain.exceptions import AttachmentNotFoundError, AttachmentValidationError
 from media.domain.repositories import AttachmentRepository
-from media.domain.services import FileStorageService
+from media.infrastructure.services import FileStorageService
 from shared.application.cqrs import CommandHandler
 from shared.application.exception_mapper import map_domain_exception_to_application
 from shared.application.exceptions import ApplicationError

@@ -16,7 +16,7 @@ from media.application.mappers import PictureDTOMapper
 from media.domain.entities import Picture
 from media.domain.exceptions import PictureNotFoundError, PictureValidationError
 from media.domain.repositories import PictureRepository
-from media.domain.services import FileStorageService
+from media.infrastructure.services import FileStorageService
 from shared.application.cqrs import CommandHandler
 from shared.application.exception_mapper import map_domain_exception_to_application
 from shared.application.exceptions import ApplicationError

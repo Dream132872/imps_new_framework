@@ -23,7 +23,7 @@ from media.domain.exceptions import (
     ChunkUploadValidationError,
 )
 from media.domain.repositories import ChunkUploadRepository
-from media.domain.services import ChunkUploadService
+from media.infrastructure.services import ChunkUploadService
 from shared.application.exceptions import ApplicationError, ApplicationValidationError
 
 

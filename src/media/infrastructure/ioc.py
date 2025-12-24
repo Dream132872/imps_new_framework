@@ -5,15 +5,16 @@ Inversion of Control bindings for media bounded context.
 from injector import Binder, Module
 
 from media.domain.repositories import AttachmentRepository, ChunkUploadRepository, PictureRepository
-from media.domain.services import ChunkUploadService, FileStorageService
 from media.infrastructure.repositories import (
     DjangoAttachmentRepository,
     DjangoChunkUploadRepository,
     DjangoPictureRepository,
 )
 from media.infrastructure.services import (
+    ChunkUploadService,
     DjangoChunkUploadService,
     DjangoFileStorageService,
+    FileStorageService,
 )
 
 

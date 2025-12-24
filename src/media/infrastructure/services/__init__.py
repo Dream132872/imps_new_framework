@@ -1,5 +1,10 @@
-from .django_chunk_upload_service import DjangoChunkUploadService
-from .django_file_storage_service import DjangoFileStorageService
+from .chunk_upload_service import ChunkUploadService, DjangoChunkUploadService
+from .file_storage_service import DjangoFileStorageService, FileStorageService
 
-__all__ = ("DjangoChunkUploadService", "DjangoFileStorageService")
+__all__ = (
+    "ChunkUploadService",
+    "DjangoChunkUploadService",
+    "DjangoFileStorageService",
+    "FileStorageService",
+)
 

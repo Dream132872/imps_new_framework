@@ -1,5 +1,9 @@
-from .chunk_upload_service import ChunkUploadService
-from .file_storage_service import FileStorageService
+"""
+Domain services for media bounded context.
 
-__all__ = ("ChunkUploadService", "FileStorageService")
+Note: Infrastructure services (FileStorageService, ChunkUploadService)
+have been moved to infrastructure/services/ as they are technical operations,
+not domain business logic.
+"""
 
+__all__ = ()

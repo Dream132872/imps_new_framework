@@ -17,7 +17,7 @@ from media.domain.exceptions import (
     ChunkUploadValidationError,
 )
 from media.domain.repositories import ChunkUploadRepository
-from media.domain.services import ChunkUploadService, FileStorageService
+from media.infrastructure.services import ChunkUploadService, FileStorageService
 from shared.application.cqrs import CommandHandler
 from shared.application.exception_mapper import map_domain_exception_to_application
 from shared.application.exceptions import ApplicationError

@@ -19,7 +19,7 @@ from media.domain.repositories import (
     ChunkUploadRepository,
     PictureRepository,
 )
-from media.domain.services import FileStorageService
+from media.infrastructure.services import FileStorageService
 from media.infrastructure.models import Picture as PictureModel
 from shared.domain.entities import FileField, FileFieldType
 from shared.infrastructure.ioc import UnitOfWork
