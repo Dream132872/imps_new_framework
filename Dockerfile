@@ -7,14 +7,8 @@ FROM imps-framework-base:latest
 ENV PYTHONPATH=/app/src \
     DJANGO_SETTINGS_MODULE=config.settings
 
-# Copy requirements first for better caching
-COPY requirements.txt .
-
-# Install Python dependencies using uv (much faster than pip)
-# uv sync is faster and uses better caching than pip
-RUN uv pip install --system --no-cache -r requirements.txt
-
 # Copy the entire project (will be overridden by volume mount in development)
+# Note: Python dependencies are already installed in the base image
 COPY . .
 
 # Create directories for media and static files

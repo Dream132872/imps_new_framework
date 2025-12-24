@@ -57,11 +57,12 @@ class PictureController(ControllerBase):
         return await dispatch_query_async(
             SearchUsersQuery(page=page, page_size=page_size, paginated=True)
         )
-        cached_data = await cache.aget("cached_users")
-        if not cached_data:
-            res: PaginatedResultDTO = await dispatch_query_async(
-                SearchUsersQuery(page=page, page_size=page_size, paginated=True)
-            )
-            await cache.aset("cached_users", res)
-            return res
-        return cached_data
+        ## cached scenario
+        # cached_data = await cache.aget("cached_users")
+        # if not cached_data:
+        #     res: PaginatedResultDTO = await dispatch_query_async(
+        #         SearchUsersQuery(page=page, page_size=page_size, paginated=True)
+        #     )
+        #     await cache.aset("cached_users", res)
+        #     return res
+        # return cached_data

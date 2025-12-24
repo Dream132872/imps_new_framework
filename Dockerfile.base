@@ -26,3 +26,10 @@ RUN uv --version
 # Set work directory
 WORKDIR /app
 
+# Copy requirements.txt and install Python dependencies
+# This caches Python packages in the base image
+COPY requirements.txt .
+
+# Install Python dependencies using uv (much faster than pip)
+RUN uv pip install --system --no-cache -r requirements.txt
+

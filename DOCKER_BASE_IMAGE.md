@@ -31,35 +31,44 @@ This project uses a custom base Docker image to speed up builds by pre-installin
 ### Subsequent Builds
 
 After the base image is built, running `docker-compose up --build` will:
-- ✅ Use the cached base image (no system package installation)
+- ✅ Use the cached base image (no system package installation, no Python package installation)
 - ✅ Only copy source code
-- ✅ Only run `uv pip install` (much faster than pip, cached if requirements.txt hasn't changed)
+- ✅ Much faster builds since everything is pre-installed!
 
 This makes builds **much faster**!
 
 ## How It Works
 
-1. **`Dockerfile.base`** - Contains system dependencies and tools:
+1. **`Dockerfile.base`** - Contains system dependencies, tools, and Python packages:
    - System packages: postgresql-client, gcc, libpq-dev
    - **uv package manager** - Fast Python package installer (much faster than pip)
+   - **Python dependencies** - All packages from requirements.txt are pre-installed
    - Built once and cached
    - Tagged as `imps-framework-base:latest`
 
 2. **`Dockerfile`** - Uses the base image
-   - Uses `uv` to install Python packages (faster than pip)
-   - Copies your source code
-   - Much faster builds
+   - Only copies your source code
+   - Everything else is already installed in the base image
+   - Much faster builds!
 
 ## When to Rebuild Base Image
 
-Rebuild the base image only when:
+Rebuild the base image when:
 - System dependencies change (adding/removing apt packages)
+- **Python dependencies change** (requirements.txt is updated)
 - Python version changes
 - Base image needs updates
 
 **To rebuild:**
 ```bash
-docker build -f Dockerfile.base -t imps-framework-base:latest .
+# Windows PowerShell
+.\build-base.ps1
+
+# Linux/Mac
+./build-base.sh
+
+# Or manually
+docker build --no-cache -f Dockerfile.base -t imps-framework-base:latest .
 ```
 
 ## Benefits
@@ -122,13 +131,27 @@ If you want even better performance, you can use `uv sync` with a `pyproject.tom
 - 📦 **Smaller Docker images** (better caching)
 - 🔄 **Compatible with pip** (can use requirements.txt)
 
-## Advanced: Including Python Dependencies in Base Image
+## Python Dependencies in Base Image
 
-If your Python dependencies (`requirements.txt`) rarely change, you can also cache them in the base image:
+Python dependencies from `requirements.txt` are **already included** in the base image! This means:
 
-1. Copy `requirements.txt` to `Dockerfile.base`
-2. Run `uv pip install` in `Dockerfile.base`
-3. This will cache Python packages too
+- ✅ **Faster builds** - Python packages are pre-installed and cached
+- ✅ **No pip install on every build** - Only source code is copied
+- ⚠️ **Rebuild base image** when `requirements.txt` changes
 
-However, this means you need to rebuild the base image whenever `requirements.txt` changes.
+### When requirements.txt Changes
+
+If you add/remove/update packages in `requirements.txt`:
+
+1. Rebuild the base image:
+   ```bash
+   .\build-base.ps1  # Windows
+   # or
+   ./build-base.sh   # Linux/Mac
+   ```
+
+2. Then rebuild your app:
+   ```bash
+   docker-compose build
+   ```
 
