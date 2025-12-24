@@ -5,7 +5,6 @@ Optimized for handling 2000+ concurrent users.
 """
 
 import os
-import signal
 import sys
 from pathlib import Path
 
@@ -20,13 +19,25 @@ if __name__ == "__main__":
     # Import Gunicorn configuration
     from gunicorn_config import *
 
-    # Import Gunicorn application
-    from gunicorn.app.wsgiapp import WSGIApplication
+    # Import Gunicorn application classes
+    from gunicorn.app.base import BaseApplication
+    from gunicorn import util
 
-    class StandaloneApplication(WSGIApplication):
-        def init(self, parser, opts, args):
-            """Initialize the application with our configuration."""
-            self.cfg = self.make_config()
+    class StandaloneApplication(BaseApplication):
+        def __init__(self):
+            """Initialize the application."""
+            self.options = {}
+            # Determine app URI based on worker class
+            # Uvicorn workers need ASGI, sync workers need WSGI
+            if worker_class == "uvicorn.workers.UvicornWorker":
+                self.app_uri = "config.asgi:application"
+            else:
+                self.app_uri = "config.wsgi:application"
+            super().__init__()
+
+        def load_config(self):
+            """Load configuration from our config file."""
+            # Set all configuration options
             self.cfg.set("default_proc_name", proc_name)
             self.cfg.set("bind", bind)
             self.cfg.set("backlog", backlog)
@@ -36,6 +47,8 @@ if __name__ == "__main__":
             self.cfg.set("max_requests", max_requests)
             self.cfg.set("max_requests_jitter", max_requests_jitter)
             self.cfg.set("preload_app", preload_app)
+            if reload_enabled:
+                self.cfg.set("reload", True)
             self.cfg.set("timeout", timeout)
             self.cfg.set("keepalive", keepalive)
             self.cfg.set("graceful_timeout", graceful_timeout)
@@ -64,19 +77,25 @@ if __name__ == "__main__":
             if certfile:
                 self.cfg.set("certfile", certfile)
 
-        def load_config(self):
-            """Load configuration from our config file."""
-            pass
+        def load(self):
+            """Load the application (ASGI or WSGI based on worker class)."""
+            return util.import_app(self.app_uri)
 
     # Create and run the application
     app = StandaloneApplication()
 
-    print("Starting Gunicorn with Uvicorn workers...")
+    # Determine app type for display
+    app_type = "ASGI" if worker_class == "uvicorn.workers.UvicornWorker" else "WSGI"
+    print(f"Starting Gunicorn with {worker_class} workers...")
+    print(f"Application type: {app_type}")
+    print(f"Application URI: {app.app_uri}")
     print(f"Workers: {workers}")
     print(f"Worker connections: {worker_connections}")
     print(f"Total concurrent capacity: {workers * worker_connections}")
     print(f"Bind: {bind}")
     print(f"Log level: {loglevel}")
+    print(f"Reload enabled: {reload_enabled}")
+    print(f"Preload app: {preload_app}")
     print("Press Ctrl+C to stop the server")
 
     try:
@@ -85,6 +104,8 @@ if __name__ == "__main__":
         print("\nShutdown requested by user...")
     except Exception as e:
         print(f"Server error: {e}")
+        import traceback
+        traceback.print_exc()
     finally:
         print("Server stopped.")
 

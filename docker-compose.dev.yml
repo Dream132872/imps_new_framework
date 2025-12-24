@@ -1,0 +1,17 @@
+version: '3.8'
+
+# Development override file
+# Use with: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+# This enables hot reload for development
+
+services:
+  web:
+    environment:
+      # Enable reload for hot reload during development
+      - GUNICORN_RELOAD=true
+      # Use fewer workers in development
+      - GUNICORN_WORKERS=2
+      # More verbose logging in development
+      - GUNICORN_LOG_LEVEL=debug
+      - DEBUG=True
+

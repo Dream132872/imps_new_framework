@@ -10,7 +10,6 @@ from media.domain.repositories import PictureRepository
 from media.infrastructure.mappers import PictureMapper
 from media.infrastructure.models import Picture as PictureModel
 from shared.domain.exceptions import DomainEntityNotFoundError
-from shared.domain.factories import FileFieldFactory
 from shared.infrastructure.repositories import DjangoRepository
 
 __all__ = ("DjangoPictureRepository",)

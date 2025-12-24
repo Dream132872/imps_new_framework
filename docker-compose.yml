@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: imps_framework_web
+    volumes:
+      # Mount src directory for hot reload
+      - ./src:/app/src:rw
+      # Mount cdn directory for media files
+      - ./cdn:/app/cdn:rw
+      # Mount logs directory
+      - ./logs:/app/logs:rw
+      # Prevent node_modules from being overwritten if you have any
+      - /app/src/__pycache__
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=True
+      - PYTHONPATH=/app/src
+      - DJANGO_SETTINGS_MODULE=config.settings
+      # Database connection - using service name from other docker-compose via external network
+      # Change 'db' to match your database service name from the other docker-compose file
+      # Port: 5432 for PostgreSQL, 6432 for PgBouncer
+      - DATABASE_HOST=${DATABASE_HOST:-pgbouncer}
+      - DATABASE_PORT=${DATABASE_PORT:-6432}
+      - DATABASE_NAME=${DATABASE_NAME:-imps_new_framework_db}
+      - DATABASE_USER=${DATABASE_USER:-root}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD:-admin}
+      # Redis connection - using service name from other docker-compose via external network
+      # Change 'redis' to match your Redis service name from the other docker-compose file
+      - REDIS_HOST=${REDIS_HOST:-redis}
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      # Redis URLs for Django - these will use REDIS_HOST and REDIS_PORT from above
+      # Format: redis://host:port/database_number
+      - CACHES_DEFAULT_REDIS_URL=${CACHES_DEFAULT_REDIS_URL:-redis://redis:6379/0}
+      - CACHES_SESSIONS_REDIS_URL=${CACHES_SESSIONS_REDIS_URL:-redis://redis:6379/1}
+      - CELERY_BROKER_URL=${CELERY_BROKER_URL:-redis://redis:6379/0}
+      # Gunicorn configuration
+      - GUNICORN_BIND=${GUNICORN_BIND:-0.0.0.0:8000}
+      - GUNICORN_WORKERS=${GUNICORN_WORKERS:-8}
+      - GUNICORN_WORKER_CLASS=${GUNICORN_WORKER_CLASS:-uvicorn.workers.UvicornWorker}
+      - GUNICORN_WORKER_CONNECTIONS=${GUNICORN_WORKER_CONNECTIONS:-1000}
+      - GUNICORN_LOG_LEVEL=${GUNICORN_LOG_LEVEL:-error}
+      - GUNICORN_RELOAD=${GUNICORN_RELOAD:-false}
+      - GUNICORN_TIMEOUT=${GUNICORN_TIMEOUT:-30}
+    command: python src/start_gunicorn.py
+    restart: unless-stopped
+    networks:
+      - external_network
+
+# Uncomment and configure this section if connecting via external network
+# Make sure your other docker-compose file uses the same network name
+networks:
+  external_network:
+    external: true
+    name: shared_network  # Change to match your other docker-compose network name

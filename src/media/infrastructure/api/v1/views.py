@@ -4,11 +4,10 @@ Media api views.
 
 from typing import Any
 
+from django.core.cache import cache
 from django.http import HttpRequest
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-from django.views.decorators.cache import cache_page
-from ninja.decorators import decorate_view
 from ninja_extra import ControllerBase, api_controller, permissions, route, status
 
 from identity.application.queries.user_queries import SearchUsersQuery
@@ -42,7 +41,6 @@ class PictureController(ControllerBase):
         url_name="images_list",
         permissions=[HasRole("articles.view")],
     )
-    @decorate_view(cache_page(20))
     async def get_images(self):
         """Get list of all images."""
 
@@ -55,8 +53,12 @@ class PictureController(ControllerBase):
         return {"picture_id": "123"}
 
     @route.get("users/", response={200: Any}, summary=_("Submit"))
-    async def get_users(self, page: int = 1, page_size: int = 1000):
-        res: PaginatedResultDTO = await dispatch_query_async(
-            SearchUsersQuery(page=page, page_size=page_size, paginated=True)
-        )
-        return res
+    async def get_users(self, page: int = 1, page_size: int = 20):
+        cached_data = await cache.aget("cached_users")
+        if not cached_data:
+            res: PaginatedResultDTO = await dispatch_query_async(
+                SearchUsersQuery(page=page, page_size=page_size, paginated=True)
+            )
+            await cache.aset("cached_users", res)
+            return res
+        return cached_data

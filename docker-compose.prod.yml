@@ -1,0 +1,18 @@
+version: '3.8'
+
+# Production override file
+# Use with: docker-compose -f docker-compose.yml -f docker-compose.prod.yml up
+
+services:
+  web:
+    # Production settings for Gunicorn
+    environment:
+      - DEBUG=False
+      - GUNICORN_WORKERS=8
+      - GUNICORN_BIND=0.0.0.0:8000
+      - GUNICORN_RELOAD=false
+      - GUNICORN_LOG_LEVEL=warning
+      - GUNICORN_PRELOAD_APP=true
+    # Remove volume mounts in production (use COPY in Dockerfile instead)
+    volumes: []
+

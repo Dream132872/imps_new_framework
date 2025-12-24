@@ -71,14 +71,20 @@ def load_module(module_dot_path: str) -> None:
         for iter_path, iter_dir_names, iter_file_names in path.walk(top_down=True):
             if "__pycache__" not in str(iter_path):
                 for module in iter_file_names:
-                    module_dotted_path = ".".join(
-                        str(Path(iter_path, module))
-                        .split(f"{settings.BASE_DIR}")[1]
-                        .split("\\")[1:]
-                    ).split(".py")[0]
+                    if not module.endswith(".py"):
+                        continue
+                    # Get relative path from BASE_DIR
+                    full_file_path = Path(iter_path, module)
                     try:
+                        relative_path = full_file_path.relative_to(settings.BASE_DIR)
+                        # Convert path separators to dots for module import
+                        module_dotted_path = str(relative_path).replace(os.sep, ".").replace("/", ".").replace("\\", ".").replace(".py", "")
+                        # Skip empty module names
+                        if not module_dotted_path:
+                            continue
                         importlib.import_module(module_dotted_path)
-                    except ImportError as e:
+                    except (ValueError, ImportError) as e:
+                        # ValueError if path is not relative to BASE_DIR, ImportError if module doesn't exist
                         continue
     else:
         try:

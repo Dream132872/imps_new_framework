@@ -9,7 +9,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Any, Generic, TypeVar
 
-from adrf.mixins import sync_to_async
+from asgiref.sync import sync_to_async
 
 from shared.application.exceptions import ApplicationConfigurationError
 from shared.infrastructure.ioc import get_injector

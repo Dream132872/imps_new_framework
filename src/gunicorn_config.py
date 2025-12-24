@@ -18,15 +18,20 @@ bind = os.getenv("GUNICORN_BIND", "0.0.0.0:8000")
 backlog = int(os.getenv("GUNICORN_BACKLOG", "2048"))
 
 # Worker processes
-# For 2000 concurrent users: 12-16 workers recommended
-workers = int(os.getenv("GUNICORN_WORKERS", "12"))
-worker_class = "uvicorn.workers.UvicornWorker"
+# For Docker: Use 2-4 workers (can be overridden via env var)
+# For production hosts: 12-16 workers recommended for 2000+ concurrent users
+workers = int(os.getenv("GUNICORN_WORKERS", str((multiprocessing.cpu_count() * 2) + 1)))
+# Worker class: uvicorn.workers.UvicornWorker for async, sync for sync workers
+worker_class = os.getenv("GUNICORN_WORKER_CLASS", "uvicorn.workers.UvicornWorker")
 worker_connections = int(os.getenv("GUNICORN_WORKER_CONNECTIONS", "1000"))
 
 # Worker lifecycle
 max_requests = int(os.getenv("GUNICORN_MAX_REQUESTS", "5000"))
 max_requests_jitter = int(os.getenv("GUNICORN_MAX_REQUESTS_JITTER", "100"))
-preload_app = os.getenv("GUNICORN_PRELOAD_APP", "true").lower() == "true"
+# Disable preload_app if reload is enabled (for development)
+reload_enabled = os.getenv("GUNICORN_RELOAD", "false").lower() == "true"
+preload_app = not reload_enabled and os.getenv("GUNICORN_PRELOAD_APP", "true").lower() == "true"
+reload = reload_enabled
 
 # Timeouts
 timeout = int(os.getenv("GUNICORN_TIMEOUT", "30"))
@@ -51,7 +56,8 @@ limit_request_fields = int(os.getenv("GUNICORN_LIMIT_REQUEST_FIELDS", "100"))
 limit_request_field_size = int(os.getenv("GUNICORN_LIMIT_REQUEST_FIELD_SIZE", "8190"))
 
 # Performance tuning
-worker_tmp_dir = os.getenv("GUNICORN_WORKER_TMP_DIR", "/dev/shm")  # Use RAM for temp files
+# Use /tmp in Docker, /dev/shm on Linux hosts (shared memory)
+worker_tmp_dir = os.getenv("GUNICORN_WORKER_TMP_DIR", "/tmp")
 
 # Environment variables
 raw_env = [
