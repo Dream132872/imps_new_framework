@@ -36,13 +36,13 @@ class PictureType(Enum):
             PictureValidationError: if value is invalid
         """
         try:
-            return cls(value)
+            return cls(value.lower())
         except:
             raise PictureValidationError(
                 _(
                     "Picture type '{picture_type}' is not valid. Valid types are: {valid_types}"
                 ).format(
-                    picture_type=value, valid_types=", ".join([pt.value for pt in cls])
+                    picture_type=value.lower(), valid_types=", ".join([pt.value for pt in cls])
                 )
             )
 

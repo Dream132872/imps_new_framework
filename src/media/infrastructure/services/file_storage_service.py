@@ -91,6 +91,16 @@ class DjangoFileStorageService(FileStorageService):
         if not file_content:
             return ""
 
+        # Check if file is empty - handle both BytesIO and SimpleUploadedFile
+        if hasattr(file_content, "getbuffer"):
+            # BytesIO objects
+            if not file_content.getbuffer().nbytes:
+                return ""
+        elif hasattr(file_content, "size"):
+            # SimpleUploadedFile and similar Django file objects
+            if not file_content.size:
+                return ""
+
         # Ensure file is at the start
         if hasattr(file_content, "seek"):
             file_content.seek(0)
