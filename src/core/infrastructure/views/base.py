@@ -3,15 +3,18 @@ Base views for core infrastructure.
 """
 
 import logging
+import os
 from dataclasses import asdict
 from typing import Any, Dict
 
 from adrf.requests import AsyncRequest
 from adrf.views import APIView
 from django.core.cache import cache
+from django.http import HttpRequest, JsonResponse
 from django.http.response import HttpResponse as HttpResponse
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
+from django.views.decorators.http import require_http_methods
 from rest_framework import serializers, status
 from rest_framework.response import Response
 
@@ -49,6 +52,21 @@ class HomeView(views.AdminGenericMixin, views.FormView):
 
 class TestView(views.AdminGenericMixin, views.TemplateView):
     template_name = "core/base/test.html"
+
+
+@require_http_methods(["GET"])
+def health_check(request: HttpRequest) -> JsonResponse:
+    """Health check endpoint for monitoring and load balancers."""
+    return JsonResponse(
+        {
+            "status": "healthy",
+            "workers": os.getenv("UVICORN_WORKERS", "12"),
+            "concurrency_limit": os.getenv("UVICORN_LIMIT_CONCURRENCY", "300"),
+            "gunicorn_workers": os.getenv("GUNICORN_WORKERS", "12"),
+            "gunicorn_connections": os.getenv("GUNICORN_WORKER_CONNECTIONS", "1000"),
+            "async_threads": os.getenv("ASYNC_THREADS", "16"),
+        }
+    )
 
 
 class UserSerializer(serializers.Serializer):
