@@ -2,11 +2,13 @@
 
 import copy
 import logging
+import tempfile
 from typing import Any, Generator
 
 import pytest
 from django.contrib.contenttypes.models import ContentType
 from django.core.cache import cache, caches
+from django.test import override_settings
 from pytest_django.fixtures import SettingsWrapper
 
 logger = logging.getLogger(__file__)
@@ -34,6 +36,14 @@ def change_default_cache_location(
     # clear all caches from default and sessions
     cache.clear()
     caches["sessions"].clear()
+
+
+@pytest.fixture(autouse=True)
+def temp_media_root():
+    """Create a temporary media root for tests to avoid creating files in cdn folder"""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        with override_settings(MEDIA_ROOT=tmpdir):
+            yield tmpdir
 
 
 @pytest.fixture
