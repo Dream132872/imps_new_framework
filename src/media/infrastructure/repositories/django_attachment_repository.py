@@ -47,13 +47,13 @@ class DjangoAttachmentRepository(DjangoRepository[Attachment], AttachmentReposit
     ) -> list[Attachment]:
         attachments = self.model_class.objects.select_related("content_type").all()
 
-        if content_type and content_type is not None:
+        if content_type is not None:
             attachments = attachments.filter(content_type_id=content_type)
 
-        if object_id and object_id is not None:
+        if object_id is not None:
             attachments = attachments.filter(object_id=object_id)
 
-        if attachment_type and attachment_type is not None:
+        if attachment_type:
             attachments = attachments.filter(attachment_type__iexact=attachment_type)
 
         return [
@@ -69,13 +69,13 @@ class DjangoAttachmentRepository(DjangoRepository[Attachment], AttachmentReposit
     ) -> Attachment | None:
         attachments = self.model_class.objects.select_related("content_type").all()
 
-        if content_type and content_type is not None:
+        if content_type is not None:
             attachments = attachments.filter(content_type_id=content_type)
 
-        if object_id and object_id is not None:
+        if object_id is not None:
             attachments = attachments.filter(object_id=object_id)
 
-        if attachment_type and attachment_type is not None:
+        if attachment_type:
             attachments = attachments.filter(attachment_type__iexact=attachment_type)
 
         first_attachment = attachments.order_by("display_order", "created_at").first()

@@ -45,13 +45,13 @@ class DjangoPictureRepository(DjangoRepository[Picture], PictureRepository):
     ) -> list[Picture]:
         pictures = self.model_class.objects.select_related("content_type").all()
 
-        if content_type and content_type is not None:
+        if content_type is not None:
             pictures = pictures.filter(content_type_id=content_type)
 
-        if object_id and object_id is not None:
+        if object_id is not None:
             pictures = pictures.filter(object_id=object_id)
 
-        if picture_type and picture_type is not None:
+        if picture_type:
             pictures = pictures.filter(picture_type__iexact=picture_type)
 
         return [
@@ -67,13 +67,13 @@ class DjangoPictureRepository(DjangoRepository[Picture], PictureRepository):
     ) -> Picture | None:
         pictures = self.model_class.objects.select_related("content_type").all()
 
-        if content_type and content_type is not None:
+        if content_type is not None:
             pictures = pictures.filter(content_type_id=content_type)
 
-        if object_id and object_id is not None:
+        if object_id is not None:
             pictures = pictures.filter(object_id=object_id)
 
-        if picture_type and picture_type is not None:
+        if picture_type:
             pictures = pictures.filter(picture_type__iexact=picture_type)
 
         first_picture = pictures.order_by("display_order", "created_at").first()

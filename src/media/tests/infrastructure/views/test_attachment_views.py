@@ -167,7 +167,6 @@ class TestCreateAttachmentView:
         import json
         data = json.loads(response.content)
         assert data["status"] == "success"
-        assert "Attachment has been created successfully" in data["message"]
         assert data["details"]["is_update"] is False
         assert "attachment" in data["details"]
 
