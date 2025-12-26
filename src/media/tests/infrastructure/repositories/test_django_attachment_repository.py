@@ -1,6 +1,8 @@
 import uuid
 from typing import Callable
 
+from django.contrib.contenttypes.models import ContentType
+from django.core.files.uploadedfile import SimpleUploadedFile
 import pytest
 
 from media.domain.entities.attachment_entities import Attachment as AttachmentEntity
@@ -22,8 +24,8 @@ class TestDjangoAttachmentRepository:
 
     def test_get_by_id_returns_domain_entity(
         self,
-        sample_attachment_file,
-        sample_content_type,
+        sample_attachment_file: SimpleUploadedFile,
+        sample_content_type: ContentType,
         attachment_entity_factory: Callable[..., AttachmentEntity],
     ) -> None:
         """Test retrieving attachment entity by ID after saving through repository."""
@@ -65,8 +67,8 @@ class TestDjangoAttachmentRepository:
 
     def test_get_by_id_raises_not_found(
         self,
-        sample_attachment_file,
-        sample_content_type,
+        sample_attachment_file: SimpleUploadedFile,
+        sample_content_type: ContentType,
         attachment_entity_factory: Callable[..., AttachmentEntity],
     ) -> None:
         """Test that get_by_id raises AttachmentNotFoundError for non-existent ID."""
@@ -96,8 +98,8 @@ class TestDjangoAttachmentRepository:
 
     def test_search_attachments_filters_and_orders(
         self,
-        sample_attachment_file,
-        sample_content_type,
+        sample_attachment_file: SimpleUploadedFile,
+        sample_content_type: ContentType,
         attachment_entity_factory: Callable[..., AttachmentEntity],
     ) -> None:
         """Test search_attachments with filtering and ordering."""
@@ -156,8 +158,8 @@ class TestDjangoAttachmentRepository:
 
     def test_search_first_attachment_returns_first_match(
         self,
-        sample_attachment_file,
-        sample_content_type,
+        sample_attachment_file: SimpleUploadedFile,
+        sample_content_type: ContentType,
         attachment_entity_factory: Callable[..., AttachmentEntity],
     ) -> None:
         """Test search_first_attachment returns the first matching entity."""
@@ -208,8 +210,8 @@ class TestDjangoAttachmentRepository:
 
     def test_save_updates_existing_entity(
         self,
-        sample_attachment_file,
-        sample_content_type,
+        sample_attachment_file: SimpleUploadedFile,
+        sample_content_type: ContentType,
         attachment_entity_factory: Callable[..., AttachmentEntity],
     ) -> None:
         """Test that save() updates an existing entity when ID is provided."""
@@ -253,8 +255,8 @@ class TestDjangoAttachmentRepository:
 
     def test_delete_removes_entity(
         self,
-        sample_attachment_file,
-        sample_content_type,
+        sample_attachment_file: SimpleUploadedFile,
+        sample_content_type: ContentType,
         attachment_entity_factory: Callable[..., AttachmentEntity],
     ) -> None:
         """Test that delete() removes an entity from the repository."""
@@ -288,8 +290,8 @@ class TestDjangoAttachmentRepository:
 
     def test_delete_raises_not_found(
         self,
-        sample_attachment_file,
-        sample_content_type,
+        sample_attachment_file: SimpleUploadedFile,
+        sample_content_type: ContentType,
         attachment_entity_factory: Callable[..., AttachmentEntity],
     ) -> None:
         """Test that delete() raises error for non-existent entity."""
@@ -321,8 +323,8 @@ class TestDjangoAttachmentRepository:
 
     def test_get_all_returns_all_entities(
         self,
-        sample_attachment_file,
-        sample_content_type,
+        sample_attachment_file: SimpleUploadedFile,
+        sample_content_type: ContentType,
         attachment_entity_factory: Callable[..., AttachmentEntity],
     ) -> None:
         """Test that get_all() returns all entities in the repository."""
@@ -372,8 +374,8 @@ class TestDjangoAttachmentRepository:
 
     def test_exists_by_id_returns_true_when_exists(
         self,
-        sample_attachment_file,
-        sample_content_type,
+        sample_attachment_file: SimpleUploadedFile,
+        sample_content_type: ContentType,
         attachment_entity_factory: Callable[..., AttachmentEntity],
     ) -> None:
         """Test that exists_by_id() returns True for existing entity."""
@@ -415,8 +417,8 @@ class TestDjangoAttachmentRepository:
 
     def test_search_attachments_with_empty_string_type(
         self,
-        sample_attachment_file,
-        sample_content_type,
+        sample_attachment_file: SimpleUploadedFile,
+        sample_content_type: ContentType,
         attachment_entity_factory: Callable[..., AttachmentEntity],
     ) -> None:
         """Test search_attachments with empty string attachment_type returns all."""
@@ -459,8 +461,8 @@ class TestDjangoAttachmentRepository:
 
     def test_search_attachments_with_all_none_returns_all(
         self,
-        sample_attachment_file,
-        sample_content_type,
+        sample_attachment_file: SimpleUploadedFile,
+        sample_content_type: ContentType,
         attachment_entity_factory: Callable[..., AttachmentEntity],
     ) -> None:
         """Test search_attachments with all None parameters returns all entities."""
@@ -503,8 +505,8 @@ class TestDjangoAttachmentRepository:
 
     def test_search_attachments_returns_empty_list_when_no_matches(
         self,
-        sample_attachment_file,
-        sample_content_type,
+        sample_attachment_file: SimpleUploadedFile,
+        sample_content_type: ContentType,
         attachment_entity_factory: Callable[..., AttachmentEntity],
     ) -> None:
         """Test search_attachments returns empty list when no matches found."""
@@ -541,8 +543,8 @@ class TestDjangoAttachmentRepository:
 
     def test_search_attachments_orders_by_created_at_when_display_order_same(
         self,
-        sample_attachment_file,
-        sample_content_type,
+        sample_attachment_file: SimpleUploadedFile,
+        sample_content_type: ContentType,
         attachment_entity_factory: Callable[..., AttachmentEntity],
     ) -> None:
         """Test search_attachments orders by created_at when display_order is same."""
@@ -590,7 +592,7 @@ class TestDjangoAttachmentRepository:
 
     def test_search_first_attachment_returns_none_when_no_matches(
         self,
-        sample_content_type,
+        sample_content_type: ContentType,
     ) -> None:
         """Test search_first_attachment returns None when no matches found."""
         repo = DjangoAttachmentRepository()
@@ -607,8 +609,8 @@ class TestDjangoAttachmentRepository:
 
     def test_search_first_attachment_with_empty_string_type(
         self,
-        sample_attachment_file,
-        sample_content_type,
+        sample_attachment_file: SimpleUploadedFile,
+        sample_content_type: ContentType,
         attachment_entity_factory: Callable[..., AttachmentEntity],
     ) -> None:
         """Test search_first_attachment with empty string attachment_type."""
