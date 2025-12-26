@@ -85,7 +85,7 @@ class TestCreatePictureCommandHandler:
 
         # Assert
         assert result is not None
-        assert result.id == saved_picture.id
+        assert str(result.id) == saved_picture.id
         assert result.title == command.title
         assert result.alternative == command.alternative
         assert result.content_type_id == command.content_type_id
@@ -502,7 +502,7 @@ class TestUpdatePictureCommandHandler:
 
         # Assert
         assert result is not None
-        assert result.id == updated_picture.id
+        assert str(result.id) == updated_picture.id
         assert result.image is not None
         assert result.image.name == updated_picture.image.name
         assert result.image.url == updated_picture.image.url
@@ -576,7 +576,7 @@ class TestUpdatePictureCommandHandler:
 
         # Assert
         assert result is not None
-        assert result.id == updated_picture.id
+        assert str(result.id) == updated_picture.id
         assert result.image is not None
         assert result.image.name == updated_picture.image.name
         assert result.image.url == updated_picture.image.url
@@ -1028,7 +1028,7 @@ class TestDeletePictureCommandHandler:
 
         # Assert
         assert result is not None
-        assert result.id == sample_picture_entity.id
+        assert str(result.id) == sample_picture_entity.id
         assert result.image.name == sample_picture_entity.image.name
 
         mock_unit_of_work[PictureRepository].get_by_id.assert_called_once_with(

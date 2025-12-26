@@ -2,8 +2,8 @@
 Data transfer object for picture.
 """
 
-from datetime import datetime
 import uuid
+from datetime import datetime
 from dataclasses import dataclass
 
 from shared.application.dtos.file_field import FileFieldDTO
@@ -15,7 +15,7 @@ __all__ = ("PictureDTO",)
 class PictureDTO:
     """Data Transfer Object for picture."""
 
-    id: str
+    id: uuid.UUID
     image: FileFieldDTO
     picture_type: str
     title: str

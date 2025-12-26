@@ -3,6 +3,7 @@ Manage attachment views.
 """
 
 import logging
+import uuid
 from dataclasses import asdict
 from functools import lru_cache
 from typing import Any
@@ -83,7 +84,7 @@ class UpdateAttachmentView(views.AdminGenericMixin, views.FormView):
     def get_initial(self) -> dict[str, Any]:
         init = super().get_initial()
         attachment = self.get_attachment_data()
-        init["attachment_id"] = attachment.id
+        init["attachment_id"] = str(attachment.id)
         init["content_type"] = attachment.content_type_id
         init["object_id"] = attachment.object_id
         init["attachment_type"] = attachment.attachment_type
@@ -103,7 +104,7 @@ class UpdateAttachmentView(views.AdminGenericMixin, views.FormView):
         # dispatch the requested command for updating attachment entity
         attachment = dispatch_command(
             UpdateAttachmentCommand(
-                attachment_id=data["attachment_id"],
+                attachment_id=uuid.UUID(data["attachment_id"]),
                 content_type_id=data["content_type"],
                 attachment_type=data["attachment_type"],
                 title=data["title"],

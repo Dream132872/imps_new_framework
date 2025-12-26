@@ -100,7 +100,11 @@ class UpdatePictureCommandHandler(
 
                 # update picture information
                 picture.update_information(
-                    title=command.title, alternative=command.alternative
+                    title=command.title,
+                    alternative=command.alternative,
+                    picture_type=command.picture_type,
+                    content_type_id=command.content_type_id,
+                    object_id=str(command.object_id),
                 )
 
                 # save the new

@@ -30,7 +30,7 @@ class TestAttachmentDTOMapper:
 
         # Assert
         assert isinstance(result, AttachmentDTO)
-        assert result.id == sample_attachment_entity.id
+        assert str(result.id) == sample_attachment_entity.id
         assert result.attachment_type == sample_attachment_entity.attachment_type
         assert result.title == sample_attachment_entity.title
         assert result.content_type_id == sample_attachment_entity.content_type_id
@@ -127,7 +127,7 @@ class TestAttachmentDTOMapper:
         updated_at = datetime(2023, 1, 2, 12, 0, 0)
 
         attachment = AttachmentEntity(
-            id="test-id",
+            id=str(uuid.uuid4()),
             file=sample_attachment_file_field,
             attachment_type="document",
             content_type_id=sample_content_type.id,
@@ -169,7 +169,7 @@ class TestAttachmentDTOMapper:
         assert isinstance(result, list)
         assert len(result) == 1
         assert isinstance(result[0], AttachmentDTO)
-        assert result[0].id == sample_attachment_entity.id
+        assert str(result[0].id) == sample_attachment_entity.id
 
     def test_list_to_dto_with_multiple_attachments(
         self,

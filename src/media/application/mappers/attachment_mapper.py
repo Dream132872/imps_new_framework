@@ -1,5 +1,7 @@
 """Attachment DTO mappers"""
 
+import uuid
+
 from media.application.dtos import AttachmentDTO
 from media.domain.entities import Attachment as AttachmentEntity
 from shared.application.mappers import FileFieldDTOMapper
@@ -14,7 +16,7 @@ class AttachmentDTOMapper:
         """Converts attachment entity instance to dto instance"""
 
         return AttachmentDTO(
-            id=attachment.id,
+            id=uuid.UUID(attachment.id),
             file=FileFieldDTOMapper.to_dto(attachment.file, FileFieldType.FILE),
             attachment_type=attachment.attachment_type,
             title=attachment.title,

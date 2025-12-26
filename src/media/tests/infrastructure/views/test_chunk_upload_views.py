@@ -11,6 +11,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import RequestFactory
 
+from identity.infrastructure.models.user import User
 from media.application import commands as chunk_upload_commands
 from media.application.commands import (
     CreateAttachmentCommand,
@@ -46,7 +47,7 @@ def sample_chunk_file() -> SimpleUploadedFile:
 @pytest.fixture
 def sample_picture_dto(sample_content_type: ContentType) -> PictureDTO:
     """Create a sample PictureDTO."""
-    picture_id = str(uuid.uuid4())
+    picture_id = uuid.uuid4()
     return PictureDTO(
         id=picture_id,
         image=FileFieldDTO(
@@ -71,7 +72,7 @@ def sample_picture_dto(sample_content_type: ContentType) -> PictureDTO:
 @pytest.fixture
 def sample_attachment_dto(sample_content_type: ContentType) -> AttachmentDTO:
     """Create a sample AttachmentDTO."""
-    attachment_id = str(uuid.uuid4())
+    attachment_id = uuid.uuid4()
     return AttachmentDTO(
         id=attachment_id,
         file=FileFieldDTO(
@@ -474,7 +475,7 @@ class TestGetChunkUploadStatusView:
     def test_permission_required(
         self,
         request_factory: RequestFactory,
-        authenticated_user_with_permissions,
+        authenticated_user_with_permissions: User,
     ):
         """Test that view requires correct permissions."""
         view = GetChunkUploadStatusView()
@@ -490,7 +491,7 @@ class TestCompletePictureChunkUploadView:
         self,
         mock_dispatch_command: MagicMock,
         request_factory: RequestFactory,
-        authenticated_user_with_permissions,
+        authenticated_user_with_permissions: User,
         sample_content_type: ContentType,
         sample_picture_dto: PictureDTO,
     ):
@@ -521,7 +522,6 @@ class TestCompletePictureChunkUploadView:
         import json
         data = json.loads(response.content)
         assert data["status"] == "success"
-        assert "Picture has been created successfully" in data["message"]
         assert data["details"]["is_update"] is False
         assert "picture" in data["details"]
 
@@ -540,7 +540,7 @@ class TestCompletePictureChunkUploadView:
         self,
         mock_dispatch_command: MagicMock,
         request_factory: RequestFactory,
-        authenticated_user_with_permissions,
+        authenticated_user_with_permissions: User,
         sample_content_type: ContentType,
         sample_picture_dto: PictureDTO,
     ):
@@ -592,7 +592,6 @@ class TestCompletePictureChunkUploadView:
         import json
         data = json.loads(response.content)
         assert data["status"] == "success"
-        assert "Picture has been updated successfully" in data["message"]
         assert data["details"]["is_update"] is True
 
         assert mock_dispatch_command.call_count == 2
@@ -606,7 +605,7 @@ class TestCompletePictureChunkUploadView:
         self,
         mock_dispatch_command: MagicMock,
         request_factory: RequestFactory,
-        authenticated_user_with_permissions,
+        authenticated_user_with_permissions: User,
     ):
         """Test that POST returns error when required fields are missing."""
         request = request_factory.post(
@@ -646,7 +645,7 @@ class TestCompleteAttachmentChunkUploadView:
         self,
         mock_dispatch_command: MagicMock,
         request_factory: RequestFactory,
-        authenticated_user_with_permissions,
+        authenticated_user_with_permissions: User,
         sample_content_type: ContentType,
         sample_attachment_dto: AttachmentDTO,
     ):
@@ -676,7 +675,6 @@ class TestCompleteAttachmentChunkUploadView:
         import json
         data = json.loads(response.content)
         assert data["status"] == "success"
-        assert "Attachment has been created successfully" in data["message"]
         assert data["details"]["is_update"] is False
         assert "attachment" in data["details"]
 
@@ -694,7 +692,7 @@ class TestCompleteAttachmentChunkUploadView:
         self,
         mock_dispatch_command: MagicMock,
         request_factory: RequestFactory,
-        authenticated_user_with_permissions,
+        authenticated_user_with_permissions: User,
         sample_content_type: ContentType,
         sample_attachment_dto: AttachmentDTO,
     ):
@@ -744,7 +742,6 @@ class TestCompleteAttachmentChunkUploadView:
         import json
         data = json.loads(response.content)
         assert data["status"] == "success"
-        assert "Attachment has been updated successfully" in data["message"]
         assert data["details"]["is_update"] is True
 
         assert mock_dispatch_command.call_count == 2

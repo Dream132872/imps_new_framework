@@ -3,6 +3,7 @@ Manage picture views.
 """
 
 import logging
+import uuid
 from dataclasses import asdict
 from functools import lru_cache
 from typing import Any
@@ -84,7 +85,7 @@ class UpdatePictureView(views.AdminGenericMixin, views.FormView):
     def get_initial(self) -> dict[str, Any]:
         init = super().get_initial()
         picture = self.get_picture_data()
-        init["picture_id"] = picture.id
+        init["picture_id"] = str(picture.id)
         init["content_type"] = picture.content_type_id
         init["object_id"] = picture.object_id
         init["picture_type"] = picture.picture_type
@@ -105,7 +106,7 @@ class UpdatePictureView(views.AdminGenericMixin, views.FormView):
         # dispatch the requested command for updating picture entity
         picture = dispatch_command(
             UpdatePictureCommand(
-                picture_id=data["picture_id"],
+                picture_id=uuid.UUID(data["picture_id"]),
                 content_type_id=data["content_type"],
                 alternative=data["alternative"],
                 title=data["title"],

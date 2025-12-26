@@ -31,7 +31,7 @@ class TestPictureDTOMapper:
 
         # Assert
         assert isinstance(result, PictureDTO)
-        assert result.id == sample_picture_entity.id
+        assert str(result.id) == sample_picture_entity.id
         assert result.picture_type == sample_picture_entity.picture_type
         assert result.title == sample_picture_entity.title
         assert result.alternative == sample_picture_entity.alternative
@@ -122,9 +122,10 @@ class TestPictureDTOMapper:
         # Arrange
         created_at = datetime(2023, 1, 1, 12, 0, 0)
         updated_at = datetime(2023, 1, 2, 12, 0, 0)
+        picture_id = str(uuid.uuid4())
 
         picture = PictureEntity(
-            id="test-id",
+            id=picture_id,
             image=sample_image_file_field,
             picture_type="main",
             content_type_id=sample_content_type.id,
@@ -167,7 +168,7 @@ class TestPictureDTOMapper:
         assert isinstance(result, list)
         assert len(result) == 1
         assert isinstance(result[0], PictureDTO)
-        assert result[0].id == sample_picture_entity.id
+        assert str(result[0].id) == sample_picture_entity.id
 
     def test_list_to_dto_with_multiple_pictures(
         self,

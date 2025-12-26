@@ -30,7 +30,7 @@ class TestAttachmentMapper:
 
         # Assert
         assert isinstance(result, AttachmentModel)
-        assert result.id == sample_attachment_entity.id
+        assert str(result.id) == sample_attachment_entity.id
         assert result.created_at == sample_attachment_entity.created_at
         assert result.updated_at == sample_attachment_entity.updated_at
         assert result.file == sample_attachment_entity.file.name

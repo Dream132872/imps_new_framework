@@ -31,7 +31,7 @@ class TestPictureMapper:
 
         # Assert
         assert isinstance(result, PictureModel)
-        assert result.id == sample_picture_entity.id
+        assert str(result.id) == sample_picture_entity.id
         assert result.created_at == sample_picture_entity.created_at
         assert result.updated_at == sample_picture_entity.updated_at
         assert result.image == sample_picture_entity.image.name

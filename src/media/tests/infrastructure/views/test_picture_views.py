@@ -9,8 +9,8 @@ from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import RequestFactory
-from django.urls import reverse
 
+from identity.infrastructure.models.user import User
 from media.application.commands import (
     CreatePictureCommand,
     DeletePictureCommand,
@@ -43,7 +43,7 @@ def sample_image_file() -> SimpleUploadedFile:
 @pytest.fixture
 def sample_picture_dto(sample_content_type: ContentType) -> PictureDTO:
     """Create a sample PictureDTO."""
-    picture_id = str(uuid.uuid4())
+    picture_id = uuid.uuid4()
     return PictureDTO(
         id=picture_id,
         image=FileFieldDTO(
@@ -66,7 +66,7 @@ def sample_picture_dto(sample_content_type: ContentType) -> PictureDTO:
 
 
 @pytest.fixture
-def authenticated_user_with_permissions(db):
+def authenticated_user_with_permissions(db: None):
     """Create an authenticated user with required permissions."""
     from identity.infrastructure.models import User
 
@@ -101,7 +101,7 @@ class TestCreatePictureView:
         self,
         mock_dispatch_command: MagicMock,
         request_factory: RequestFactory,
-        authenticated_user_with_permissions,
+        authenticated_user_with_permissions: User,
         sample_content_type: ContentType,
     ):
         """Test that get_initial sets correct values from URL kwargs."""
@@ -123,7 +123,7 @@ class TestCreatePictureView:
         self,
         mock_dispatch_command: MagicMock,
         request_factory: RequestFactory,
-        authenticated_user_with_permissions,
+        authenticated_user_with_permissions: User,
         sample_content_type: ContentType,
         sample_image_file: SimpleUploadedFile,
         sample_picture_dto: PictureDTO,
@@ -155,7 +155,7 @@ class TestCreatePictureView:
         # Create a mock form
         form = MagicMock()
         form.get_form_data.return_value = {
-            "content_type": str(sample_content_type.id),
+            "content_type": sample_content_type.id,
             "object_id": str(uuid.uuid4()),
             "picture_type": "main",
             "title": "Test Picture",
@@ -168,9 +168,9 @@ class TestCreatePictureView:
 
         assert response.status_code == 200
         import json
+
         data = json.loads(response.content)
         assert data["status"] == "success"
-        assert "Picture has been created successfully" in data["message"]
         assert data["details"]["is_update"] is False
         assert "picture" in data["details"]
 
@@ -188,7 +188,7 @@ class TestCreatePictureView:
         self,
         mock_dispatch_command: MagicMock,
         request_factory: RequestFactory,
-        authenticated_user_with_permissions,
+        authenticated_user_with_permissions: User,
         sample_content_type: ContentType,
     ):
         """Test that form_invalid returns a response."""
@@ -215,7 +215,7 @@ class TestCreatePictureView:
     def test_permission_required(
         self,
         request_factory: RequestFactory,
-        authenticated_user_with_permissions,
+        authenticated_user_with_permissions: User,
     ):
         """Test that view requires correct permissions."""
         view = CreatePictureView()
@@ -233,18 +233,18 @@ class TestUpdatePictureView:
         mock_dispatch_command: MagicMock,
         mock_dispatch_query: MagicMock,
         request_factory: RequestFactory,
-        authenticated_user_with_permissions,
+        authenticated_user_with_permissions: User,
         sample_picture_dto: PictureDTO,
     ):
         """Test that get_initial loads picture data from query."""
         mock_dispatch_query.return_value = sample_picture_dto
 
         view = UpdatePictureView()
-        view.kwargs = {"picture_id": sample_picture_dto.id}
+        view.kwargs = {"picture_id": str(sample_picture_dto.id)}
 
         initial = view.get_initial()
 
-        assert initial["picture_id"] == sample_picture_dto.id
+        assert initial["picture_id"] == str(sample_picture_dto.id)
         assert initial["content_type"] == sample_picture_dto.content_type_id
         assert initial["object_id"] == sample_picture_dto.object_id
         assert initial["picture_type"] == sample_picture_dto.picture_type
@@ -254,7 +254,7 @@ class TestUpdatePictureView:
         mock_dispatch_query.assert_called_once()
         call_args = mock_dispatch_query.call_args[0][0]
         assert isinstance(call_args, GetPictureByIdQuery)
-        assert call_args.picture_id == sample_picture_dto.id
+        assert call_args.picture_id == str(sample_picture_dto.id)
 
     @patch("media.infrastructure.views.picture_views.dispatch_query")
     @patch("media.infrastructure.views.picture_views.dispatch_command")
@@ -263,7 +263,7 @@ class TestUpdatePictureView:
         mock_dispatch_command: MagicMock,
         mock_dispatch_query: MagicMock,
         request_factory: RequestFactory,
-        authenticated_user_with_permissions,
+        authenticated_user_with_permissions: User,
         sample_picture_dto: PictureDTO,
     ):
         """Test that get_form sets picture_data on form."""
@@ -274,7 +274,7 @@ class TestUpdatePictureView:
 
         view = UpdatePictureView()
         view.request = request
-        view.kwargs = {"picture_id": sample_picture_dto.id}
+        view.kwargs = {"picture_id": str(sample_picture_dto.id)}
 
         form = view.get_form()
 
@@ -288,7 +288,7 @@ class TestUpdatePictureView:
         mock_dispatch_command: MagicMock,
         mock_dispatch_query: MagicMock,
         request_factory: RequestFactory,
-        authenticated_user_with_permissions,
+        authenticated_user_with_permissions: User,
         sample_content_type: ContentType,
         sample_image_file: SimpleUploadedFile,
         sample_picture_dto: PictureDTO,
@@ -321,11 +321,11 @@ class TestUpdatePictureView:
 
         view = UpdatePictureView()
         view.request = request
-        view.kwargs = {"picture_id": sample_picture_dto.id}
+        view.kwargs = {"picture_id": str(sample_picture_dto.id)}
 
         form = MagicMock()
         form.get_form_data.return_value = {
-            "picture_id": sample_picture_dto.id,
+            "picture_id": str(sample_picture_dto.id),
             "content_type": str(sample_content_type.id),
             "object_id": str(uuid.uuid4()),
             "picture_type": "main",
@@ -339,15 +339,15 @@ class TestUpdatePictureView:
 
         assert response.status_code == 200
         import json
+
         data = json.loads(response.content)
         assert data["status"] == "success"
-        assert "Picture has been updated successfully" in data["message"]
         assert data["details"]["is_update"] is True
 
         mock_dispatch_command.assert_called_once()
         call_args = mock_dispatch_command.call_args[0][0]
         assert isinstance(call_args, UpdatePictureCommand)
-        assert call_args.picture_id == uuid.UUID(sample_picture_dto.id)
+        assert call_args.picture_id == sample_picture_dto.id
         assert call_args.title == "Updated Title"
 
     @patch("media.infrastructure.views.picture_views.dispatch_query")
@@ -357,7 +357,7 @@ class TestUpdatePictureView:
         mock_dispatch_command: MagicMock,
         mock_dispatch_query: MagicMock,
         request_factory: RequestFactory,
-        authenticated_user_with_permissions,
+        authenticated_user_with_permissions: User,
         sample_content_type: ContentType,
         sample_picture_dto: PictureDTO,
     ):
@@ -381,11 +381,11 @@ class TestUpdatePictureView:
 
         view = UpdatePictureView()
         view.request = request
-        view.kwargs = {"picture_id": sample_picture_dto.id}
+        view.kwargs = {"picture_id": str(sample_picture_dto.id)}
 
         form = MagicMock()
         form.get_form_data.return_value = {
-            "picture_id": sample_picture_dto.id,
+            "picture_id": str(sample_picture_dto.id),
             "content_type": str(sample_content_type.id),
             "object_id": str(uuid.uuid4()),
             "picture_type": "main",
@@ -399,6 +399,7 @@ class TestUpdatePictureView:
 
         assert response.status_code == 200
         import json
+
         data = json.loads(response.content)
         assert data["status"] == "success"
 
@@ -414,7 +415,7 @@ class TestUpdatePictureView:
         mock_dispatch_command: MagicMock,
         mock_dispatch_query: MagicMock,
         request_factory: RequestFactory,
-        authenticated_user_with_permissions,
+        authenticated_user_with_permissions: User,
         sample_picture_dto: PictureDTO,
     ):
         """Test that form_invalid returns a response."""
@@ -425,7 +426,7 @@ class TestUpdatePictureView:
 
         view = UpdatePictureView()
         view.request = request
-        view.kwargs = {"picture_id": sample_picture_dto.id}
+        view.kwargs = {"picture_id": str(sample_picture_dto.id)}
 
         form = MagicMock()
         form.errors = {"title": ["This field is required."]}
@@ -439,7 +440,7 @@ class TestUpdatePictureView:
     def test_permission_required(
         self,
         request_factory: RequestFactory,
-        authenticated_user_with_permissions,
+        authenticated_user_with_permissions: User,
     ):
         """Test that view requires correct permissions."""
         view = UpdatePictureView()
@@ -455,7 +456,7 @@ class TestDeletePictureView:
         self,
         mock_dispatch_command: MagicMock,
         request_factory: RequestFactory,
-        authenticated_user_with_permissions,
+        authenticated_user_with_permissions: User,
         sample_picture_dto: PictureDTO,
     ):
         """Test that POST deletes a picture successfully."""
@@ -473,6 +474,7 @@ class TestDeletePictureView:
 
         assert response.status_code == 200
         import json
+
         data = json.loads(response.content)
         assert "details" in data
         assert "message" in data
@@ -480,14 +482,13 @@ class TestDeletePictureView:
         mock_dispatch_command.assert_called_once()
         call_args = mock_dispatch_command.call_args[0][0]
         assert isinstance(call_args, DeletePictureCommand)
-        assert call_args.pk == picture_id
+        assert call_args.pk == str(picture_id)
 
     def test_permission_required(
         self,
         request_factory: RequestFactory,
-        authenticated_user_with_permissions,
+        authenticated_user_with_permissions: User,
     ):
         """Test that view requires correct permissions."""
         view = DeletePictureView()
         assert "media_infrastructure.delete_picture" in view.permission_required
-

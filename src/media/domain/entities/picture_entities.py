@@ -118,19 +118,43 @@ class Picture(AggregateRoot):
         self.update_timestamp()
 
     def update_information(
-        self, title: str | None = None, alternative: str | None = None
+        self,
+        title: str | None = None,
+        alternative: str | None = None,
+        picture_type: str | PictureType | None = None,
+        content_type_id: int | None = None,
+        object_id: int | str | None = None,
     ) -> None:
         """Update picture information.
 
         Args:
             title (str | None, optional): title of the image. Defaults to None.
             alternative (str | None, optional): alternative of the image. Defaults to None.
+            picture_type (str | PictureType | None, optional): type of the picture. Defaults to None.
+            content_type_id (int | None, optional): content type ID. Defaults to None.
+            object_id (int | str | None, optional): object ID. Defaults to None.
         """
-        if title:
+        if title is not None:
             self._title = title
 
-        if alternative:
+        if alternative is not None:
             self._alternative = alternative
+
+        if picture_type is not None:
+            if isinstance(picture_type, str):
+                self._picture_type = PictureType.from_string(picture_type)
+            elif isinstance(picture_type, PictureType):
+                self._picture_type = picture_type
+
+        if content_type_id is not None:
+            if not content_type_id:
+                raise PictureValidationError(_("Content type ID cannot be empty"))
+            self._content_type_id = content_type_id
+
+        if object_id is not None:
+            if not object_id:
+                raise PictureValidationError(_("Object ID cannot be empty"))
+            self._object_id = object_id
 
         self.update_timestamp()
 

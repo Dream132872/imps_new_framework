@@ -223,12 +223,10 @@ class TestPictureEntity:
         sample_picture_entity.update_information(title="", alternative="")
 
         # Assert
+        assert sample_picture_entity.title == "", "title value should be changed"
         assert (
-            sample_picture_entity.title == original_title
-        ), "title value should not be changed"
-        assert (
-            sample_picture_entity.alternative == origianl_alternative
-        ), "alternative value should not be changed"
+            sample_picture_entity.alternative == ""
+        ), "alternative value should be changed"
 
     def test_picture_to_dict(self, sample_picture_entity: PictureEntity) -> None:
         """Test converting Picture entity to dictionary."""

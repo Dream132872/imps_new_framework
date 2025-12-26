@@ -1,5 +1,7 @@
 """Picture DTO mappers"""
 
+import uuid
+
 from media.application.dtos import PictureDTO
 from media.domain.entities import Picture as PictureEntity
 from shared.application.mappers import FileFieldDTOMapper
@@ -14,7 +16,7 @@ class PictureDTOMapper:
         """Converts picture entity instance to picture dto instance"""
 
         return PictureDTO(
-            id=picture.id,
+            id=uuid.UUID(picture.id),
             image=FileFieldDTOMapper.to_dto(picture.image, FileFieldType.IMAGE),
             picture_type=picture.picture_type,
             title=picture.title,

@@ -51,7 +51,7 @@ class TestSearchAttachmentsQueryHandler:
         # Assert
         assert result is not None
         assert len(result) == 1
-        assert result[0].id == sample_attachment_entity.id
+        assert str(result[0].id) == sample_attachment_entity.id
 
         # Verify method calls
         mock_unit_of_work[AttachmentRepository].search_attachments.assert_called_once_with(
@@ -96,8 +96,8 @@ class TestSearchAttachmentsQueryHandler:
         # Assert
         assert result is not None
         assert len(result) == 2
-        assert result[0].id == attachment1.id
-        assert result[1].id == attachment2.id
+        assert str(result[0].id) == attachment1.id
+        assert str(result[1].id) == attachment2.id
 
         # Verify method calls
         mock_unit_of_work[AttachmentRepository].search_attachments.assert_called_once_with(
@@ -156,7 +156,7 @@ class TestSearchAttachmentsQueryHandler:
         # Assert
         assert result is not None
         assert len(result) == 1
-        assert result[0].id == sample_attachment_entity.id
+        assert str(result[0].id) == sample_attachment_entity.id
 
         # Verify method calls
         mock_unit_of_work[AttachmentRepository].search_attachments.assert_called_once_with(
@@ -187,7 +187,7 @@ class TestSearchAttachmentsQueryHandler:
         # Assert
         assert result is not None
         assert len(result) == 1
-        assert result[0].id == sample_attachment_entity.id
+        assert str(result[0].id) == sample_attachment_entity.id
 
         # Verify method calls
         mock_unit_of_work[AttachmentRepository].search_attachments.assert_called_once_with(
@@ -247,7 +247,7 @@ class TestSearchFirstAttachmentQueryHandler:
 
         # Assert
         assert result is not None
-        assert result.id == sample_attachment_entity.id
+        assert str(result.id) == sample_attachment_entity.id
 
         # Verify method calls
         mock_unit_of_work[
@@ -286,7 +286,7 @@ class TestSearchFirstAttachmentQueryHandler:
 
         # Assert
         assert result is not None
-        assert result.id == sample_attachment_entity.id
+        assert str(result.id) == sample_attachment_entity.id
 
         # Verify method calls
         mock_unit_of_work[
@@ -346,7 +346,7 @@ class TestSearchFirstAttachmentQueryHandler:
 
         # Assert
         assert result is not None
-        assert result.id == sample_attachment_entity.id
+        assert str(result.id) == sample_attachment_entity.id
 
         # Verify method calls
         mock_unit_of_work[
@@ -378,7 +378,7 @@ class TestSearchFirstAttachmentQueryHandler:
 
         # Assert
         assert result is not None
-        assert result.id == sample_attachment_entity.id
+        assert str(result.id) == sample_attachment_entity.id
 
         # Verify method calls
         mock_unit_of_work[
@@ -442,7 +442,7 @@ class TestGetAttachmentByIdQueryHandler:
 
         # Assert
         assert result is not None
-        assert result.id == sample_attachment_entity.id
+        assert str(result.id) == sample_attachment_entity.id
         assert result.title == sample_attachment_entity.title
         assert result.content_type_id == sample_attachment_entity.content_type_id
         assert result.object_id == sample_attachment_entity.object_id
@@ -525,7 +525,7 @@ class TestGetAttachmentByIdQueryHandler:
 
         # Assert
         assert result is not None
-        assert result.id == sample_attachment_entity.id
+        assert str(result.id) == sample_attachment_entity.id
 
         # Verify method calls - handler converts attachment_id to string
         mock_unit_of_work[AttachmentRepository].get_by_id.assert_called_once_with(

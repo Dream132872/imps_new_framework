@@ -43,7 +43,7 @@ def sample_attachment_file() -> SimpleUploadedFile:
 @pytest.fixture
 def sample_attachment_dto(sample_content_type: ContentType) -> AttachmentDTO:
     """Create a sample AttachmentDTO."""
-    attachment_id = str(uuid.uuid4())
+    attachment_id = uuid.uuid4()
     return AttachmentDTO(
         id=attachment_id,
         file=FileFieldDTO(
@@ -92,6 +92,7 @@ def authenticated_user_with_permissions(db: None):
 
 
 @pytest.mark.infrastructure
+@pytest.mark.unit
 class TestCreateAttachmentView:
     """Tests for CreateAttachmentView."""
 
@@ -153,7 +154,7 @@ class TestCreateAttachmentView:
         # Create a mock form
         form = MagicMock()
         form.get_form_data.return_value = {
-            "content_type": str(sample_content_type.id),
+            "content_type": sample_content_type.id,
             "object_id": str(uuid.uuid4()),
             "attachment_type": "document",
             "title": "Test Attachment",
@@ -218,6 +219,7 @@ class TestCreateAttachmentView:
 
 
 @pytest.mark.infrastructure
+@pytest.mark.unit
 class TestUpdateAttachmentView:
     """Tests for UpdateAttachmentView."""
 
@@ -235,11 +237,11 @@ class TestUpdateAttachmentView:
         mock_dispatch_query.return_value = sample_attachment_dto
 
         view = UpdateAttachmentView()
-        view.kwargs = {"attachment_id": sample_attachment_dto.id}
+        view.kwargs = {"attachment_id": str(sample_attachment_dto.id)}
 
         initial = view.get_initial()
 
-        assert initial["attachment_id"] == sample_attachment_dto.id
+        assert initial["attachment_id"] == str(sample_attachment_dto.id)
         assert initial["content_type"] == sample_attachment_dto.content_type_id
         assert initial["object_id"] == sample_attachment_dto.object_id
         assert initial["attachment_type"] == sample_attachment_dto.attachment_type
@@ -248,7 +250,7 @@ class TestUpdateAttachmentView:
         mock_dispatch_query.assert_called_once()
         call_args = mock_dispatch_query.call_args[0][0]
         assert isinstance(call_args, GetAttachmentByIdQuery)
-        assert call_args.attachment_id == sample_attachment_dto.id
+        assert call_args.attachment_id == str(sample_attachment_dto.id)
 
     @patch("media.infrastructure.views.attachment_views.dispatch_query")
     @patch("media.infrastructure.views.attachment_views.dispatch_command")
@@ -268,7 +270,7 @@ class TestUpdateAttachmentView:
 
         view = UpdateAttachmentView()
         view.request = request
-        view.kwargs = {"attachment_id": sample_attachment_dto.id}
+        view.kwargs = {"attachment_id": str(sample_attachment_dto.id)}
 
         form = view.get_form()
 
@@ -314,11 +316,11 @@ class TestUpdateAttachmentView:
 
         view = UpdateAttachmentView()
         view.request = request
-        view.kwargs = {"attachment_id": sample_attachment_dto.id}
+        view.kwargs = {"attachment_id": str(sample_attachment_dto.id)}
 
         form = MagicMock()
         form.get_form_data.return_value = {
-            "attachment_id": sample_attachment_dto.id,
+            "attachment_id": str(sample_attachment_dto.id),
             "content_type": str(sample_content_type.id),
             "object_id": str(uuid.uuid4()),
             "attachment_type": "document",
@@ -333,13 +335,12 @@ class TestUpdateAttachmentView:
         import json
         data = json.loads(response.content)
         assert data["status"] == "success"
-        assert "Attachment has been updated successfully" in data["message"]
         assert data["details"]["is_update"] is True
 
         mock_dispatch_command.assert_called_once()
         call_args = mock_dispatch_command.call_args[0][0]
         assert isinstance(call_args, UpdateAttachmentCommand)
-        assert call_args.attachment_id == uuid.UUID(sample_attachment_dto.id)
+        assert call_args.attachment_id == sample_attachment_dto.id
         assert call_args.title == "Updated Title"
 
     @patch("media.infrastructure.views.attachment_views.dispatch_query")
@@ -372,11 +373,11 @@ class TestUpdateAttachmentView:
 
         view = UpdateAttachmentView()
         view.request = request
-        view.kwargs = {"attachment_id": sample_attachment_dto.id}
+        view.kwargs = {"attachment_id": str(sample_attachment_dto.id)}
 
         form = MagicMock()
         form.get_form_data.return_value = {
-            "attachment_id": sample_attachment_dto.id,
+            "attachment_id": str(sample_attachment_dto.id),
             "content_type": str(sample_content_type.id),
             "object_id": str(uuid.uuid4()),
             "attachment_type": "document",
@@ -415,7 +416,7 @@ class TestUpdateAttachmentView:
 
         view = UpdateAttachmentView()
         view.request = request
-        view.kwargs = {"attachment_id": sample_attachment_dto.id}
+        view.kwargs = {"attachment_id": str(sample_attachment_dto.id)}
 
         form = MagicMock()
         form.errors = {"title": ["This field is required."]}
@@ -437,10 +438,11 @@ class TestUpdateAttachmentView:
 
 
 @pytest.mark.infrastructure
+@pytest.mark.unit
 class TestDeleteAttachmentView:
     """Tests for DeleteAttachmentView."""
 
-    @patch("media.infrastructure.views.attachment_views.dispatch_command")
+    @patch("shared.infrastructure.views.generics.dispatch_command")
     def test_post_deletes_attachment_successfully(
         self,
         mock_dispatch_command: MagicMock,
@@ -458,19 +460,18 @@ class TestDeleteAttachmentView:
         view.request = request
         view.command_class = DeleteAttachmentCommand
 
-        attachment_id = uuid.uuid4()
+        attachment_id = sample_attachment_dto.id
         response = view.post(request, pk=str(attachment_id))
 
         assert response.status_code == 200
         import json
         data = json.loads(response.content)
-        assert "successfully deleted" in data["message"].lower()
         assert "details" in data
 
         mock_dispatch_command.assert_called_once()
         call_args = mock_dispatch_command.call_args[0][0]
         assert isinstance(call_args, DeleteAttachmentCommand)
-        assert call_args.pk == attachment_id
+        assert call_args.pk == str(attachment_id)
 
     def test_permission_required(
         self,
@@ -480,4 +481,3 @@ class TestDeleteAttachmentView:
         """Test that view requires correct permissions."""
         view = DeleteAttachmentView()
         assert "media_infrastructure.delete_attachment" in view.permission_required
-

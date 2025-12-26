@@ -2,6 +2,7 @@
 Data transfer object for attachment.
 """
 
+import uuid
 from datetime import datetime
 from dataclasses import dataclass
 
@@ -14,7 +15,7 @@ __all__ = ("AttachmentDTO",)
 class AttachmentDTO:
     """Data Transfer Object for attachment."""
 
-    id: str
+    id: uuid.UUID
     file: FileFieldDTO
     attachment_type: str
     title: str

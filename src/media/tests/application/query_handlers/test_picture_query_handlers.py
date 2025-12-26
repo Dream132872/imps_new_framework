@@ -52,7 +52,7 @@ class TestSearchPicturesQueryHandler:
         # Assert
         assert result is not None
         assert len(result) == 1
-        assert result[0].id == sample_picture_entity.id
+        assert str(result[0].id) == sample_picture_entity.id
 
         # Verify method calls
         mock_unit_of_work[PictureRepository].search_pictures.assert_called_once_with(
@@ -97,8 +97,8 @@ class TestSearchPicturesQueryHandler:
         # Assert
         assert result is not None
         assert len(result) == 2
-        assert result[0].id == picture1.id
-        assert result[1].id == picture2.id
+        assert str(result[0].id) == picture1.id
+        assert str(result[1].id) == picture2.id
 
         # Verify method calls
         mock_unit_of_work[PictureRepository].search_pictures.assert_called_once_with(
@@ -157,7 +157,7 @@ class TestSearchPicturesQueryHandler:
         # Assert
         assert result is not None
         assert len(result) == 1
-        assert result[0].id == sample_picture_entity.id
+        assert str(result[0].id) == sample_picture_entity.id
 
         # Verify method calls
         mock_unit_of_work[PictureRepository].search_pictures.assert_called_once_with(
@@ -188,7 +188,7 @@ class TestSearchPicturesQueryHandler:
         # Assert
         assert result is not None
         assert len(result) == 1
-        assert result[0].id == sample_picture_entity.id
+        assert str(result[0].id) == sample_picture_entity.id
 
         # Verify method calls
         mock_unit_of_work[PictureRepository].search_pictures.assert_called_once_with(
@@ -246,7 +246,7 @@ class TestSearchFirstPictureQueryHandler:
 
         # Assert
         assert result is not None
-        assert result.id == sample_picture_entity.id
+        assert str(result.id) == sample_picture_entity.id
 
         # Verify method calls
         mock_unit_of_work[PictureRepository].search_first_picture.assert_called_once_with(
@@ -283,7 +283,7 @@ class TestSearchFirstPictureQueryHandler:
 
         # Assert
         assert result is not None
-        assert result.id == sample_picture_entity.id
+        assert str(result.id) == sample_picture_entity.id
 
         # Verify method calls
         mock_unit_of_work[PictureRepository].search_first_picture.assert_called_once_with(
@@ -339,7 +339,7 @@ class TestSearchFirstPictureQueryHandler:
 
         # Assert
         assert result is not None
-        assert result.id == sample_picture_entity.id
+        assert str(result.id) == sample_picture_entity.id
 
         # Verify method calls
         mock_unit_of_work[PictureRepository].search_first_picture.assert_called_once_with(
@@ -369,7 +369,7 @@ class TestSearchFirstPictureQueryHandler:
 
         # Assert
         assert result is not None
-        assert result.id == sample_picture_entity.id
+        assert str(result.id) == sample_picture_entity.id
 
         # Verify method calls
         mock_unit_of_work[PictureRepository].search_first_picture.assert_called_once_with(
@@ -429,7 +429,7 @@ class TestGetPictureByIdQueryHandler:
 
         # Assert
         assert result is not None
-        assert result.id == sample_picture_entity.id
+        assert str(result.id) == sample_picture_entity.id
         assert result.title == sample_picture_entity.title
         assert result.alternative == sample_picture_entity.alternative
         assert result.content_type_id == sample_picture_entity.content_type_id
@@ -513,7 +513,7 @@ class TestGetPictureByIdQueryHandler:
 
         # Assert
         assert result is not None
-        assert result.id == sample_picture_entity.id
+        assert str(result.id) == sample_picture_entity.id
 
         # Verify method calls - handler converts picture_id to string
         mock_unit_of_work[PictureRepository].get_by_id.assert_called_once_with(

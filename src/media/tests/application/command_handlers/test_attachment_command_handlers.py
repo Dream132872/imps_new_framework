@@ -82,7 +82,7 @@ class TestCreateAttachmentCommandHandler:
 
         # Assert
         assert result is not None
-        assert result.id == saved_attachment.id
+        assert str(result.id) == saved_attachment.id
         assert result.title == command.title
         assert result.content_type_id == command.content_type_id
         assert result.object_id == str(command.object_id)
@@ -437,7 +437,7 @@ class TestUpdateAttachmentCommandHandler:
 
         # Assert
         assert result is not None
-        assert result.id == updated_attachment.id
+        assert str(result.id) == updated_attachment.id
         assert result.file is not None
         assert result.file.name == updated_attachment.file.name
         assert result.file.url == updated_attachment.file.url
@@ -505,7 +505,7 @@ class TestUpdateAttachmentCommandHandler:
 
         # Assert
         assert result is not None
-        assert result.id == updated_attachment.id
+        assert str(result.id) == updated_attachment.id
         assert result.file is not None
         assert result.file.name == updated_attachment.file.name
         assert result.file.url == updated_attachment.file.url
@@ -954,7 +954,7 @@ class TestDeleteAttachmentCommandHandler:
 
         # Assert
         assert result is not None
-        assert result.id == sample_attachment_entity.id
+        assert str(result.id) == sample_attachment_entity.id
         assert result.file.name == sample_attachment_entity.file.name
 
         mock_unit_of_work[AttachmentRepository].get_by_id.assert_called_once_with(
