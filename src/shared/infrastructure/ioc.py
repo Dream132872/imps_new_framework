@@ -1,4 +1,4 @@
-﻿"""
+"""
 This is inversion of control manager of infrastructure.
 """
 

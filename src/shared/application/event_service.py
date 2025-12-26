@@ -1,4 +1,4 @@
-﻿"""
+"""
 Base domain event service interface
 """
 
