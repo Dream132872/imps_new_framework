@@ -6,13 +6,12 @@ import uuid
 from dataclasses import dataclass
 from datetime import datetime
 
-
 __all__ = ("UserDTO",)
 
 
 @dataclass
 class UserDTO:
-    id: str
+    id: uuid.UUID
     username: str
     email: str
     first_name: str
@@ -22,4 +21,3 @@ class UserDTO:
     is_active: bool
     created_at: datetime
     updated_at: datetime
-

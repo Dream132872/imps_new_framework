@@ -3,6 +3,7 @@ Domain events system.
 """
 
 from abc import ABC, abstractmethod
+from dataclasses import dataclass, field
 from typing import Any
 from uuid import uuid4
 
@@ -122,6 +123,11 @@ class InMemoryEventBus(EventBus):
             ]
 
 
+EVENT_BUSES = {
+    "in_memory": InMemoryEventBus(),
+}
+
+
 def get_event_bus(event_bus_type: str = "in_memory") -> EventBus:
     """
     gets required event bus based on type you pass
@@ -133,11 +139,7 @@ def get_event_bus(event_bus_type: str = "in_memory") -> EventBus:
         EventBus: an instance of EventBus interface implementation
     """
 
-    event_buses = {
-        "in_memory": InMemoryEventBus,
-    }
-
-    if not event_bus_type in event_buses:
+    if not event_bus_type in EVENT_BUSES:
         raise KeyError(f"Event bus ('{event_bus_type}') does not exists.")
 
-    return event_buses[event_bus_type]()
+    return EVENT_BUSES[event_bus_type]

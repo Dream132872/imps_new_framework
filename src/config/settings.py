@@ -108,6 +108,7 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "shared.infrastructure.middlewares.RequestScopeMiddleware",  # Request-scoped services (like UnitOfWork)
     "django.contrib.sessions.middleware.SessionMiddleware",
     "core.infrastructure.middlewares.locale.ForceIgnoreDefaultLanguageMiddleware",
     "django.middleware.locale.LocaleMiddleware",

@@ -10,7 +10,7 @@ from django.db import models, transaction
 from django.utils.translation import gettext_lazy as _
 
 from shared.application.exceptions import ApplicationConfigurationError
-from shared.domain.entities import Entity
+from shared.domain.entities import AggregateRoot, Entity
 from shared.domain.exceptions import *
 from shared.domain.repositories import Repository, UnitOfWork
 
@@ -24,6 +24,25 @@ class DjangoRepository(Repository[T], Generic[T]):
     def __init__(self, model_class: type[models.Model], entity_class: type[T]) -> None:
         self.model_class = model_class
         self.entity_class = entity_class
+        self._unit_of_work: UnitOfWork | None = None
+
+    def set_unit_of_work(self, uow: UnitOfWork) -> None:
+        """Set the unit of work for tracking aggregates.
+
+        Args:
+            uow: The unit of work instance to track aggregates with.
+        """
+        self._unit_of_work = uow
+
+    def _track_aggregate(self, entity: T) -> None:
+        """Track aggregate root for domain event publishing.
+
+        Args:
+            entity: The entity to track if it's an aggregate root.
+        """
+        if isinstance(entity, AggregateRoot) and self._unit_of_work:
+            if hasattr(self._unit_of_work, "_track_aggregate"):
+                self._unit_of_work._track_aggregate(entity)  # type: ignore
 
     def save(self, entity: T) -> T:
         if entity.id:
@@ -51,7 +70,9 @@ class DjangoRepository(Repository[T], Generic[T]):
             # No ID, create new
             model_instance = self._entity_to_model(entity)
             model_instance.save()
-        return self._model_to_entity(model_instance)
+        saved_entity = self._model_to_entity(model_instance)
+        self._track_aggregate(saved_entity)
+        return saved_entity
 
     def get_by_id(self, id: str) -> T:
         try:
@@ -68,6 +89,7 @@ class DjangoRepository(Repository[T], Generic[T]):
     def delete(self, entity: T) -> None:
         try:
             model_instance = self.model_class.objects.get(pk=entity.id)
+            self._track_aggregate(entity)
             model_instance.delete(keep_parents=True)
         except self.model_class.DoesNotExist:
             raise DomainEntityNotFoundError(
@@ -93,14 +115,17 @@ class DjangoUnitOfWork(UnitOfWork):
     """
 
     def __init__(self) -> None:
+        print("new instance of UnitOfWork has been created")
         self._repositories = {}
         self._transaction: transaction.Atomic | None = None
         self._should_rollback = False
+        self._tracked_aggregates: set[AggregateRoot] = set()
 
     def __enter__(self) -> Self:
         self._transaction = transaction.atomic()
         self._transaction.__enter__()
         self._should_rollback = False
+        self._tracked_aggregates.clear()
         return self
 
     def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
@@ -108,9 +133,23 @@ class DjangoUnitOfWork(UnitOfWork):
             # If rollback was explicitly requested, mark it
             if self._should_rollback:
                 transaction.set_rollback(True)
+
+            # Check if transaction will commit (no exception and no rollback)
+            will_commit = exc_type is None and not self._should_rollback
+
             self._transaction.__exit__(exc_type, exc_val, exc_tb)
+
+            # Publish domain events only after successful commit
+            if will_commit:
+                self._publish_domain_events()
+        else:
+            # If no transaction, still publish events (for testing scenarios)
+            if exc_type is None:
+                self._publish_domain_events()
+
         self._transaction = None
         self._should_rollback = False
+        self._tracked_aggregates.clear()
 
     def commit(self) -> None:
         # Django's transactions are automatically committed when the context exits normally
@@ -127,19 +166,61 @@ class DjangoUnitOfWork(UnitOfWork):
         self._should_rollback = True
         transaction.set_rollback(True)
 
+    def _track_aggregate(self, aggregate: AggregateRoot) -> None:
+        """Track an aggregate root for domain event publishing.
+
+        Args:
+            aggregate: The aggregate root to track.
+        """
+        self._tracked_aggregates.add(aggregate)
+
+    def _publish_domain_events(self) -> None:
+        """Collect and publish all domain events from tracked aggregates.
+
+        This method is called after a successful transaction commit.
+        It collects all domain events from tracked aggregates, publishes them,
+        and then clears the events from the aggregates.
+        """
+        from shared.domain.events import DomainEvent, get_event_bus
+
+        if not self._tracked_aggregates:
+            return
+
+        event_bus = get_event_bus()
+        all_events: list[DomainEvent] = []
+
+        # Collect all events from tracked aggregates
+        for aggregate in self._tracked_aggregates:
+            all_events.extend(aggregate.domain_events)
+
+        # Publish all events
+        for event in all_events:
+            event_bus.publish(event)
+
+        # Clear events from aggregates after publishing
+        for aggregate in self._tracked_aggregates:
+            aggregate.clear_domain_events()
+
     def _get_repository(self, repo: type[R]) -> R:
         if repo not in self._repositories:
             from shared.infrastructure.ioc import get_injector
 
             injector = get_injector()
             try:
-                self._repositories[repo] = injector.get(repo)
+                repository = injector.get(repo)
+                self._repositories[repo] = repository
             except Exception:
                 raise ApplicationConfigurationError(
                     message=f"No repository registered for {repo}"
                 )
 
-        return self._repositories[repo]
+        # Always set the unit of work reference so repositories can track aggregates
+        # This ensures the reference is updated even for cached repositories
+        repository = self._repositories[repo]
+        if isinstance(repository, DjangoRepository):
+            repository.set_unit_of_work(self)
+
+        return repository
 
     def __getitem__(self, repo_type: type[R]) -> R:
         return self._get_repository(repo_type)

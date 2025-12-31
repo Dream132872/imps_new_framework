@@ -10,7 +10,6 @@ ENV PYTHONPATH=/app/src \
 # Copy the entire project (will be overridden by volume mount in development)
 # Note: Python dependencies are already installed in the base image
 COPY . .
-COPY dist/src .
 
 # Create directories for media and static files
 RUN mkdir -p /app/cdn/media /app/cdn/static /app/logs

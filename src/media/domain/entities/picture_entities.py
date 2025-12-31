@@ -8,6 +8,7 @@ from typing import Any
 
 from django.utils.translation import gettext_lazy as _
 
+from media.domain.events.picture_events import PictureUpdatedImageEvent
 from media.domain.exceptions import PictureValidationError
 from shared.domain.entities import AggregateRoot, FileField
 
@@ -42,7 +43,8 @@ class PictureType(Enum):
                 _(
                     "Picture type '{picture_type}' is not valid. Valid types are: {valid_types}"
                 ).format(
-                    picture_type=value.lower(), valid_types=", ".join([pt.value for pt in cls])
+                    picture_type=value.lower(),
+                    valid_types=", ".join([pt.value for pt in cls]),
                 )
             )
 
@@ -114,8 +116,16 @@ class Picture(AggregateRoot):
         if not new_image or (new_image.size is not None and new_image.size == 0):
             raise PictureValidationError(_("Image cannot be None"))
 
+        original_image_name = self.image.name
         self._image = new_image
         self.update_timestamp()
+        self.add_domain_event(
+            PictureUpdatedImageEvent(
+                picture_id=self.id,
+                old_image_name=original_image_name,
+                new_image_name=new_image.name,
+            )
+        )
 
     def update_information(
         self,

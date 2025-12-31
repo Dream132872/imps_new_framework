@@ -15,7 +15,7 @@ from ninja_jwt.schema import (
 class UserSchema(Schema):
     """User information schema."""
 
-    id: str | uuid.UUID
+    id: uuid.UUID
     username: str
     first_name: str = ""
     last_name: str = ""
