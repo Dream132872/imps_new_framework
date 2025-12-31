@@ -18,8 +18,12 @@ class SharedInfrastructureConfig(AppConfig):
     name = "shared.infrastructure"
     label = "shared_infrastructure"
     verbose_name = _("Shared infrastrucutre")
-    shared_modules_to_load = ("api",)
-    initial_loading_modules = ()
+    shared_modules_to_load = (
+        "infrastructure.api",
+        "application.cqrs_services",
+        "application.event_services",
+    )
+    modules_to_load = ()
 
     def ready(self) -> None:
         # this is for shared injector instance
@@ -45,36 +49,37 @@ class SharedInfrastructureConfig(AppConfig):
 
             # dotted path to the installed app.
             django_app_dot_location = ".".join(config.__module__.split(".")[:-1])
+            bounded_context_name = django_app_dot_location.split(".")[0]
 
             # manage initial load python modules.
             # each django app has a config file and each config file can have
             # a variable named initial_loading_modules that contains a string/list/tuple of all
             # python modules that should be loaded after ready() method.
-            if hasattr(config, "initial_loading_modules"):
-                initial_loading_modules = getattr(config, "initial_loading_modules")
-
-                if isinstance(initial_loading_modules, str):
-                    load_module(f"{django_app_dot_location}.{initial_loading_modules}")
-                elif isinstance(initial_loading_modules, (list, tuple)):
-                    for py_module in initial_loading_modules:
-                        load_module(f"{django_app_dot_location}.{py_module}")
+            initial_loading_modules = getattr(config, "initial_loading_modules", [])
+            if not isinstance(initial_loading_modules, (list, tuple)):
+                raise TypeError(
+                    "initial_loading_modules should be of type list or tuple"
+                )
 
             # load all initial load python modules that are shared between all installed apps.
-            for module in shared_modules_to_load:
-                load_module(f"{django_app_dot_location}.{module}")
+            initial_loading_modules.extend(shared_modules_to_load)
+
+            for py_module in initial_loading_modules:
+                print(f"{bounded_context_name}.{py_module}")
+                load_module(f"{bounded_context_name}.{py_module}")
 
             # manage all Injector Module classes to handle dependency injection.
             # each django app can have a python module named ioc.py that contains all Injector Modules.
             # this section installs all Modules in global injector instance.
             try:
-                module = import_module(f"{django_app_dot_location}.ioc")
+                module_dotted_path = import_module(f"{django_app_dot_location}.ioc")
 
                 for _, klass in inspect.getmembers(
-                    module,
+                    module_dotted_path,
                     lambda a: inspect.isclass(a)
                     and issubclass(a, injector_module.Module),
                 ):
-                    # install found class to injector
+                    # install found class to the injector
                     self.injector.binder.install(klass)
             except Exception as e:
                 logger.error(
@@ -93,18 +98,6 @@ class SharedInfrastructureConfig(AppConfig):
                 f"{settings.MIGRATIONS_HISTORY_PATH}.{config.label}"
             )
 
-            # load cqrs service of domain.
-            # each domain has it's own cqrs_service.py file
-            # that configures the handlers for commands and queries.
-            try:
-                load_module(
-                    f"{django_app_dot_location.split(".")[0]}.application.cqrs_service"
-                )
-            except Exception as e:
-                logger.warning(
-                    f"There is no cqrs_service module/file file in {config.label}. error msg: {e}"
-                )
-
         # add api router to the urls after loading all api modules
         add_api_urls()
 
@@ -122,4 +115,3 @@ def add_api_urls() -> None:
         path("api/v1/", api_v1.urls),
         prefix_default_language=False,
     )
-

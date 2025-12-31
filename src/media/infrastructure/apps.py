@@ -7,4 +7,3 @@ class InfrastructureConfig(AppConfig):
     name = "media.infrastructure"
     label = "media_infrastructure"
     verbose_name = _("Media")
-
