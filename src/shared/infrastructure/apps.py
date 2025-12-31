@@ -18,9 +18,13 @@ class SharedInfrastructureConfig(AppConfig):
     name = "shared.infrastructure"
     label = "shared_infrastructure"
     verbose_name = _("Shared infrastrucutre")
+
     shared_modules_to_load = (
+        # load api from infrastructure layer of each bounded contexts.
         "infrastructure.api",
+        # load cqrs service from application layer of each bounded contexts.
         "application.cqrs_services",
+        # load domain event service from application layer of each bounded contexts.
         "application.event_services",
     )
     modules_to_load = ()
@@ -61,7 +65,7 @@ class SharedInfrastructureConfig(AppConfig):
                     "initial_loading_modules should be of type list or tuple"
                 )
 
-            # load all initial load python modules that are shared between all installed apps.
+            # load all initial load python modules that are shared between all bounded contexts.
             initial_loading_modules.extend(shared_modules_to_load)
 
             for py_module in initial_loading_modules:
