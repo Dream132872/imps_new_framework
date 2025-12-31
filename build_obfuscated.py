@@ -20,6 +20,7 @@ STATIC_EXTENSIONS = {
 # Directories to exclude from obfuscation but include in copy
 EXCLUDE_FROM_OBFUSCATION = [
     '*/migrations/*',
+    '*/migrations_histories/*',
     '*/tests/*',
     '*/__pycache__/*',
     '*/locale/*',
