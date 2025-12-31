@@ -60,6 +60,10 @@ cover/
 *.mo
 *.pot
 
+# Compressed files
+*.zip
+*.rar
+
 # Django stuff:
 *.log
 local_settings.py

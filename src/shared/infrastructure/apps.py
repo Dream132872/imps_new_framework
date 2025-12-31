@@ -65,7 +65,6 @@ class SharedInfrastructureConfig(AppConfig):
             initial_loading_modules.extend(shared_modules_to_load)
 
             for py_module in initial_loading_modules:
-                print(f"{bounded_context_name}.{py_module}")
                 load_module(f"{bounded_context_name}.{py_module}")
 
             # manage all Injector Module classes to handle dependency injection.
