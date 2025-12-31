@@ -1,13 +1,16 @@
 """Integration tests for attachment views."""
 
 import uuid
+from typing import TYPE_CHECKING
 
 import pytest
-from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import RequestFactory
 
+if TYPE_CHECKING:
+    from django.test import RequestFactory
+
+from identity.infrastructure.models.user import User
 from media.application.dtos import AttachmentDTO
 from media.infrastructure.forms import AttachmentUpsertForm
 from media.infrastructure.models import Attachment as AttachmentModel
@@ -25,45 +28,8 @@ pytestmark = [
 ]
 
 
-@pytest.fixture
-def request_factory():
-    """Create a request factory."""
-    return RequestFactory()
-
-
-@pytest.fixture
-def authenticated_user_with_permissions(db):
-    """Create an authenticated user with required permissions."""
-    from identity.infrastructure.models import User
-
-    user = User.objects.create_user(
-        username="testuser",
-        email="test@example.com",
-        password="testpass123",
-        is_staff=True,
-    )
-
-    # Add required permissions
-    add_permission = Permission.objects.get(
-        codename="add_attachment", content_type__app_label="media_infrastructure"
-    )
-    change_permission = Permission.objects.get(
-        codename="change_attachment", content_type__app_label="media_infrastructure"
-    )
-    delete_permission = Permission.objects.get(
-        codename="delete_attachment", content_type__app_label="media_infrastructure"
-    )
-
-    user.user_permissions.add(add_permission, change_permission, delete_permission)
-    return user
-
-
-@pytest.fixture
-def sample_attachment_file() -> SimpleUploadedFile:
-    """Create a sample attachment file."""
-    return SimpleUploadedFile(
-        "test_file.pdf", b"fake file content", content_type="application/pdf"
-    )
+# Fixtures are now in conftest.py
+# Use sample_attachment_file_pdf from conftest for PDF files
 
 
 @pytest.mark.integration
@@ -73,9 +39,9 @@ class TestCreateAttachmentViewIntegration:
     def test_create_attachment_through_view(
         self,
         request_factory: RequestFactory,
-        authenticated_user_with_permissions,
+        authenticated_user_with_permissions: User,
         sample_content_type: ContentType,
-        sample_attachment_file: SimpleUploadedFile,
+        sample_attachment_file_pdf: SimpleUploadedFile,
     ):
         """Test creating an attachment through the view with real command handler."""
         # Arrange
@@ -90,7 +56,7 @@ class TestCreateAttachmentViewIntegration:
                 "title": "Test Attachment",
             },
         )
-        request.FILES["file"] = sample_attachment_file
+        request.FILES["file"] = sample_attachment_file_pdf
         request.user = authenticated_user_with_permissions
 
         view = CreateAttachmentView()
@@ -109,7 +75,7 @@ class TestCreateAttachmentViewIntegration:
                 "attachment_type": "document",
                 "title": "Test Attachment",
             },
-            files={"file": sample_attachment_file},
+            files={"file": sample_attachment_file_pdf},
         )
 
         # Act
@@ -138,7 +104,7 @@ class TestCreateAttachmentViewIntegration:
     def test_get_initial_sets_correct_values(
         self,
         request_factory: RequestFactory,
-        authenticated_user_with_permissions,
+        authenticated_user_with_permissions: User,
         sample_content_type: ContentType,
     ):
         """Test that get_initial sets correct values from URL kwargs."""
@@ -163,16 +129,16 @@ class TestUpdateAttachmentViewIntegration:
     def test_update_attachment_through_view(
         self,
         request_factory: RequestFactory,
-        authenticated_user_with_permissions,
+        authenticated_user_with_permissions: User,
         sample_content_type: ContentType,
-        sample_attachment_file: SimpleUploadedFile,
+        sample_attachment_file_pdf: SimpleUploadedFile,
     ):
         """Test updating an attachment through the view with real command handler."""
         # Arrange: Create an attachment first
         object_id = str(uuid.uuid4())
 
         original_attachment = AttachmentModel.objects.create(
-            file=sample_attachment_file,
+            file=sample_attachment_file_pdf,
             content_type=sample_content_type,
             object_id=object_id,
             attachment_type="document",
@@ -222,16 +188,16 @@ class TestUpdateAttachmentViewIntegration:
     def test_update_attachment_without_new_file(
         self,
         request_factory: RequestFactory,
-        authenticated_user_with_permissions,
+        authenticated_user_with_permissions: User,
         sample_content_type: ContentType,
-        sample_attachment_file: SimpleUploadedFile,
+        sample_attachment_file_pdf: SimpleUploadedFile,
     ):
         """Test updating an attachment without providing a new file."""
         # Arrange: Create an attachment first
         object_id = str(uuid.uuid4())
 
         original_attachment = AttachmentModel.objects.create(
-            file=sample_attachment_file,
+            file=sample_attachment_file_pdf,
             content_type=sample_content_type,
             object_id=object_id,
             attachment_type="document",
@@ -276,14 +242,14 @@ class TestUpdateAttachmentViewIntegration:
     def test_get_initial_loads_attachment_data(
         self,
         request_factory: RequestFactory,
-        authenticated_user_with_permissions,
+        authenticated_user_with_permissions: User,
         sample_content_type: ContentType,
-        sample_attachment_file: SimpleUploadedFile,
+        sample_attachment_file_pdf: SimpleUploadedFile,
     ):
         """Test that get_initial loads attachment data from query."""
         # Arrange: Create an attachment
         attachment = AttachmentModel.objects.create(
-            file=sample_attachment_file,
+            file=sample_attachment_file_pdf,
             content_type=sample_content_type,
             object_id=str(uuid.uuid4()),
             attachment_type="document",
@@ -306,14 +272,14 @@ class TestUpdateAttachmentViewIntegration:
     def test_get_form_sets_attachment_data(
         self,
         request_factory: RequestFactory,
-        authenticated_user_with_permissions,
+        authenticated_user_with_permissions: User,
         sample_content_type: ContentType,
-        sample_attachment_file: SimpleUploadedFile,
+        sample_attachment_file_pdf: SimpleUploadedFile,
     ):
         """Test that get_form sets attachment_data on form."""
         # Arrange: Create an attachment
         attachment = AttachmentModel.objects.create(
-            file=sample_attachment_file,
+            file=sample_attachment_file_pdf,
             content_type=sample_content_type,
             object_id=str(uuid.uuid4()),
             attachment_type="document",
@@ -345,14 +311,14 @@ class TestDeleteAttachmentViewIntegration:
     def test_delete_attachment_through_view(
         self,
         request_factory: RequestFactory,
-        authenticated_user_with_permissions,
+        authenticated_user_with_permissions: User,
         sample_content_type: ContentType,
-        sample_attachment_file: SimpleUploadedFile,
+        sample_attachment_file_pdf: SimpleUploadedFile,
     ):
         """Test deleting an attachment through the view with real command handler."""
         # Arrange: Create an attachment
         attachment = AttachmentModel.objects.create(
-            file=sample_attachment_file,
+            file=sample_attachment_file_pdf,
             content_type=sample_content_type,
             object_id=str(uuid.uuid4()),
             attachment_type="document",

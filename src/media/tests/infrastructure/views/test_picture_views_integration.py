@@ -4,13 +4,9 @@ import uuid
 from io import BytesIO
 
 import pytest
-from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import RequestFactory
 from PIL import Image
-
-from identity.infrastructure.models.user import User
 from media.application.dtos import PictureDTO
 from media.infrastructure.forms import UpsertPictureForm
 from media.infrastructure.models import Picture as PictureModel
@@ -39,40 +35,9 @@ def _create_image_file(name: str = "test.png") -> SimpleUploadedFile:
     )
 
 
-@pytest.fixture
-def request_factory():
-    """Create a request factory."""
-    return RequestFactory()
+# Fixtures are now in conftest.py
 
 
-@pytest.fixture
-def authenticated_user_with_permissions(db):
-    """Create an authenticated user with required permissions."""
-    from identity.infrastructure.models import User
-
-    user = User.objects.create_user(
-        username="testuser",
-        email="test@example.com",
-        password="testpass123",
-        is_staff=True,
-    )
-
-    # Add required permissions
-    add_permission = Permission.objects.get(
-        codename="add_picture", content_type__app_label="media_infrastructure"
-    )
-    change_permission = Permission.objects.get(
-        codename="change_picture", content_type__app_label="media_infrastructure"
-    )
-    delete_permission = Permission.objects.get(
-        codename="delete_picture", content_type__app_label="media_infrastructure"
-    )
-
-    user.user_permissions.add(add_permission, change_permission, delete_permission)
-    return user
-
-
-@pytest.mark.integration
 class TestCreatePictureViewIntegration:
     """Integration tests for CreatePictureView."""
 
@@ -165,7 +130,6 @@ class TestCreatePictureViewIntegration:
         assert initial["picture_type"] == "main"
 
 
-@pytest.mark.integration
 class TestUpdatePictureViewIntegration:
     """Integration tests for UpdatePictureView."""
 
@@ -354,7 +318,6 @@ class TestUpdatePictureViewIntegration:
         assert picture_dto.title == picture.title
 
 
-@pytest.mark.integration
 class TestDeletePictureViewIntegration:
     """Integration tests for DeletePictureView."""
 
@@ -398,4 +361,3 @@ class TestDeletePictureViewIntegration:
 
         # Verify picture was actually deleted from database
         assert not PictureModel.objects.filter(id=picture_id).exists()
-

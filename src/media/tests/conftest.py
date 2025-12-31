@@ -3,13 +3,17 @@ Media related fixtures.
 """
 
 import uuid
+from datetime import datetime
 from typing import Callable
 from unittest.mock import MagicMock
 
 import pytest
+from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import RequestFactory
 
+from media.application.dtos import AttachmentDTO, PictureDTO
 from media.domain.entities.attachment_entities import Attachment as AttachmentEntity
 from media.domain.entities.chunk_upload_entities import ChunkUpload as ChunkUploadEntity
 from media.domain.entities.chunk_upload_entities import ChunkUploadStatus
@@ -21,6 +25,7 @@ from media.domain.repositories import (
 )
 from media.infrastructure.services import FileStorageService
 from media.infrastructure.models import Picture as PictureModel
+from shared.application.dtos.file_field import FileFieldDTO
 from shared.domain.entities import FileField, FileFieldType
 from shared.infrastructure.ioc import UnitOfWork
 
@@ -276,3 +281,128 @@ def mock_file_storage_service() -> MagicMock:
     """Created MagicMock object of file storage service"""
 
     return MagicMock(spec=FileStorageService)
+
+
+# ============================================================================
+# View Testing Fixtures
+# ============================================================================
+
+
+@pytest.fixture
+def request_factory() -> RequestFactory:
+    """Create a request factory for view testing."""
+    return RequestFactory()
+
+
+@pytest.fixture
+def sample_chunk_file() -> SimpleUploadedFile:
+    """Create a sample chunk file for chunk upload testing."""
+    return SimpleUploadedFile(
+        "chunk.bin", b"fake chunk content", content_type="application/octet-stream"
+    )
+
+
+@pytest.fixture
+def sample_attachment_file_pdf() -> SimpleUploadedFile:
+    """Create a sample PDF attachment file for view testing."""
+    return SimpleUploadedFile(
+        "test_file.pdf", b"fake file content", content_type="application/pdf"
+    )
+
+
+@pytest.fixture
+def file_field_dto_factory() -> Callable[..., FileFieldDTO]:
+    """Factory for FileFieldDTO."""
+
+    def _create_file_field_dto(**kwargs) -> FileFieldDTO:  # type: ignore
+        return FileFieldDTO(
+            file_type=kwargs.get("file_type", "image"),
+            name=kwargs.get("name", "test_image.jpg"),
+            url=kwargs.get("url", "/media/test_image.jpg"),
+            size=kwargs.get("size", 1024),
+            width=kwargs.get("width", 800),
+            height=kwargs.get("height", 600),
+            content_type=kwargs.get("content_type", "image/jpeg"),
+        )
+
+    return _create_file_field_dto
+
+
+@pytest.fixture
+def sample_picture_dto(sample_content_type: ContentType) -> PictureDTO:
+    """Create a sample PictureDTO for view testing."""
+    picture_id = uuid.uuid4()
+    return PictureDTO(
+        id=picture_id,
+        image=FileFieldDTO(
+            file_type="image",
+            name="test_image.jpg",
+            url="/media/test_image.jpg",
+            size=1024,
+            width=800,
+            height=600,
+            content_type="image/jpeg",
+        ),
+        picture_type="main",
+        title="Test Picture",
+        alternative="Test Alternative",
+        content_type_id=sample_content_type.id,
+        object_id=str(uuid.uuid4()),
+        created_at=datetime.now(),
+        updated_at=datetime.now(),
+    )
+
+
+@pytest.fixture
+def sample_attachment_dto(sample_content_type: ContentType) -> AttachmentDTO:
+    """Create a sample AttachmentDTO for view testing."""
+    attachment_id = uuid.uuid4()
+    return AttachmentDTO(
+        id=attachment_id,
+        file=FileFieldDTO(
+            file_type="file",
+            name="test_file.pdf",
+            url="/media/test_file.pdf",
+            size=2048,
+            width=None,
+            height=None,
+            content_type="application/pdf",
+        ),
+        attachment_type="document",
+        title="Test Attachment",
+        content_type_id=sample_content_type.id,
+        object_id=str(uuid.uuid4()),
+        created_at=datetime.now(),
+        updated_at=datetime.now(),
+    )
+
+
+@pytest.fixture
+def authenticated_user_with_permissions(db):
+    """Create an authenticated user with all media-related permissions for view testing."""
+    from identity.infrastructure.models import User
+
+    user = User.objects.create_user(
+        username="testuser",
+        email="test@example.com",
+        password="testpass123",
+        is_staff=True,
+    )
+
+    # Add all required permissions for media views
+    permissions = [
+        "add_picture",
+        "change_picture",
+        "delete_picture",
+        "add_attachment",
+        "change_attachment",
+        "delete_attachment",
+    ]
+
+    for perm_codename in permissions:
+        permission = Permission.objects.get(
+            codename=perm_codename, content_type__app_label="media_infrastructure"
+        )
+        user.user_permissions.add(permission)
+
+    return user

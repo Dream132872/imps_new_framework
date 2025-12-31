@@ -19,8 +19,12 @@ from media.infrastructure.repositories import DjangoChunkUploadRepository
 from media.infrastructure.services import DjangoChunkUploadService
 
 
-@pytest.mark.infrastructure
-@pytest.mark.integration
+pytestmark = [
+    pytest.mark.infrastructure,
+    pytest.mark.integration,
+]
+
+
 class TestDjangoChunkUploadService:
     """Integration tests for DjangoChunkUploadService"""
 
@@ -50,7 +54,7 @@ class TestDjangoChunkUploadService:
         chunk_data = b"chunk data content"
         chunk_size = len(chunk_data)
         total_size = chunk_size * 2  # Allow room for more chunks
-        
+
         entity = chunk_upload_entity_factory(
             upload_id=upload_id,
             total_size=total_size,
@@ -104,7 +108,7 @@ class TestDjangoChunkUploadService:
         chunk_data = b"extra chunk"
         chunk_size = len(chunk_data)
         total_size = chunk_size  # Set total size to match the chunk
-        
+
         entity = chunk_upload_entity_factory(
             upload_id=upload_id,
             total_size=total_size,
@@ -118,7 +122,7 @@ class TestDjangoChunkUploadService:
         offset = total_size
 
         # Act
-        # Note: The service code compares chunk_upload.status (string) to 
+        # Note: The service code compares chunk_upload.status (string) to
         # ChunkUploadStatus.COMPLETED (enum), which may fail due to type mismatch.
         # If comparison works: returns early with original size
         # If comparison fails: processes chunk and adds to size
@@ -126,8 +130,8 @@ class TestDjangoChunkUploadService:
 
         # Assert
         updated_entity = repository.get_by_upload_id(upload_id)
-        
-        # The service code compares chunk_upload.status (string "completed") to 
+
+        # The service code compares chunk_upload.status (string "completed") to
         # ChunkUploadStatus.COMPLETED (enum), which fails, so the chunk gets processed.
         # The status remains "completed" because uploaded_size >= total_size check
         # sets it back to completed. We test the actual behavior.
@@ -149,7 +153,7 @@ class TestDjangoChunkUploadService:
         upload_id = str(uuid.uuid4())
         chunk_data = b"chunk data"
         chunk_size = len(chunk_data)
-        
+
         entity = chunk_upload_entity_factory(
             upload_id=upload_id,
             total_size=chunk_size * 2,
@@ -161,7 +165,7 @@ class TestDjangoChunkUploadService:
         offset = 0
 
         # Act & Assert
-        # Note: The service compares chunk_upload.status (string) to 
+        # Note: The service compares chunk_upload.status (string) to
         # ChunkUploadStatus.FAILED (enum), which may fail due to type mismatch.
         # If comparison works: raises ChunkUploadInvalidEntityError
         # If comparison fails: processes chunk (this indicates a bug in service)
@@ -253,7 +257,7 @@ class TestDjangoChunkUploadService:
         chunk1_size = len(chunk1_data)
         chunk2_size = len(chunk2_data)
         total_size = chunk1_size + chunk2_size
-        
+
         entity = chunk_upload_entity_factory(
             upload_id=upload_id,
             total_size=total_size,
@@ -287,7 +291,7 @@ class TestDjangoChunkUploadService:
         chunk_data = b"chunk data"
         chunk_size = len(chunk_data)
         total_size = chunk_size * 2  # Allow room for more chunks
-        
+
         entity = chunk_upload_entity_factory(
             upload_id=upload_id,
             total_size=total_size,
@@ -410,7 +414,7 @@ class TestDjangoChunkUploadService:
         upload_id = str(uuid.uuid4())
         chunk_data = b"test data"
         chunk_size = len(chunk_data)
-        
+
         entity = chunk_upload_entity_factory(
             upload_id=upload_id,
             total_size=chunk_size * 2,  # Not complete yet
@@ -436,7 +440,7 @@ class TestDjangoChunkUploadService:
         upload_id = str(uuid.uuid4())
         chunk_data = b"complete data"
         chunk_size = len(chunk_data)
-        
+
         entity = chunk_upload_entity_factory(
             upload_id=upload_id,
             total_size=chunk_size,
@@ -467,7 +471,7 @@ class TestDjangoChunkUploadService:
         upload_id = str(uuid.uuid4())
         chunk_data = b"complete data"
         chunk_size = len(chunk_data)
-        
+
         entity = chunk_upload_entity_factory(
             upload_id=upload_id,
             total_size=chunk_size,
@@ -548,7 +552,7 @@ class TestDjangoChunkUploadService:
         chunk_data = b"chunk data as bytes"
         chunk_size = len(chunk_data)
         total_size = chunk_size * 2  # Allow room for more chunks
-        
+
         entity = chunk_upload_entity_factory(
             upload_id=upload_id,
             total_size=total_size,
@@ -607,4 +611,3 @@ class TestDjangoChunkUploadService:
                 with default_storage.open(updated_entity.temp_file_path, "rb") as f:
                     content = f.read()
                     assert content == chunk1_data + chunk2_data
-

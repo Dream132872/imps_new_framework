@@ -8,8 +8,12 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from media.infrastructure.services import DjangoFileStorageService
 
 
-@pytest.mark.infrastructure
-@pytest.mark.integration
+pytestmark = [
+    pytest.mark.infrastructure,
+    pytest.mark.integration,
+]
+
+
 class TestDjangoFileStorageService:
     """Integration tests for DjangoFileStorageService"""
 
@@ -466,4 +470,3 @@ class TestDjangoFileStorageService:
         assert path1 != path2
         assert service.file_exists(path1)
         assert service.file_exists(path2)
-

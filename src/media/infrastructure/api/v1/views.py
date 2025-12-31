@@ -35,23 +35,6 @@ class HasRole(permissions.BasePermission):
 class PictureController(ControllerBase):
     """Picutre related api endpoints."""
 
-    @route.get(
-        "",
-        response={200: dict[str, str]},
-        url_name="images_list",
-        permissions=[HasRole("articles.view")],
-    )
-    async def get_images(self):
-        """Get list of all images."""
-
-        return {"key": reverse("api_v1:media:images_list")}
-
-    @route.post("create/", response={status.HTTP_200_OK: Any})
-    async def create_picture(self, data: str):
-        """Create new picture."""
-
-        return {"picture_id": "123"}
-
     @route.get("users/", response={200: PaginatedResultDTO}, summary=_("Submit"))
     async def get_users(self, page: int = 1, page_size: int = 20) -> PaginatedResultDTO:
         return await dispatch_query_async(

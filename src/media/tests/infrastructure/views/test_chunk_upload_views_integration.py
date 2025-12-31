@@ -4,13 +4,11 @@ import os
 import uuid
 from io import BytesIO
 
+from django.test import RequestFactory
 import pytest
-from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import RequestFactory
 from PIL import Image
-
 from identity.infrastructure.models.user import User
 from media.infrastructure.models import (
     Attachment as AttachmentModel,
@@ -42,49 +40,9 @@ def _create_image_file(name: str = "test.png") -> SimpleUploadedFile:
     )
 
 
-@pytest.fixture
-def request_factory():
-    """Create a request factory."""
-    return RequestFactory()
+# Fixtures are now in conftest.py
 
 
-@pytest.fixture
-def authenticated_user_with_permissions(db: None):
-    """Create an authenticated user with required permissions."""
-    from identity.infrastructure.models import User
-
-    user = User.objects.create_user(
-        username="testuser",
-        email="test@example.com",
-        password="testpass123",
-        is_staff=True,
-    )
-
-    # Add required permissions
-    add_picture_permission = Permission.objects.get(
-        codename="add_picture", content_type__app_label="media_infrastructure"
-    )
-    change_picture_permission = Permission.objects.get(
-        codename="change_picture", content_type__app_label="media_infrastructure"
-    )
-    add_attachment_permission = Permission.objects.get(
-        codename="add_attachment", content_type__app_label="media_infrastructure"
-    )
-    change_attachment_permission = Permission.objects.get(
-        codename="change_attachment", content_type__app_label="media_infrastructure"
-    )
-
-    user.user_permissions.add(
-        add_picture_permission,
-        change_picture_permission,
-        add_attachment_permission,
-        change_attachment_permission,
-    )
-    return user
-
-
-@pytest.mark.integration
-@pytest.mark.infrastructure
 class TestCreateChunkUploadViewIntegration:
     """Integration tests for CreateChunkUploadView."""
 
@@ -124,15 +82,13 @@ class TestCreateChunkUploadViewIntegration:
         assert chunk_upload.uploaded_size == 0
 
 
-@pytest.mark.integration
-@pytest.mark.infrastructure
 class TestUploadChunkViewIntegration:
     """Integration tests for UploadChunkView."""
 
     def test_upload_chunk_through_view(
         self,
         request_factory: RequestFactory,
-        authenticated_user_with_permissions,
+        authenticated_user_with_permissions: User,
     ):
         """Test uploading a chunk through the view with real command handler."""
         # Arrange: Create a chunk upload first
@@ -179,15 +135,13 @@ class TestUploadChunkViewIntegration:
         assert updated_chunk_upload.chunk_count > 0
 
 
-@pytest.mark.integration
-@pytest.mark.infrastructure
 class TestGetChunkUploadStatusViewIntegration:
     """Integration tests for GetChunkUploadStatusView."""
 
     def test_get_chunk_upload_status_through_view(
         self,
         request_factory: RequestFactory,
-        authenticated_user_with_permissions,
+        authenticated_user_with_permissions: User,
     ):
         """Test getting chunk upload status through the view with real query handler."""
         # Arrange: Create a chunk upload
@@ -218,8 +172,6 @@ class TestGetChunkUploadStatusViewIntegration:
         assert "completed" in data
 
 
-@pytest.mark.integration
-@pytest.mark.infrastructure
 class TestCompletePictureChunkUploadViewIntegration:
     """Integration tests for CompletePictureChunkUploadView."""
 
@@ -288,7 +240,7 @@ class TestCompletePictureChunkUploadViewIntegration:
     def test_complete_picture_chunk_upload_updates_picture(
         self,
         request_factory: RequestFactory,
-        authenticated_user_with_permissions,
+        authenticated_user_with_permissions: User,
         sample_content_type: ContentType,
     ):
         """Test completing chunk upload and updating an existing picture."""
@@ -357,15 +309,13 @@ class TestCompletePictureChunkUploadViewIntegration:
         assert updated_picture.picture_type == "gallery"
 
 
-@pytest.mark.integration
-@pytest.mark.infrastructure
 class TestCompleteAttachmentChunkUploadViewIntegration:
     """Integration tests for CompleteAttachmentChunkUploadView."""
 
     def test_complete_attachment_chunk_upload_creates_attachment(
         self,
         request_factory: RequestFactory,
-        authenticated_user_with_permissions,
+        authenticated_user_with_permissions: User,
         sample_content_type: ContentType,
     ):
         """Test completing chunk upload and creating an attachment through the view."""
@@ -425,7 +375,7 @@ class TestCompleteAttachmentChunkUploadViewIntegration:
     def test_complete_attachment_chunk_upload_updates_attachment(
         self,
         request_factory: RequestFactory,
-        authenticated_user_with_permissions,
+        authenticated_user_with_permissions: User,
         sample_content_type: ContentType,
     ):
         """Test completing chunk upload and updating an existing attachment."""
@@ -491,4 +441,3 @@ class TestCompleteAttachmentChunkUploadViewIntegration:
         updated_attachment = AttachmentModel.objects.get(id=existing_attachment.id)
         assert updated_attachment.title == "Updated Title"
         assert updated_attachment.attachment_type == "archive"
-
