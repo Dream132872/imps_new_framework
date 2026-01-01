@@ -65,7 +65,7 @@ function getPictureElement(picture, popupData) {
         deleteScenario = `data-delete-callback="singlePictureRemovalCallback"`;
     }
 
-    return $(`
+    let element = $(`
         <div class="me-3 mb-3" id="${picture.id}">
           <div class="image-box rounded-3">
             <img src="${picture.image.url}" width="150" height="150" alt="${
@@ -78,15 +78,18 @@ function getPictureElement(picture, popupData) {
                 }" data-popup-name="picture_preview_popup" data-popup-features="width=${
         picture.image.width
     },height=${picture.image.height}"><i class="bi bi-eye"></i></a>
-                <a class="action-button cursor-pointer d-flex justify-content-center align-items-center" data-popup-open="${updatePictureUrl}" data-popup-name="select_picture_popup" data-popup-handler="handlePicturePopupReply" data-popup-data="${JSON.stringify(
-        popupData
-    )}"><i class="bi bi-pen"></i></a>
+                <a class="action-button cursor-pointer d-flex justify-content-center align-items-center" data-popup-open="${updatePictureUrl}" data-popup-name="select_picture_popup" data-popup-handler="handlePicturePopupReply"><i class="bi bi-pen"></i></a>
                 <a class="action-button cursor-pointer d-flex justify-content-center align-items-center" data-delete-url="${deletePictureUrl}" ${deleteScenario}><i class="bi bi-trash"></i></a>
               </div>
             </div>
           </div>
         </div>
     `);
+
+    // Set the data-popup-data attribute separately to ensure proper HTML escaping
+    element.find('a[data-popup-handler="handlePicturePopupReply"]').attr('data-popup-data', JSON.stringify(popupData));
+
+    return element;
 }
 
 // add managed picture to the desigred box
@@ -136,7 +139,6 @@ function singlePictureRemovalCallback(el, res) {
         content_type: res.details.content_type_id,
         object_id: res.details.object_id,
     });
-    console.log(createPictureUrl);
 
     let pictureBoxId = $("#" + res.details.id)
         .parent()
@@ -149,13 +151,13 @@ function singlePictureRemovalCallback(el, res) {
         object_id: res.details.object_id,
     };
 
+    let stringifyPopupData = JSON.stringify(picturePopupData);
+
     let selectPictureEl = $(`
     <div class="me-3 mb-3">
         <div class="image-box add-image rounded-3 cursor-pointer">
           <img src="/static/shared/images/defaults/dummy_150x150.jpg" width="150" height="150" alt="Add new image" />
-          <div class="overlay d-flex flex-column justify-content-end align-items-center w-100 h-100" data-popup-open="${createPictureUrl}" data-popup-name="select_picture_popup" data-popup-handler="handlePicturePopupReply" data-popup-data="${JSON.stringify(
-        picturePopupData
-    )}">
+          <div class="overlay d-flex flex-column justify-content-end align-items-center w-100 h-100" data-popup-open="${createPictureUrl}" data-popup-name="select_picture_popup" data-popup-handler="handlePicturePopupReply">
             <div class="actions d-flex justify-content-evenly align-items-center w-100 mb-3">
               <a class="action-button cursor-pointer d-flex justify-content-center align-items-center"><i class="bi bi-plus-lg"></i></a>
             </div>
@@ -163,6 +165,9 @@ function singlePictureRemovalCallback(el, res) {
         </div>
       </div>
     `);
+
+    // Set the data-popup-data attribute separately to ensure proper HTML escaping
+    selectPictureEl.find('.overlay').attr('data-popup-data', stringifyPopupData);
 
     $("#" + res.details.id).replaceWith(selectPictureEl);
 }

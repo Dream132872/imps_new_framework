@@ -13,3 +13,6 @@ class PictureEventService(BaseEventService):
         self.event_bus.subscribe(
             "PictureUpdatedImage", PictureUpdatedImageEventHandler()
         )
+
+
+picture_event_service = PictureEventService()

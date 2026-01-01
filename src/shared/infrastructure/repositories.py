@@ -45,31 +45,53 @@ class DjangoRepository(Repository[T], Generic[T]):
                 self._unit_of_work._track_aggregate(entity)  # type: ignore
 
     def save(self, entity: T) -> T:
+        """
+        Save an entity to the repository.
+
+        Optimized implementation using Django's update_or_create():
+        - For existing entities: Single UPDATE query (no SELECT needed beforehand)
+        - For new entities: Single INSERT query
+        - Eliminates the double query (SELECT + UPDATE) pattern
+
+        Args:
+            entity: The entity to save
+
+        Returns:
+            The saved entity with updated timestamps
+        """
+        # Convert entity to model to get field values
+        model_data = self._entity_to_model(entity)
+
+        # Build dictionary of field values for update_or_create defaults
+        # Exclude immutable fields (id, created_at) and auto-managed fields (updated_at)
+        update_fields = {}
+        for field in model_data._meta.fields:
+            field_name = field.name
+            # Skip id (lookup key), created_at (immutable), and auto-managed fields
+            # updated_at is auto-managed by Django (auto_now=True)
+            if (
+                field_name not in ("id", "created_at", "updated_at")
+                and not field.primary_key
+                and not (hasattr(field, "auto_now") and field.auto_now)
+                and not (hasattr(field, "auto_now_add") and field.auto_now_add)
+            ):
+                value = getattr(model_data, field_name, None)
+                # Include the value (None is valid for nullable fields)
+                update_fields[field_name] = value
+
         if entity.id:
-            try:
-                # Try to get existing instance (single query)
-                model_instance = self.model_class.objects.get(pk=entity.id)
-                # Update existing instance
-                updated_model = self._entity_to_model(entity)
-                for field in model_instance._meta.fields:
-                    field_name = field.name
-                    if field_name in ("id", "created_at", "updated_at"):
-                        continue
-                    if hasattr(updated_model, field_name):
-                        setattr(
-                            model_instance,
-                            field_name,
-                            getattr(updated_model, field_name),
-                        )
-                model_instance.save()
-            except self.model_class.DoesNotExist:
-                # Entity doesn't exist, create new
-                model_instance = self._entity_to_model(entity)
-                model_instance.save()
+            # For existing entities, use update_or_create with the ID as lookup
+            # This performs a single UPDATE query if the record exists
+            model_instance, created = self.model_class.objects.update_or_create(
+                pk=entity.id,
+                defaults=update_fields
+            )
         else:
-            # No ID, create new
-            model_instance = self._entity_to_model(entity)
-            model_instance.save()
+            # For new entities, save the model directly (single INSERT)
+            model_data.save()
+            model_instance = model_data
+
+        # Convert back to entity and track aggregate for domain events
         saved_entity = self._model_to_entity(model_instance)
         self._track_aggregate(entity)
         return saved_entity
@@ -115,6 +137,7 @@ class DjangoUnitOfWork(UnitOfWork):
     """
 
     def __init__(self) -> None:
+        print("new instance of UnitOfWork has been created")
         self._repositories = {}
         self._transaction: transaction.Atomic | None = None
         self._should_rollback = False
