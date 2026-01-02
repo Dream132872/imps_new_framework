@@ -137,7 +137,6 @@ class DjangoUnitOfWork(UnitOfWork):
     """
 
     def __init__(self) -> None:
-        print("new instance of UnitOfWork has been created")
         self._repositories = {}
         self._transaction: transaction.Atomic | None = None
         self._should_rollback = False

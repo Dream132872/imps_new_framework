@@ -7,6 +7,7 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import gettext_noop
+from guardian.mixins import GuardianUserMixin
 
 from identity.infrastructure.models.managers.user_manager import CustomUserManager
 from shared.infrastructure.models import BaseModel
@@ -14,7 +15,7 @@ from shared.infrastructure.models import BaseModel
 __all__ = ("User",)
 
 
-class User(AbstractUser, BaseModel):
+class User(AbstractUser, GuardianUserMixin, BaseModel):
     """Model definition for User."""
 
     # user avatar

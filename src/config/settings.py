@@ -91,6 +91,7 @@ THIRD_PARTY_APPS = [
     "ninja_extra",
     "ninja_jwt",
     "ninja_jwt.token_blacklist",
+    "guardian",
 ]
 
 LOCAL_APPS = [
@@ -216,6 +217,7 @@ LOGIN_URL = reverse_lazy("identity:auth:login")
 
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
+    "guardian.backends.ObjectPermissionBackend",
 ]
 
 MIGRATIONS_HISTORY_PATH = config(
@@ -325,7 +327,7 @@ CACHES = {
         },
         # Additional optimizations for your scale:
         "CONNECTION_POOL_KWARGS": {
-            "max_connections": 50,  # Handle 200 concurrent users
+            "max_connections": 200,
             "retry_on_timeout": True,
             "socket_connect_timeout": 5,
             "socket_timeout": 5,
@@ -352,14 +354,22 @@ CACHES = {
 }
 
 # Security optimizations for production
-SECURE_BROWSER_XSS_FILTER = True
-SECURE_CONTENT_TYPE_NOSNIFF = True
-X_FRAME_OPTIONS = "DENY"
+SECURE_BROWSER_XSS_FILTER = config("SECURE_BROWSER_XSS_FILTER", default=True, cast=bool)
+SECURE_CONTENT_TYPE_NOSNIFF = config(
+    "SECURE_CONTENT_TYPE_NOSNIFF", default=True, cast=bool
+)
+X_FRAME_OPTIONS = config("X_FRAME_OPTIONS", default="DENY")
 
 # File upload optimizations
-FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
-DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
-DATA_UPLOAD_MAX_NUMBER_FIELDS = 1000
+FILE_UPLOAD_MAX_MEMORY_SIZE = config(
+    "FILE_UPLOAD_MAX_MEMORY_SIZE", default=5242880, cast=int
+)
+DATA_UPLOAD_MAX_MEMORY_SIZE = config(
+    "DATA_UPLOAD_MAX_MEMORY_SIZE", default=10485760, cast=int
+)
+DATA_UPLOAD_MAX_NUMBER_FIELDS = config(
+    "DATA_UPLOAD_MAX_NUMBER_FIELDS", default=1000, cast=int
+)
 
 # session settings
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
@@ -415,13 +425,13 @@ os.makedirs("logs", exist_ok=True)
 # django-js-reverse configuration
 JS_REVERSE_JS_VAR_NAME = "DjangoUrls"
 JS_REVERSE_JS_MINIFY = True
-JS_REVERSE_INCLUDE_ONLY_NAMESPACES = [
-    "shared",
-    "core",
-    "media",
-    "identity",
-]
+JS_REVERSE_INCLUDE_ONLY_NAMESPACES = [app.split(".")[0] for app in LOCAL_APPS]
 
+# Django guardian settings
+GUARDIAN_MONKEY_PATCH_USER = False
+GUARDIAN_ANONYMOUS_USER_CACHE_TTL = config(
+    "GUARDIAN_ANONYMOUS_USER_CACHE_TTL", default="60", cast=int
+)
 
 # JWT configuration
 NINJA_JWT = {

@@ -7,9 +7,10 @@ from typing import Any
 from django.contrib import admin
 from django.db.models import QuerySet
 from django.http import HttpRequest
+from guardian.admin import GuardedModelAdmin
 
 
-class BaseModelAdmin(admin.ModelAdmin):
+class BaseModelAdmin(GuardedModelAdmin):
     """
     Base admin class that provides common functionality for models inheriting from BaseModel.
     This can be used as a mixin or base class for other admin classes.
