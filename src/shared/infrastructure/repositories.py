@@ -83,8 +83,7 @@ class DjangoRepository(Repository[T], Generic[T]):
             # For existing entities, use update_or_create with the ID as lookup
             # This performs a single UPDATE query if the record exists
             model_instance, created = self.model_class.objects.update_or_create(
-                pk=entity.id,
-                defaults=update_fields
+                pk=entity.id, defaults=update_fields
             )
         else:
             # For new entities, save the model directly (single INSERT)
