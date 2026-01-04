@@ -5,7 +5,6 @@ Picture Query Handlers for CQRS implementation.
 from __future__ import annotations
 
 import logging
-from typing import Any
 
 from django.utils.translation import gettext_lazy as _
 from injector import inject

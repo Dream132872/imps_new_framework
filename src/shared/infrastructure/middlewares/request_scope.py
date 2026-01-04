@@ -7,10 +7,14 @@ ASP.NET Core's scoped services).
 """
 
 from adrf.requests import AsyncRequest, Request
-from django.http import HttpRequest
+from django.http import HttpRequest, HttpResponse
 from django.utils.deprecation import MiddlewareMixin
 
-from shared.infrastructure.ioc import clear_request_scope
+from shared.infrastructure.context import (
+    ContextKeys,
+    clear_request_scope,
+    set_in_request_scope,
+)
 
 
 class RequestScopeMiddleware(MiddlewareMixin):
@@ -24,11 +28,16 @@ class RequestScopeMiddleware(MiddlewareMixin):
 
     def process_request(self, request: HttpRequest | AsyncRequest | Request) -> None:
         """Initialize request scope at the start of the request."""
-        # The context variable is automatically initialized with an empty dict
-        # when accessed for the first time in a new context
-        pass
+        # Set the current request in context
+        set_in_request_scope(ContextKeys.CURRENT_REQUEST, request)
+        
+        # Set user if authenticated
+        if hasattr(request, 'user') and request.user.is_authenticated:
+            set_in_request_scope(ContextKeys.CURRENT_USER, request.user)
 
-    def process_response(self, request: HttpRequest | AsyncRequest | Request, response) -> None:
+    def process_response(
+        self, request: HttpRequest | AsyncRequest | Request, response: HttpResponse
+    ) -> HttpResponse:
         """Clean up request scope after the request completes."""
         clear_request_scope()
         return response
@@ -38,4 +47,3 @@ class RequestScopeMiddleware(MiddlewareMixin):
     ) -> None:
         """Clean up request scope even if an exception occurs."""
         clear_request_scope()
-

@@ -2,7 +2,6 @@
 This is inversion of control manager of infrastructure.
 """
 
-import contextvars
 import functools
 import inspect
 import logging
@@ -18,6 +17,7 @@ from injector import Binder, Injector, Module
 from shared.domain.entities import Entity
 from shared.domain.repositories import UnitOfWork
 from shared.infrastructure.repositories import DjangoUnitOfWork
+from shared.infrastructure.utils.scoped_injector import PerRequestScope
 
 T = TypeVar("T", bound=Entity)
 
@@ -29,12 +29,6 @@ __all__ = (
 )
 
 logger = logging.getLogger(__name__)
-
-# Context variable for request-scoped services (similar to ASP.NET Core scoped services)
-# This ensures one instance per request, not per injection
-_request_scope: contextvars.ContextVar[Dict[str, Any]] = contextvars.ContextVar(
-    "_request_scope", default={}
-)
 
 
 def get_injector() -> Injector:
@@ -127,39 +121,6 @@ def inject_dependencies():
     return decorator
 
 
-def provide_unit_of_work() -> UnitOfWork:
-    """Factory function that provides a request-scoped UnitOfWork instance.
-
-    Similar to ASP.NET Core's scoped services - one instance per request.
-    This prevents race conditions when multiple users work on the same aggregate
-    while ensuring efficiency by reusing the same instance within a single request.
-
-    Returns:
-        UnitOfWork: A UnitOfWork instance scoped to the current request
-    """
-    scope = _request_scope.get()
-    scope_key = "__unit_of_work__"
-
-    if scope_key not in scope:
-        scope[scope_key] = DjangoUnitOfWork()
-
-    return scope[scope_key]
-
-
-def clear_request_scope() -> None:
-    """Clear the request-scoped services.
-
-    This should be called at the end of each request to ensure
-    services are properly cleaned up and not leaked between requests.
-    """
-    scope = _request_scope.get()
-    scope.clear()
-
-
 class SharedModule(Module):
     def configure(self, binder: Binder) -> None:
-        # Bind UnitOfWork to a request-scoped factory function
-        # Similar to ASP.NET Core's scoped services - one instance per request
-        # This prevents race conditions when multiple users work on the same aggregate
-        # while ensuring efficiency by reusing the same instance within a single request
-        binder.bind(UnitOfWork, to=provide_unit_of_work)
+        binder.bind(UnitOfWork, to=DjangoUnitOfWork, scope=PerRequestScope)

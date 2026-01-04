@@ -109,13 +109,13 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "shared.infrastructure.middlewares.RequestScopeMiddleware",  # Request-scoped services (like UnitOfWork)
     "django.contrib.sessions.middleware.SessionMiddleware",
     "core.infrastructure.middlewares.locale.ForceIgnoreDefaultLanguageMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "shared.infrastructure.middlewares.RequestScopeMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "core.infrastructure.middlewares.host.MultipleProxyMiddleware",
@@ -216,8 +216,8 @@ AUTH_USER_MODEL = "identity_infrastructure.User"
 LOGIN_URL = reverse_lazy("identity:auth:login")
 
 AUTHENTICATION_BACKENDS = [
+    "shared.infrastructure.auth_backends.ExclusionAwareObjectPermissionBackend",
     "django.contrib.auth.backends.ModelBackend",
-    "guardian.backends.ObjectPermissionBackend",
 ]
 
 MIGRATIONS_HISTORY_PATH = config(
